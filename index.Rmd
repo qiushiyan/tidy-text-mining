@@ -1,0 +1,15 @@
+--- 
+title: 'Text Mining with R Notes'
+author: "Maxine"
+date: "`r Sys.Date()`"
+site: bookdown::bookdown_site
+documentclass: book
+always_allow_html: yes
+--- 
+
+
+# Preface {-}  
+
+
+This book grew out of my learning experience and notes concerning [Text Mining with R: A Tidy Approach](https://www.tidytextmining.com/) by Julia Silge and David Robinson.
+
