@@ -1,0 +1,14 @@
+book_filename: "bookdown-English"
+delete_merged_file: true
+
+rmd_files: [
+  "index.Rmd",
+  "tidytextformat.Rmd",
+  "sentiment-analysis.Rmd",
+  
+  
+  "reference.Rmd",
+]
+language:
+  ui:
+    chapter_name: "Chapter "

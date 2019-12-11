@@ -1,10 +1,14 @@
 --- 
-title: 'Text Mining with R Notes'
+title: 'Text Mining with R --- Notes'
 author: "Maxine"
 date: "`r Sys.Date()`"
 site: bookdown::bookdown_site
 documentclass: book
-always_allow_html: yes
+github-repo: enixam/TextMining
+bibliography: [bib.bib, packages.bib]
+biblio-style: apalike
+link-citations: yes
+#nocite: '@*'
 --- 
 
 
