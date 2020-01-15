@@ -12,3 +12,5 @@ rmd_files: [
 language:
   ui:
     chapter_name: "Chapter "
+    
+before_script: "common.R"
