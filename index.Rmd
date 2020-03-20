@@ -17,10 +17,11 @@ link-citations: yes
 
 This book grew out of my learning experience and notes concerning [Text Mining with R: A Tidy Approach](https://www.tidytextmining.com/) by Julia Silge and David Robinson.  
 
-`tidyverse` is automatically loaded before each chapter: 
+`tidyverse` and `tidytext` are automatically loaded before each chapter: 
 
 ```{r, eval = FALSE}
 library(tidyverse)
+library(tidytext)
 ```
 
 
