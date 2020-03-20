@@ -13,7 +13,6 @@ austen_books()
 ```
 
 
-
 ```{r}
 original_books <- austen_books() %>%
   group_by(book) %>%
