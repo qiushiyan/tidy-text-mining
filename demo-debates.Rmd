@@ -1,0 +1,10 @@
+
+# Democratic debates transcripts 2020  
+
+https://github.com/favstats/demdebates2020  
+
+```{r}
+# devtools::install_github("favstats/demdebates2020")
+# library(demdebates2020)
+```
+

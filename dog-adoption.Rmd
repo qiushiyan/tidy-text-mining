@@ -1,3 +1,4 @@
+```{r}
 # https://github.com/ameliabedelia/tidy_tuesday/blob/master/code/2019-12-17_dog-adoptions.R
 
 library(tidyverse)
@@ -72,3 +73,5 @@ plot_df %>%
         plot.margin = margin(1, 2, 1, 1, "lines"))
 
 ggsave(here::here("plots", "dog_adoptions.png"), height = 6.7, width = 6.7)
+```
+
