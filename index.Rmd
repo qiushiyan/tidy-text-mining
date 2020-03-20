@@ -1,10 +1,10 @@
 --- 
 title: 'Text Mining with R --- Notes'
-author: "Maxine"
+author: "Qiushi Yan"
 date: "`r Sys.Date()`"
 site: bookdown::bookdown_site
 documentclass: book
-github-repo: enixam/TextMining
+github-repo: enixam/tidy-text-mining
 bibliography: [bib.bib, packages.bib]
 biblio-style: apalike
 link-citations: yes
@@ -15,5 +15,12 @@ link-citations: yes
 # Preface {-}  
 
 
-This book grew out of my learning experience and notes concerning [Text Mining with R: A Tidy Approach](https://www.tidytextmining.com/) by Julia Silge and David Robinson.
+This book grew out of my learning experience and notes concerning [Text Mining with R: A Tidy Approach](https://www.tidytextmining.com/) by Julia Silge and David Robinson.  
+
+`tidyverse` is automatically loaded before each chapter: 
+
+```{r, eval = FALSE}
+library(tidyverse)
+```
+
 
