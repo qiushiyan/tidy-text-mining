@@ -1,0 +1,193 @@
+
+# Analyzing word and document frequency 
+
+
+A central question in text mining and natural language processing is how to quantify what a document is about.  This chapter presents two approaches of measuring the "keywords" of a particular document amid other, tf-idf and weighted log odds. 
+
+```{r}
+theme_set(theme_light())
+```
+
+
+## tf-idf  
+
+The logic of tf-idf is that the words containing the greatest information about a particular document are the words that **appear many times in that document, but in relatively few others**. Calculating tf-idf attempts to find the words that are important (i.e., common) in a text, but not too common. It is widely used in document search and information retrieval tasks. 14 To the extent tf.idf reliably captures what is distinctive about a particular document, it could be interpreted as a feature evaluation technique.  
+
+Term frequency (tf) of a particular word $i$ in document $j$ is defined as 
+
+$$
+\text{tf}_{ij} = \frac{n_{ij}}{\sum_{k}n_{kj}}
+$$
+
+where $n_{ij}$ is the frequncy of word $i$ in document $j$, and $\sum_{k}n_{kj}$ the total word counts in document $j$. We can see that $\text{tf}_{ij}$ is essentially a scaling of term counts $n_{ij}$, so that the metric will not be biased against words in lengthy documents.  
+
+Inverse document frequency (idf) of word $i$ in the corpus is defined as 
+
+$$
+\text{idf}_i = \lg{\frac{|D|}{|{j:t_i \in d_j}|}}
+$$
+where $|D|$ is the number of documents in the corpus, and $|{j:t_i \in d_j}|$ the number of documents containing word $i$
+
+### Term frequency in Jane Austen’s novels  
+
+```{r}
+library(janeaustenr)
+
+book_words <- austen_books() %>%
+  unnest_tokens(word, text) %>% 
+  add_count(book, name = "total_words") %>%
+  group_by(book, total_words) %>% 
+  count(word, sort = TRUE) %>% 
+  ungroup()
+
+book_words
+```
+
+There is one row in this book_words data frame for each word-book combination; `n` is the number of times that word is used in that book and `total_words` is the total words in that book. The usual suspects are here with the highest `n`, “the”, “and”, “to”, and so forth.  
+
+let’s look at the distribution of `n / total` for each novel, which is the predefined term frequency:  
+
+```{r tf-distribution, fig.cap = "Term Frequency Distribution in Jane Austen’s Novels"}
+ggplot(book_words) + 
+  geom_histogram(aes(n / total_words, fill = book), show.legend = FALSE) +
+  xlim(NA, 0.0009) + 
+  facet_wrap(~ book, nrow = 3, scales = "free_y")
+```
+
+### Zipf’s law  
+
+In Figure \@ref(fig:tf-distribution) we see the characteristic long-tailed distribution of term frequency. In fact, those types of long-tailed distributions are so common in any given corpus of natural language (like a book, or a lot of text from a website, or spoken words) that the relationship between the frequency that a word is used and its rank has been the subject of study; a classic version of this relationship is called Zipf’s law, after George Zipf, a 20th century American linguist, which can be stated as.  
+
+$$
+\text{word rank} \times \text{term frequency} = c
+$$
+
+where $c$ is a constant.  
+
+```{r}
+freq_by_rank <- book_words %>% 
+  group_by(book) %>% 
+  mutate(rank = row_number(), 
+         `term frequency` = n / total_words)
+
+freq_by_rank
+```
+
+Zipf’s law is often visualized by plotting rank on the x-axis and term frequency on the y-axis, on **logarithmic scales**. Plotting this way, an inversely proportional relationship will have a constant, negative slope. 
+
+$$
+\lg{(\text{term frequency})} = - \lg{(\text{term frequency})} + \lg{c} 
+$$
+
+```{r}
+freq_by_rank %>% 
+  ggplot(aes(rank, `term frequency`, color = book)) + 
+  geom_line(size = 1.1, alpha = 0.8, show.legend = FALSE) + 
+  scale_x_log10() +
+  scale_y_log10()
+```
+
+The slope is not quite constant, though; perhaps we could view this as a broken power law with, say, three sections. Let’s see what the exponent of the power law is for the middle section of the rank range.  
+```{r}
+rank_subset <- freq_by_rank %>% 
+  filter(rank < 500, rank > 10)
+
+rank_subset %>% 
+  lm(log10(`term frequency`) ~ log10(rank), data = .) %>%
+  summary()
+```
+The $R^2$ is approximately $1$, so that we consider the relationship between log word rank and log tf to be $\lg{\text{tf}} = -1.11\lg{\text{rank}} - 0. 62$.  
+
+```{r}
+freq_by_rank %>% 
+  ggplot(aes(rank, `term frequency`, color = book)) + 
+  geom_abline(intercept = -0.62, slope = -1.1, color = "gray50", linetype = 2) +
+  geom_line(size = 1.1, alpha = 0.8, show.legend = FALSE) + 
+  scale_x_log10() +
+  scale_y_log10()
+```
+
+
+We have found a result close to the classic version of Zipf’s law for the corpus of Jane Austen’s novels. The deviations we see here at high rank are not uncommon for many kinds of language; **a corpus of language often contains fewer rare words than predicted by a single power law**. The deviations at low rank are more unusual. Jane Austen uses a lower percentage of the most common words than many collections of language. This kind of analysis could be extended to compare authors, or to compare any other collections of text; it can be implemented simply using tidy data principles.
+
+### Word rank slope chart   
+
+[Emil Hvitfeldt](https://www.hvitfeldt.me/) had a great [blog post](https://www.hvitfeldt.me/blog/word-rank-slope-charts/) on how to make a word rank slope chart. This plot is generally designed to visualize the word rank difference of a set of paired words. If a writer is more comfortable using masculine words, then we could expect that "he" has a lower word rank than "she" (words are ranked in an descending order based on counts, as in `book_words`).  
+
+In Jane Austen's novels, suppose we decide to compare word rank on a set of words related to gender  
+```{r}
+gender_words <- tribble(
+  ~men, ~women,
+  "he", "she",
+  "his", "her",
+  "man", "woman",
+  "men", "women",
+  "boy", "girl",
+  "he's", "she's",
+  "he'd", "she'd",
+  "he'll", "she'll",
+  "himself", "herself"
+) %>%
+  pivot_longer(c(men, women), names_to = "gender", values_to = "word")
+```
+
+We unnest 6 books into separate words as usual  
+
+```{r}
+ordered_words <- austen_books() %>% 
+  unnest_tokens(word, text) %>%
+  count(word, sort = TRUE) %>%
+  mutate(rank = row_number()) %>% 
+  right_join(gender_words) 
+
+ordered_words
+```
+
+
+### The `bind_tf_idf()` function  
+
+The `bind_tf_idf` function in the tidytext package takes a tidy text dataset as input with one row per token (term), per document. One column (`word` here) contains the terms/tokens, one column contains the documents (`book` in this case), and the last necessary column contains the counts, how many times each document contains each term (`n` in this example).  
+
+```{r}
+book_words <- book_words %>% 
+  select(-total_words) %>%
+  bind_tf_idf(term = word, document = book, n = n)
+
+book_words
+```
+
+Notice that idf and thus tf-idf are zero for these extremely common words. These are all words that appear in all six of Jane Austen’s novels, so the idf term (which will then be the natural log of $1$) is zero.   
+
+
+Let’s look at terms with high tf-idf in Jane Austen’s works.
+```{r}
+book_words %>%
+  arrange(desc(tf_idf))
+```
+
+Proper nouns are often favoured by tf-idf, in this case names of important characters in each novel will generally have high tf-idf value. None of them occur in all of novels, and they are important, characteristic words for each text within the corpus of Jane Austen’s novels.  
+
+```{r}
+book_words %>% 
+  group_by(book) %>% 
+  top_n(15) %>%
+  ggplot() + 
+  geom_col(aes(y = reorder_within(word, tf_idf, book), 
+               x = tf_idf, 
+               fill = book), show.legend = FALSE) + 
+  scale_y_reordered() + 
+  facet_wrap(~ book, scales = "free", nrow = 3)
+```
+
+
+
+## A corpus of physics texts  
+
+```{r}
+library(gutenbergr)
+physics <- gutenberg_download(c(37729, 14725, 13476, 30155), 
+                              meta_fields = "author")
+
+physics
+```
+

@@ -7,7 +7,7 @@ knitr::opts_chunk$set(
   comment = "#>",
   collapse = TRUE,
   out.width = "90%",
-  fig.width = 6,
+  fig.width = 7,
   fig.asp = 0.618,  # 1 / phi
   message = F,
   warning = F

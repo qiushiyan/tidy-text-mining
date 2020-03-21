@@ -1,14 +1,18 @@
-book_filename: "bookdown-English"
+book_filename: "tidy-text-mining"
 delete_merged_file: true
+new_session: yes
 
 rmd_files: [
   "index.Rmd",
   "tidytextformat.Rmd",
   "sentiment-analysis.Rmd",
+  "analyzing-word-and-document-frequency.Rmd",
   
   
-  "reference.Rmd",
+  "references.Rmd"
 ]
+
+
 language:
   ui:
     chapter_name: "Chapter "
