@@ -17,4 +17,4 @@ language:
   ui:
     chapter_name: "Chapter "
     
-before_script: "common.R"
+before_chapter_script: "_common.R"

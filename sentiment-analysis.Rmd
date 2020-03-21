@@ -3,6 +3,11 @@
 # Sentiment analysis with tidy data  
 
 
+```{r, echo = FALSE}
+knitr::opts_chunk$set(cache = TRUE)
+```
+
+
 One way to analyze the sentiment of a text is to consider the text as a combination of its individual words and the sentiment content of the whole text as the sum of the sentiment content of the individual words. This isn’t the only way to approach sentiment analysis, but it is an often-used approach, and an approach that naturally takes advantage of the tidy tool ecosystem.
 
 ```{r}

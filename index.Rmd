@@ -5,7 +5,7 @@ date: "`r Sys.Date()`"
 site: bookdown::bookdown_site
 documentclass: book
 github-repo: enixam/tidy-text-mining
-bibliography: [bib.bib, packages.bib]
+bibliography: [references.bib, packages.bib]
 biblio-style: apalike
 link-citations: yes
 #nocite: '@*'
@@ -15,7 +15,7 @@ link-citations: yes
 # Preface {-}  
 
 
-This book grew out of my learning experience and notes concerning [Text Mining with R: A Tidy Approach](https://www.tidytextmining.com/) by Julia Silge and David Robinson.  
+This is a notebook concerning [Text Mining with R: A Tidy Approach](https://www.tidytextmining.com/)[@10.5555/3165010].
 
 `tidyverse` and `tidytext` are automatically loaded before each chapter: 
 

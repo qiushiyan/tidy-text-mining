@@ -2,9 +2,12 @@
 
 # tidy text format {#tidytextformat}  
 
-```{r,message=F}
-library(tidyverse)
-library(tidytext)
+```{r, echo = FALSE}
+knitr::opts_chunk$set(cache = TRUE)
+```
+
+
+```{r}
 library(janeaustenr)
 ```
 

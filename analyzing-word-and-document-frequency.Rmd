@@ -2,7 +2,7 @@
 # Analyzing word and document frequency 
 
 
-A central question in text mining and natural language processing is how to quantify what a document is about.  This chapter presents two approaches of measuring the "keywords" of a particular document amid other, tf-idf and weighted log odds. 
+A central question in text mining and natural language processing is how to quantify what a document is about.  This chapter presents two approaches of measuring the "keywords" of a particular document amid other, tf-idf and weighted log odds ratio. 
 
 ```{r}
 theme_set(theme_light())
@@ -35,6 +35,7 @@ library(janeaustenr)
 
 book_words <- austen_books() %>%
   unnest_tokens(word, text) %>% 
+  anti_join(stop_words) %>% 
   add_count(book, name = "total_words") %>%
   group_by(book, total_words) %>% 
   count(word, sort = TRUE) %>% 
@@ -117,30 +118,50 @@ We have found a result close to the classic version of Zipf’s law for the corp
 In Jane Austen's novels, suppose we decide to compare word rank on a set of words related to gender  
 ```{r}
 gender_words <- tribble(
-  ~men, ~women,
+  ~Men, ~Women,
   "he", "she",
   "his", "her",
   "man", "woman",
   "men", "women",
   "boy", "girl",
-  "he's", "she's",
-  "he'd", "she'd",
-  "he'll", "she'll",
   "himself", "herself"
-) %>%
-  pivot_longer(c(men, women), names_to = "gender", values_to = "word")
+)
 ```
 
-We unnest 6 books into separate words as usual  
+We unnest 6 books into separate words as usual, and `pull()` them out as a vector.
 
 ```{r}
 ordered_words <- austen_books() %>% 
   unnest_tokens(word, text) %>%
-  count(word, sort = TRUE) %>%
-  mutate(rank = row_number()) %>% 
-  right_join(gender_words) 
+  count(word, sort = TRUE) %>% 
+  pull(word)
+```
 
-ordered_words
+
+We then use `match()` to match individual words to its word rank. The trick is using the logged rank rather the rank itself, otherwise the y scale will be heavily extended by large word rank. `scale_y_log10()` is not the best option in this case, since we need `scale_y_reverse()` to put the most frequent words on the top of our plot, and labels on the y axis can be fixed by passing a function to `label`
+```{r}
+gender_words <- gender_words %>% 
+  mutate(male_rank_log10 = match(Men, ordered_words) %>% log10(),
+         female_rank_log10 = match(Women, ordered_words) %>% log10(),
+         rank_diff_log10 = male_rank_log10 - female_rank_log10) %>% 
+  pivot_longer(male_rank_log10:female_rank_log10, 
+               names_to = "index", 
+               values_to = "rank") %>% 
+  mutate(label = if_else(index == "male_rank_log10", Men, Women)) %>%
+  mutate(index = fct_recode(index,
+                            "male" = "male_rank_log10",
+                            "female" = "female_rank_log10"))
+
+limits <-  max(abs(gender_words$rank_diff_log10)) * c(-1, 1)
+
+library(ggrepel)
+gender_words %>%
+  ggplot(aes(index, rank, group = Men)) + 
+  geom_line(aes(color = rank_diff_log10), show.legend = FALSE) + 
+  geom_text_repel(aes(label = label)) + 
+  scale_y_reverse(label = function(x) 10 ^ x, breaks = scales::breaks_pretty(n = 3)) +
+  scale_color_fermenter(type = "div", palette = "Spectral", limits = limits) + 
+  theme_minimal()
 ```
 
 
@@ -158,6 +179,10 @@ book_words
 
 Notice that idf and thus tf-idf are zero for these extremely common words. These are all words that appear in all six of Jane Austen’s novels, so the idf term (which will then be the natural log of $1$) is zero.   
 
+```{block2, type = "rmdnote"}
+Although it is often not necessary to remove stopwords when extracting tf-idf on the ground that stop words will generally have zero idf, it is good practice, in most cases, to focus on non-stop words only. There are circumstances under which which some stop words could have a meaning worth capturing, e.g., "her" in abortion debates), and tf-idf is not a good option in such cases, see \@ref(weighted-log-odds-ratio). 
+```
+
 
 Let’s look at terms with high tf-idf in Jane Austen’s works.
 ```{r}
@@ -167,7 +192,7 @@ book_words %>%
 
 Proper nouns are often favoured by tf-idf, in this case names of important characters in each novel will generally have high tf-idf value. None of them occur in all of novels, and they are important, characteristic words for each text within the corpus of Jane Austen’s novels.  
 
-```{r}
+```{r, fig.width = 9}
 book_words %>% 
   group_by(book) %>% 
   top_n(15) %>%
@@ -179,9 +204,15 @@ book_words %>%
   facet_wrap(~ book, scales = "free", nrow = 3)
 ```
 
+## Weighted log odds ratio
+
+[@monroe_colaresi_quinn]
 
 
 ## A corpus of physics texts  
+
+
+Let’s work with another corpus of documents, to see what terms are important in a different set of works. 
 
 ```{r}
 library(gutenbergr)
@@ -190,4 +221,17 @@ physics <- gutenberg_download(c(37729, 14725, 13476, 30155),
 
 physics
 ```
+
+Count words as usual  
+
+```{r}
+physics_words <- physics %>% 
+  unnest_tokens(word, text) %>% 
+  anti_join(stop_words) %>% 
+  count(word, sort = TRUE)
+
+physics_words
+```
+
+Visualize the highest tf-idf words  
 
