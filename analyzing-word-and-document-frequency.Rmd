@@ -13,20 +13,32 @@ theme_set(theme_light())
 
 The logic of tf-idf is that the words containing the greatest information about a particular document are the words that **appear many times in that document, but in relatively few others**. Calculating tf-idf attempts to find the words that are important (i.e., common) in a text, but not too common. It is widely used in document search and information retrieval tasks. 14 To the extent tf.idf reliably captures what is distinctive about a particular document, it could be interpreted as a feature evaluation technique.  
 
-Term frequency (tf) of a particular word $i$ in document $j$ is defined as 
+Let $w = 1, 2, ..., W$ index words and $\boldsymbol{y}$ denots the W-vector of word counts in the corpus. Let $i \in I$ index documents in the corpus, let $\boldsymbol{y^i}$ denotes the W-vector of word counts of document $i$， $y_w^i$ the count of word $w$ in document $i$, and $n^i$ the total count of words in document $i$.     
+
+Term frequency (tf) of a word $w$ in document $i$ is defined as its proprotions
 
 $$
-\text{tf}_{ij} = \frac{n_{ij}}{\sum_{k}n_{kj}}
+f_{w}^{i} = \frac{y_{w}^{i}}{n^{i}}
 $$
 
-where $n_{ij}$ is the frequncy of word $i$ in document $j$, and $\sum_{k}n_{kj}$ the total word counts in document $j$. We can see that $\text{tf}_{ij}$ is essentially a scaling of term counts $n_{ij}$, so that the metric will not be biased against words in lengthy documents.  
+ We can see that $\text{tf}_{ij}$ is essentially a scaling of term counts $n^{i}$, so that the metric will not be biased against words in lengthy documents.  
 
-Inverse document frequency (idf) of word $i$ in the corpus is defined as 
+.Inverse document frequency (idf) of word $w$ in the corpus is defined as 
 
 $$
-\text{idf}_i = \lg{\frac{|D|}{|{j:t_i \in d_j}|}}
+\text{idf}_i = \log{\frac{|D|}{|{j:t_i \in d_j}|}}
 $$
-where $|D|$ is the number of documents in the corpus, and $|{j:t_i \in d_j}|$ the number of documents containing word $i$
+where $|D|$ is the number of documents in the corpus, and $|{j:t_i \in d_j}|$ the number of documents containing word $i$. We can let  $df_w$ denote the fraction of documents that contain word $w$ at least once, then idf can be stated as 
+
+$$
+\text{idf}_i = \log{\frac{1}{df_{w}}}
+$$
+and tf-idf, the production of term frequency and document frequency, as 
+
+$$
+tf.idf_w^i = f_w^i \log{\frac{1}{df_{w}}}
+$$
+
 
 ### Term frequency in Jane Austen’s novels  
 
@@ -167,7 +179,7 @@ gender_words %>%
 
 ### The `bind_tf_idf()` function  
 
-The `bind_tf_idf` function in the tidytext package takes a tidy text dataset as input with one row per token (term), per document. One column (`word` here) contains the terms/tokens, one column contains the documents (`book` in this case), and the last necessary column contains the counts, how many times each document contains each term (`n` in this example).  
+The `bind_tf_idf()` function in the tidytext package takes a tidy text dataset as input with one row per token (term), per document. One column (`word` here) contains the terms/tokens, one column contains the documents (`book` in this case), and the last necessary column contains the counts, how many times each document contains each term (`n` in this example).  
 
 ```{r}
 book_words <- book_words %>% 
@@ -206,8 +218,45 @@ book_words %>%
 
 ## Weighted log odds ratio
 
-[@monroe_colaresi_quinn]
+This section is heavily based on [Monroe, Colaresi, and Quinn](https://www.cambridge.org/core/journals/political-analysis/article/fightin-words-lexical-feature-selection-and-evaluation-for-identifying-the-content-of-political-conflict/81B3703230D21620B81EB6E2266C7A66)[-@monroe_colaresi_quinn] and a medium post, titled [I dare say you will never use tf-idf again](https://medium.com/@TSchnoebelen/i-dare-say-you-will-never-use-tf-idf-again-4918408b2310).  
 
+### Log odds ratio
+First, the log odds of word $w$ in document $i$ is defined as 
+
+$$
+\log{O_{w}^i} = \log{\frac{f_w^i}{1 - f_w^i}} 
+$$
+
+Logging the odds ratio provides a measure that is symmetric when comparing the usage of word $w$ across different documents. Log odds ratio of word $w$ between document $i$ and $j$ is 
+
+$$
+\log{\frac{O_{w}^i}{O_w^j}} = \log{\frac{f_w^i}{1 - f_w^i} / \frac{f_w^j}{1 - f_w^j}} = \log{\frac{f_w^i}{1 - f_w^i}} - log{\frac{f_w^j}{1 - f_w^j}} 
+$$
+A problem is that, when some word $w$ is only presented in document $i$, among other documents in the corpus, odds ratio will have zero denominator and the metric goes to infinity. One solution is to "add a little bit to the zeroes", in which smoothed word frequency is defined as $\tilde{f_w^i}  = f_w^i + \varepsilon$. 
+
+Note that regardless of the zero treatment, words with hightest log odds ratio are often obscure ones. The problem is again the failure to account for sampling variability. **With logodds ratios, the sampling variation goes down with increased frequency**. So that different words are not comparable.  
+
+A common response to this is to set some frequency "threshold" for features to ‘‘qualify’’ for consideration. For example, we only compute log odds ratio on words that appears at least 10 times. 
+
+### Model-based approach: Weighted log odds ratio  
+
+
+[Monroe, Colaresi, and Quinn](https://www.cambridge.org/core/journals/political-analysis/article/fightin-words-lexical-feature-selection-and-evaluation-for-identifying-the-content-of-political-conflict/81B3703230D21620B81EB6E2266C7A66) then proposed a model-basded approach where the choice of word $w$ are modelled as a function oof document $P(w |j)$. In general, the strategy is to first model word usage in the full collection of documents and to then investigate how subgroup-specific word usage diverges from that in the full collection of documents.  
+
+First, the moel assumes that the W-vector $\boldsymbol{y}$ follows a multinomial distribution
+
+$$
+\boldsymbol{y} \sim \text{Multinomial}(n, \boldsymbol{\pi})
+$$
+where $n = \sum_{w=1}^Wy_w$ and $\boldsymbol{\pi}$ is W-vector of possibilities. And the the baseline odds ratio between word $w$ and the first word is 
+
+$$
+\beta_w = \log{}
+$$
+
+### Discussions
+
+### Further discussion 
 
 ## A corpus of physics texts  
 
