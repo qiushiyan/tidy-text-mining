@@ -1,0 +1,112 @@
+
+# Relationships between words: n-grams and correlations
+
+
+```{r}
+theme_set(theme_light())
+```
+
+
+## Tokenizing by n-gram 
+
+```{r}
+library(janeaustenr)
+
+austen_bigrams <- austen_books() %>%
+  unnest_tokens(bigram, text, token = "ngrams", n = 2)
+
+austen_bigrams %>%
+  count(bigram, sort = TRUE)
+```
+
+### Filtering n-grams  
+
+
+```{r}
+austen_separated <- austen_bigrams %>%  
+  separate(bigram, into = c("word1", "word2"), sep = " ")
+
+
+austen_united <- austen_separated %>%
+  filter(!word1 %in% stop_words$word,
+         !word2 %in% stop_words$word) %>%
+  unite(bigram, c(word1, word2), sep = " ")
+
+austen_united %>% count(bigram, sort = TRUE)
+```
+
+
+```{r}
+austen_bigrams <- austen_bigrams %>% 
+  separate(bigram, into = c("word1", "word2"), sep = " ") %>%
+  filter(!word1 %in% stop_words$word) %>%
+  filter(!word2 %in% stop_words$word) %>% 
+  unite(bigram, c(word1, word2), sep = " ")
+
+austen_bigrams
+```
+
+### Analyzing bigrams  
+
+The result of separating bigrams is helpful for exploratory analyses of the text. As a simple example, we might be interested in the most common “streets” mentioned in each book:  
+
+```{r}
+austen_bigrams %>% 
+  separate(bigram, into = c("word1", "word2"), sep = " ")  %>% 
+  filter(word2 == "street") %>% 
+  count(street = str_c(word1, word2, sep = " "), sort = TRUE)
+```
+
+
+A bigram can also be treated as a term in a document in the same way that we treated individual words. For example, we can look at the weighted log odds (Section \@ref(weighted-log-odds-ratio)) of bigrams across Austen novels.  
+
+```{r, fig.height = 10}
+library(tidylo)
+
+austen_bigrams %>% 
+  count(book, bigram, sort = TRUE) %>% 
+  bind_log_odds(set = book, feature = bigram, n = n) %>% 
+  group_by(book) %>% 
+  top_n(15) %>% 
+  ggplot() + 
+  geom_col(aes(y = reorder_within(bigram, log_odds, book),
+               x = log_odds,
+               fill = book),
+           show.legend = FALSE) + 
+  scale_y_reordered() + 
+  facet_wrap(~ book, scales = "free", nrow = 3)
+```
+
+
+### Using bigrams to provide context in sentiment analysis  
+
+```{r}
+austen_separated %>% 
+  filter(word1 == "not") %>% 
+  filter(!word2 %in% stop_words$word) %>%
+  count(word1, word2, sort = TRUE)
+```
+
+
+```{r}
+not_words <- bigrams_separated %>%
+  filter(word1 == "not") %>%
+  inner_join(get_sentiments("afinn"), by = c(word2 = "word")) %>%
+  count(word1, word2, value, sort = TRUE)
+
+not_words
+```
+
+
+```{r}
+not_words %>%
+  mutate(contribution = n * value,
+         sign = if_else(value > 0, "postive", "negative")) %>%
+  top_n(20, abs(contribution)) %>%
+  mutate(word2 = fct_reorder(word2, contribution)) %>%
+  ggplot(aes(y = word2, x = contribution, fill = sign)) +
+  geom_col(show.legend = FALSE) +
+  labs(y = 'Words preceded by \"not\"',
+       x = "Sentiment value * number of occurrences")
+```
+

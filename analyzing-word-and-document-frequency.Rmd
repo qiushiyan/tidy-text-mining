@@ -5,6 +5,12 @@
 A central question in text mining and natural language processing is how to quantify what a document is about.  This chapter presents two approaches of measuring the "keywords" of a particular document amid other, tf-idf and weighted log odds ratio. 
 
 ```{r}
+knitr::opts_chunk$set(cache = TRUE)
+```
+
+
+```{r}
+library(patchwork)
 theme_set(theme_light())
 ```
 
@@ -47,7 +53,6 @@ library(janeaustenr)
 
 book_words <- austen_books() %>%
   unnest_tokens(word, text) %>% 
-  anti_join(stop_words) %>% 
   add_count(book, name = "total_words") %>%
   group_by(book, total_words) %>% 
   count(word, sort = TRUE) %>% 
@@ -192,7 +197,7 @@ book_words
 Notice that idf and thus tf-idf are zero for these extremely common words. These are all words that appear in all six of Jane Austen’s novels, so the idf term (which will then be the natural log of $1$) is zero.   
 
 ```{block2, type = "rmdnote"}
-Although it is often not necessary to remove stopwords when extracting tf-idf on the ground that stop words will generally have zero idf, it is good practice, in most cases, to focus on non-stop words only. There are circumstances under which which some stop words could have a meaning worth capturing, e.g., "her" in abortion debates), and tf-idf is not a good option in such cases, see \@ref(weighted-log-odds-ratio). 
+Although it is often not necessary to remove stopwords when extracting tf-idf on the ground that stop words will generally have zero idf, it is good practice, in most cases, to focus on non-stop words only (I do not anti-join here because I want to compare the results on common words between tf-idf and weighted log odds ratio). There are circumstances under which which some stop words could have a meaning worth capturing, e.g., "her" in abortion debates), and tf-idf is not a good option in such cases, see \@ref(weighted-log-odds-ratio). 
 ```
 
 
@@ -221,13 +226,13 @@ book_words %>%
 This section is heavily based on [Monroe, Colaresi, and Quinn](https://www.cambridge.org/core/journals/political-analysis/article/fightin-words-lexical-feature-selection-and-evaluation-for-identifying-the-content-of-political-conflict/81B3703230D21620B81EB6E2266C7A66)[-@monroe_colaresi_quinn] and a medium post, titled [I dare say you will never use tf-idf again](https://medium.com/@TSchnoebelen/i-dare-say-you-will-never-use-tf-idf-again-4918408b2310).  
 
 ### Log odds ratio
-First, the log odds of word $w$ in document $i$ is defined as 
+First, the **log odds** of word $w$ in document $i$ is defined as 
 
 $$
 \log{O_{w}^i} = \log{\frac{f_w^i}{1 - f_w^i}} 
 $$
 
-Logging the odds ratio provides a measure that is symmetric when comparing the usage of word $w$ across different documents. Log odds ratio of word $w$ between document $i$ and $j$ is 
+Logging the odds ratio provides a measure that is symmetric when comparing the usage of word $w$ across different documents. **Log odds ratio** of word $w$ between document $i$ and $j$ is 
 
 $$
 \log{\frac{O_{w}^i}{O_w^j}} = \log{\frac{f_w^i}{1 - f_w^i} / \frac{f_w^j}{1 - f_w^j}} = \log{\frac{f_w^i}{1 - f_w^i}} - log{\frac{f_w^j}{1 - f_w^j}} 
@@ -248,15 +253,127 @@ First, the moel assumes that the W-vector $\boldsymbol{y}$ follows a multinomial
 $$
 \boldsymbol{y} \sim \text{Multinomial}(n, \boldsymbol{\pi})
 $$
-where $n = \sum_{w=1}^Wy_w$ and $\boldsymbol{\pi}$ is W-vector of possibilities. And the the baseline odds ratio between word $w$ and the first word is 
+where $n = \sum_{w=1}^Wy_w$ and $\boldsymbol{\pi}$ is W-vector of possibilities. And the the baseline log odds ratio between word $w$ and the first word is 
 
 $$
-\beta_w = \log{}
+\beta_w = \log{\pi_w} - \log{\pi_1}  \;\;\; w=1, 2, ...,  W
 $$
+
+
+BTW, this is essentially a baseline logit model including only an intercept, which is an extention of logistic regression for dealing with response with W categories.
+
+Therefore, the likelihood function can be expressed in terms of $\beta_w$  
+
+$$
+L(\boldsymbol{\beta} | \boldsymbol{y}) = \prod_{w=1}^{W}{(\frac{\exp(\beta_w)}{\sum_{w=1}^{W}\exp(\beta_w)})^{y_w}}
+$$
+
+Within any document, $i$, the model to this point goes through with addition of subscripts 
+
+$$
+\boldsymbol{y^i} \sim \text{Multinomial}(n^i, \boldsymbol{\pi^i})
+$$
+
+The lack of covariates results in an immediately available analytical solution for the MLE of 
+${\beta^i_w}$ . We calculate 
+
+$$
+\boldsymbol{\hat{\pi}}^\text{MLE} = \boldsymbol{y} / n
+$$
+
+where $n = \sum_{w = 1}^{W}y_w$and $\boldsymbol{\hat{\beta}}^\text{MLE}$ follows after transforming.
+
+The paper proceeds with a  Bayesian model, specifying the prior using the conjugate for the
+multinomial distribution, the Dirichlet:
+
+$$
+\boldsymbol{\pi} \sim \text{Dirichlet}(\boldsymbol{\alpha})
+$$
+where $\boldsymbol{\alpha}$ is a W-vector of parameters with each element $\alpha_w > 0$. There is a nice interpretation of $\alpha_w$, that is, use of any particular Dirichlet prior defined by $\boldsymbol{\alpha}$ affects the posterior exactly as if we had observed in the data an additional $\alpha_w – 1$ instances of word $w$. It follows this is a uninformative prior if all $\alpha_w$s are identitcal.  
+
+Due to the conjugacy, the full Bayesian estimate using the Dirichlet prior is also analytically available in analogous form:  
+
+$$
+\boldsymbol{\hat{\pi}} = \frac{(\boldsymbol{y} + \boldsymbol{\alpha})}{n + \alpha_0}
+$$
+where $\alpha_0 = \sum_{w=1}^{W}\alpha_w$
+
+Our job, there for is to compare if the usage of word $w$ in document $i$, $\pi_w^i$, differs from $\pi_w$ overall or in some other document $\pi^j_w$. One of the advantages of the model-based approach is that we can measure the uncertainty in odds.  
+
+Denote the odds (now with probabilistic meaning) of word w, relative to all others, as $\Omega_w = \pi_w / (1- \pi_w)$. We are interested in how the usage of a word by document $i$ differs
+from usage of the word in all documents, which we can capture with the log-odds-ratio, which we will now define as $\delta_w^i = \log{\Omega_w^i / \Omega_w}$. To compare between documents $i$ and $j$, log odds ratio of word $w$ is defined as $\delta_w^{i-j} = \log{\Omega_w^i / \Omega_w^j}$. To scale these two estimators, their point estimate and estimated variance are found
+
+$$
+\begin{aligned}
+\hat{\delta}_{w}^{i-j} &= \log(\frac{y_w^i + \alpha_w}{n^i + \alpha_0 - (y_w^i + \alpha_w)}) - \log(\frac{y_w^j + \alpha_w}{n^j + \alpha_0 - (y_w^j + \alpha_w)}) \\ 
+
+\sigma^2(\hat{\delta}_{w}^{i-j}) &\approx \frac{1}{y_w^i + a_w} + \frac{1}{y_w^j + a_w}
+\end{aligned}
+$$
+The final standardized statistic for a word $w$ is then the z–score of its log–odds–ratio:  
+
+$$
+\frac{\hat{\delta}_{w}^{i-j}}{\sigma^2(\hat{\delta}_{w}^{i-j})}
+$$
+
+The Monroe, et al method then uses counts from a background corpus to provide a prior count for words, rather than the uninformative Dirichlet prior, essentially shrinking the counts toward to the prior frequency in a large background corpus to prevent overfitting. The general notion is to put a strong conservative prior (regularization) on the model, requiring the data to speak very loudly if such a difference is to be declared. I am not going to dive into that. But it is important to know that $\alpha_0 = 1$ means no shrinkage, and $\alpha_0 \rightarrow 0$ or $\alpha_0 \rightarrow \infty$ mean strongest shrinkage.
+
+
 
 ### Discussions
 
-### Further discussion 
+The Monroe, modifies the commonly used log–odds ratio (introduced in Section \@ref(log-odds-ratio)) in two ways [@10.5210/fm.v19i4.4944] : 
+
+It uses the z–scores of the log–odds–ratio, which controls for the amount of variance in a word’s frequency. So the score on different words are comparable. And the metric also faciliates interpretation, positive log odds means stronger tendency to use the word, and negative ones indicate otherwise. Also, $|\hat{\delta}^i_w| > 1.96$ should mean some sort of significance.
+
+Secondly, it uses counts from a background corpus to provide a prior count for words, essentially shrinking the counts toward to the prior frequency in a large background corpus. These features enable differences even in very frequent words to be detected; previous linguistic methods have all had problems with frequent words. Because function words like pronouns and auxiliary verbs are both extremely frequent and have been shown to be important cues to social and narrative meaning, this is a major limitation of these methods. For example, as an English reader/speaker, you won’t be surprised that all the authors you are trying to compare use "of the" and "said the" in their respective documents, and we want to know who used much more than others. tf-idf will not be able to detect this, because the idf will always be zero. 
+
+### `bind_log_odds()`  
+
+There is an [issue](https://github.com/juliasilge/tidylo/issues/3) suggesting that `tidylo` is still experimental. However, it did provide a ussful function `bind_log_odds()` that implemented the weighted log odds we dicussed above, and it seems that it currently uses the marginal distributions (i.e., distribution of words across all documents combined) to construct an informative Dirichlet prior.  
+
+The data structure `bind_log_odds()` requires is the same with `bind_tf_idf()`  
+
+```{r}
+library(tidylo)
+
+book_words %>% 
+  bind_log_odds(set = book, feature = word, n = n) %>%
+  arrange(desc(log_odds))
+```
+
+Now let's compare the result between tf-idf and weighted log odds in a subset of `book_words`  
+
+```{r}
+words_tf_idf <- book_words %>%
+  filter(book %in% c("Emma", "Pride & Prejudice", "Persuasion")) %>% 
+  bind_tf_idf(term = word, document = book, n = n) %>%
+  group_by(book) %>% 
+  top_n(10) %>%
+  ggplot() + 
+  geom_col(aes(y = reorder_within(word, tf_idf, book), 
+               x = tf_idf, fill = book), 
+           show.legend = FALSE) + 
+  scale_y_reordered() + 
+  facet_wrap(~ book, scales = "free_y") + 
+  labs(x = NULL, y = NULL, title = "Top 10 words picked tf-idf")
+
+words_wlo <- book_words %>%
+  filter(book %in% c("Emma", "Pride & Prejudice", "Persuasion")) %>% 
+  bind_log_odds(feature = word, set = book, n = n) %>%
+  group_by(book) %>% 
+  top_n(10) %>%
+  ggplot() + 
+  geom_col(aes(y = reorder_within(word, log_odds, book), 
+               x = log_odds, fill = book), 
+           show.legend = FALSE) + 
+  scale_y_reordered() + 
+  facet_wrap(~ book, scales = "free_y") + 
+  labs(x = NULL, y = NULL, title = "Top 10 words picked by weighted log odds")
+
+words_tf_idf / words_wlo
+```
+
 
 ## A corpus of physics texts  
 
@@ -277,10 +394,80 @@ Count words as usual
 physics_words <- physics %>% 
   unnest_tokens(word, text) %>% 
   anti_join(stop_words) %>% 
-  count(word, sort = TRUE)
+  count(author, word, sort = TRUE)
 
 physics_words
 ```
 
 Visualize the highest tf-idf words  
+
+```{r, fig.height = 8}
+plot_physics <- physics_words %>%
+  bind_tf_idf(word, author, n) %>%
+  mutate(word = fct_reorder(word, tf_idf)) %>%
+  mutate(author = factor(author, levels = c("Galilei, Galileo",
+                                            "Huygens, Christiaan", 
+                                            "Tesla, Nikola",
+                                            "Einstein, Albert")))
+
+plot_physics %>% 
+  group_by(author) %>% 
+  top_n(15, tf_idf) %>% 
+  ungroup() %>%
+  ggplot(aes(y = reorder_within(word, tf_idf, author), 
+             x = tf_idf,
+             fill = author)) +
+  geom_col(show.legend = FALSE) +
+  scale_y_reordered() + 
+  labs(x = NULL, y = "tf-idf") +
+  facet_wrap(~ author, ncol = 2, scales = "free_y") 
+```
+
+Why there is `_k` and `_x` in Einstein's text ?  
+
+```{r}
+physics %>% 
+  filter(author == "Einstein, Albert",
+         str_detect(text, "_[kx]_?")) %>% 
+  select(text)
+```
+
+Some cleaning up of the text may be in demand. Also notice that there are separate “co” and “ordinate” items in the high tf-idf words for the Einstein text; the `unnest_tokens()` function separates around punctuation like hyphens by default. Notice that the tf-idf scores for “co” and “ordinate” are close to same!
+
+“AB”, “RC”, and so forth are names of rays, circles, angles, and so forth for Huygens.  
+
+```{r}
+physics %>% 
+  filter(str_detect(text, "RC")) %>% 
+  select(text)
+```
+
+```{r, fig.height = 8}
+my_stop_words <- tibble(word = c("eq", "co", "rc", "ac", "ak", "bn", 
+                                   "fig", "file", "cg", "cb", "cm",
+                               "ab", "_k", "_k_", "_x"))
+
+physics_words <- anti_join(physics_words, 
+                           my_stop_words, 
+                           by = "word")
+
+plot_physics <- physics_words %>%
+  bind_tf_idf(word, author, n) %>%
+  mutate(word = str_remove_all(word, "_")) %>%
+  group_by(author) %>% 
+  top_n(15, tf_idf) %>%
+  ungroup() %>%
+  mutate(word = reorder_within(word, tf_idf, author)) %>%
+  mutate(author = factor(author, levels = c("Galilei, Galileo",
+                                            "Huygens, Christiaan",
+                                            "Tesla, Nikola",
+                                            "Einstein, Albert")))
+
+ggplot(plot_physics, aes(word, tf_idf, fill = author)) +
+  geom_col(show.legend = FALSE) +
+  labs(x = NULL, y = "tf-idf") +
+  facet_wrap(~author, ncol = 2, scales = "free") +
+  coord_flip() +
+  scale_x_reordered()
+```
 
