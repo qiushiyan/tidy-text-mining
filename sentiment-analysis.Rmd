@@ -5,6 +5,7 @@
 
 ```{r, echo = FALSE}
 knitr::opts_chunk$set(cache = TRUE)
+theme_set(theme_light())
 ```
 
 
@@ -12,7 +13,7 @@ One way to analyze the sentiment of a text is to consider the text as a combinat
 
 ```{r}
 library(janeaustenr)
-theme_set(theme_light())
+
 ```
 
 

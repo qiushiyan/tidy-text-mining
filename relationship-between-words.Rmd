@@ -2,12 +2,20 @@
 # Relationships between words: n-grams and correlations
 
 
-```{r}
+```{r, echo = FALSE}
+knitr::opts_chunk$set(cache = TRUE)
 theme_set(theme_light())
 ```
 
 
-## Tokenizing by n-gram 
+
+
+## Tokenizing by n-gram     
+
+
+`unnest_tokens()` have been used to tokenize the text by word, or sometimes by sentence, which is useful for the kinds of sentiment and frequency analyses. But we can also use the function to tokenize into consecutive sequences of words of length `n`, called **n-grams**.  
+
+We do this by adding the `token = "ngrams"` option to unnest_tokens(), and setting n to the number of words we wish to capture in each n-gram. When we set `n`to 2, we are examining pairs of two consecutive words, often called “bigrams”:
 
 ```{r}
 library(janeaustenr)
@@ -22,6 +30,7 @@ austen_bigrams %>%
 ### Filtering n-grams  
 
 
+As one might expect, a lot of the most common bigrams are pairs of common (uninteresting) words, such as of the and to be: what we call “stop-words” (see Chapter 1). This is a useful time to use `tidyr::separate()`, which splits a column into multiple based on a delimiter. This lets us separate it into two columns, filter out stop words separately, and then combine the results.  
 ```{r}
 austen_separated <- austen_bigrams %>%  
   separate(bigram, into = c("word1", "word2"), sep = " ")
@@ -60,7 +69,7 @@ austen_bigrams %>%
 
 A bigram can also be treated as a term in a document in the same way that we treated individual words. For example, we can look at the weighted log odds (Section \@ref(weighted-log-odds-ratio)) of bigrams across Austen novels.  
 
-```{r, fig.height = 10}
+```{r, fig.height = 12, fig.width = 12}
 library(tidylo)
 
 austen_bigrams %>% 
@@ -78,7 +87,13 @@ austen_bigrams %>%
 ```
 
 
-### Using bigrams to provide context in sentiment analysis  
+### Using bigrams to provide context in sentiment analysis    
+
+Context matters in sentiment analysis. For example, the words “happy” and “like” will be counted as positive, even in a sentence like 
+
+> "I'm not happy and I don't like it!"
+
+Now that we have the data organized into bigrams, it’s easy to tell how often words are preceded by a word like "not":
 
 ```{r}
 austen_separated %>% 
@@ -87,9 +102,10 @@ austen_separated %>%
   count(word1, word2, sort = TRUE)
 ```
 
+Let’s use the AFINN lexicon for sentiment analysis, which you may recall gives a numeric sentiment value for each word, with positive or negative numbers indicating the direction of the sentiment.
 
 ```{r}
-not_words <- bigrams_separated %>%
+not_words <- austen_separated %>%
   filter(word1 == "not") %>%
   inner_join(get_sentiments("afinn"), by = c(word2 = "word")) %>%
   count(word1, word2, value, sort = TRUE)
@@ -98,15 +114,69 @@ not_words
 ```
 
 
-```{r}
+It’s worth asking which words contributed the most in the “wrong” direction. To compute that, we can multiply their value by the number of times they appear (so that a word with a value of +3 occurring 10 times has as much impact as a word with a sentiment value of +1 occurring 30 times). We visualize the result with a bar plot  
+
+```{r, fig.width = 8, fig.height = 6}
 not_words %>%
   mutate(contribution = n * value,
          sign = if_else(value > 0, "postive", "negative")) %>%
   top_n(20, abs(contribution)) %>%
   mutate(word2 = fct_reorder(word2, contribution)) %>%
   ggplot(aes(y = word2, x = contribution, fill = sign)) +
-  geom_col(show.legend = FALSE) +
+  geom_col() +
   labs(y = 'Words preceded by \"not\"',
        x = "Sentiment value * number of occurrences")
+```
+
+The bigrams “not like” and “not help” were overwhelmingly the largest causes of misidentification, making the text seem much more positive than it is. But we can see phrases like “not afraid” and “not fail” sometimes suggest text is more negative than it is.
+
+“Not” isn’t the only term that provides some context for the following word. We could pick four common words `not`, `no`, `never` and `without` that negate the subsequent term, and use the same joining and counting approach to examine all of them at once.  
+
+```{r, fig.height = 10, fig.width = 10}
+negation_words <- c("not", "no", "never", "without")
+
+negated_words <- austen_separated %>%
+  filter(word1 %in% negation_words) %>%
+  inner_join(get_sentiments("afinn"), by = c(word2 = "word")) %>%
+  count(word1, word2, value, sort = TRUE)
+
+negated_words %>%
+  mutate(contribution = n * value,
+         sign = if_else(value > 0, "postive", "negative")) %>%
+  group_by(word1) %>% 
+  top_n(20, abs(contribution)) %>%
+  ggplot(aes(y = reorder_within(word2, contribution, word1), x = contribution, fill = sign)) +
+  geom_col() + 
+  scale_y_reordered() + 
+  facet_wrap(~ word1, scales = "free") + 
+  labs(y = 'Words proceeded by a negation term',
+       x = "Sentiment value * number of occurrences",
+       title = "The most common positive or negative words to follow negations such as 'never', 'no', 'not', and 'without'")
+```
+
+### Visualizing a network of bigrams with ggraph   
+
+```{r}
+library(tidygraph)
+library(ggraph)
+```
+
+
+```{r}
+bigram_counts <- austen_separated %>% 
+  filter(!word1 %in% stop_words$word,
+         !word2 %in% stop_words$word) %>% 
+  count(word1, word2, sort = TRUE) 
+```
+
+
+```{r, fig.width = 12, fig.height = 12, fig.align = "default"}
+bigram_counts %>% 
+  filter(n > 20) %>%
+  as_tbl_graph() %>% 
+  ggraph(layout = "fr") + 
+  geom_edge_link() + 
+  geom_node_point() + 
+  geom_node_text(aes(label = name), vjust = 1, hjust = 1)
 ```
 

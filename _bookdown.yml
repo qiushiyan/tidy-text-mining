@@ -7,9 +7,12 @@ rmd_files: [
   "tidytextformat.Rmd",
   "sentiment-analysis.Rmd",
   "analyzing-word-and-document-frequency.Rmd",
+  "relationship-between-words.Rmd",
   
   
-  "references.Rmd"
+  "references.Rmd",
+  "stringr.Rmd",
+  "textclean.Rmd"
 ]
 
 

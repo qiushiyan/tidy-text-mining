@@ -4,14 +4,14 @@
 
 A central question in text mining and natural language processing is how to quantify what a document is about.  This chapter presents two approaches of measuring the "keywords" of a particular document amid other, tf-idf and weighted log odds ratio. 
 
-```{r}
+```{r, echo = FALSE}
 knitr::opts_chunk$set(cache = TRUE)
+theme_set(theme_light())
 ```
 
 
 ```{r}
 library(patchwork)
-theme_set(theme_light())
 ```
 
 
