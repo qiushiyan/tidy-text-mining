@@ -6,7 +6,6 @@ A central question in text mining and natural language processing is how to quan
 
 ```{r, echo = FALSE}
 knitr::opts_chunk$set(cache = TRUE)
-theme_set(theme_light())
 ```
 
 
@@ -298,7 +297,7 @@ $$
 $$
 where $\alpha_0 = \sum_{w=1}^{W}\alpha_w$
 
-Our job, there for is to compare if the usage of word $w$ in document $i$, $\pi_w^i$, differs from $\pi_w$ overall or in some other document $\pi^j_w$. One of the advantages of the model-based approach is that we can measure the uncertainty in odds.  
+Our job, therefore, is to compare if the usage of word $w$ in document $i$, $\pi_w^i$, differs from $\pi_w$ overall or in some other document $\pi^j_w$. One of the advantages of the model-based approach is that we can measure the uncertainty in odds.  
 
 Denote the odds (now with probabilistic meaning) of word w, relative to all others, as $\Omega_w = \pi_w / (1- \pi_w)$. We are interested in how the usage of a word by document $i$ differs
 from usage of the word in all documents, which we can capture with the log-odds-ratio, which we will now define as $\delta_w^i = \log{\Omega_w^i / \Omega_w}$. To compare between documents $i$ and $j$, log odds ratio of word $w$ is defined as $\delta_w^{i-j} = \log{\Omega_w^i / \Omega_w^j}$. To scale these two estimators, their point estimate and estimated variance are found
@@ -306,7 +305,6 @@ from usage of the word in all documents, which we can capture with the log-odds-
 $$
 \begin{aligned}
 \hat{\delta}_{w}^{i-j} &= \log(\frac{y_w^i + \alpha_w}{n^i + \alpha_0 - (y_w^i + \alpha_w)}) - \log(\frac{y_w^j + \alpha_w}{n^j + \alpha_0 - (y_w^j + \alpha_w)}) \\ 
-
 \sigma^2(\hat{\delta}_{w}^{i-j}) &\approx \frac{1}{y_w^i + a_w} + \frac{1}{y_w^j + a_w}
 \end{aligned}
 $$
@@ -326,7 +324,7 @@ The Monroe, modifies the commonly used log–odds ratio (introduced in Section \
 
 It uses the z–scores of the log–odds–ratio, which controls for the amount of variance in a word’s frequency. So the score on different words are comparable. And the metric also faciliates interpretation, positive log odds means stronger tendency to use the word, and negative ones indicate otherwise. Also, $|\hat{\delta}^i_w| > 1.96$ should mean some sort of significance.
 
-Secondly, it uses counts from a background corpus to provide a prior count for words, essentially shrinking the counts toward to the prior frequency in a large background corpus. These features enable differences even in very frequent words to be detected; previous linguistic methods have all had problems with frequent words. Because function words like pronouns and auxiliary verbs are both extremely frequent and have been shown to be important cues to social and narrative meaning, this is a major limitation of these methods. For example, as an English reader/speaker, you won’t be surprised that all the authors you are trying to compare use "of the" and "said the" in their respective documents, and we want to know who used much more than others. tf-idf will not be able to detect this, because the idf will always be zero. 
+Secondly, it uses counts from a background corpus to provide a prior count for words, essentially shrinking the counts toward to the prior frequency in a large background corpus. These features enable differences even in very frequent words to be detected; previous linguistic methods have all had problems with frequent words. Because function words like pronouns and auxiliary verbs are both extremely frequent and have been shown to be important cues to social and narrative meaning, this is a major limitation of these methods. For example, as an English reader/speaker, you won’t be surprised that all the authors you are trying to compare use "of the" and "said the" in their respective documents, and we want to know who used much more than others. tf-idf will not be able to detect this, because the idf of words appearing in every document will always be zero. 
 
 ### `bind_log_odds()`  
 

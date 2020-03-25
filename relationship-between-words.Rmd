@@ -4,7 +4,6 @@
 
 ```{r, echo = FALSE}
 knitr::opts_chunk$set(cache = TRUE)
-theme_set(theme_light())
 ```
 
 

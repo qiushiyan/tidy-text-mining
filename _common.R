@@ -15,5 +15,6 @@ knitr::opts_chunk$set(
 
 library(tidyverse)
 library(tidytext)
+theme_set(theme_light())
 
 options(dplyr.print_min = 6, dplyr.print_max = 6)
