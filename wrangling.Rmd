@@ -1,0 +1,52 @@
+
+
+
+# (APPENDIX) Appendix {-}   
+
+
+# A manual of wrangling text data, with a primary focus on [stringr](https://stringr.tidyverse.org/index.html) and [textclean](https://github.com/trinker/textclean)
+
+`stringr`, 
+
+## Replacing and removing  
+
+## Combining and splitting 
+
+Combine multiple line tokens to one paragraph (with a defined length) and the other way around  
+
+```{r}
+library(tidytext)
+library(ggpage)
+
+tinderbox_line <- head(tinderbox)
+tinderbox_paragraph <- head(tinderbox_paragraph) 
+  
+  
+# combine all six rows into a paragraph
+tinderbox_line %>% 
+  summarize(paragraph = str_c(text, collapse = " "))
+
+# split one paragraph into multiple rows 
+# ggpage::nest_paragraphs() extends str_wrap()
+tinderbox_paragraph %>% 
+  mutate(paragraph_length = str_length(text)) %>% 
+  nest_paragraphs(text, width = 50)  # no more than 50 characters per row
+```
+
+## Extracting text from pdf, word  
+
+```{r}
+library(pdftools)
+
+download.file("http://arxiv.org/pdf/1403.2805.pdf", "data/1403.2805.pdf", mode = "wb")
+txt <- pdf_text("data/1403.2805.pdf")
+
+# all 29 pages  
+length(txt) 
+
+cat(txt[[2]])
+
+enframe(txt) %>% 
+  rename(page = name) %>% 
+  nest_paragraphs(input = value, width = 100)
+```

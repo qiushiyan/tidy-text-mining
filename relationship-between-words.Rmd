@@ -153,7 +153,7 @@ negated_words %>%
        title = "The most common positive or negative words to follow negations such as 'never', 'no', 'not', and 'without'")
 ```
 
-### Visualizing a network of bigrams with ggraph   
+### Visualizing a network of bigrams with `ggraph`  
 
 ```{r}
 library(tidygraph)
@@ -242,3 +242,120 @@ friends_count %>%
   geom_node_text(aes(label = name), size = 4, vjust = 1, hjust = 1)
 ```
 
+## Counting and correlating pairs of words with `widyr`  
+
+> Tokenizing by n-gram is a useful way to explore pairs of adjacent words. However, we may also be interested in words that tend to co-occur within particular documents or particular chapters, even if they don’t occur next to each other.
+
+For this reason, it is sometimes necessary to "cast" a tidy dataset into a wide matrix (such as a co-occurrence matrix), performs an operation such as a correlation on it, then re-tidies the result. This is when [`widyr`](https://github.com/dgrtwo/widyr) comes to the rescue, the workflow is shown in the book:  
+
+```{r, echo = FALSE}
+knitr::include_graphics("images/widyr.jpg")
+```
+
+### Counting and correlating among sections  
+
+We devide the book “Pride and Prejudice” into 10-line sections , as we did for Section \@ref(Sentiment-analysis-with-inner-join) (80 lines). We may be interested in what words tend to appear within the same section.  
+
+
+```{r}
+austen_section_words <- austen_books() %>%
+  filter(book == "Pride & Prejudice") %>%
+  mutate(section = row_number() %/% 10) %>%
+  filter(section > 0) %>%
+  unnest_tokens(word, text) %>%
+  filter(!word %in% stop_words$word)
+
+austen_section_words
+```
+
+
+
+`widyr::pairwise_counts()` counts the number of times each pair of *items* appear together within a group defined by "*feature*". In this case, it counts the number of times each pair of words appear together within a section, note it still returns a tidy data frame, although the underlying computation took place in a matrix form :  
+
+```{r}
+library(widyr)
+
+austen_section_words %>% 
+  pairwise_count(word, section, sort = TRUE)
+```
+
+We can easily find the words that most often occur with Darcy. Since `pairwise_count` records both the counts of `(word_A, word_B)` and `(word_B, word_B)`, it does not matter we `filter` at `item1` or `item2`  
+
+```{r}
+austen_section_words %>% 
+  pairwise_count(word, section, sort = TRUE) %>% 
+  filter(item1 == "darcy")
+```
+
+ 
+   
+### Pairwise correlation
+
+> Pairs like “Elizabeth” and “Darcy” are the most common co-occurring words, but that’s not particularly meaningful since they’re also the most common individual words. We may instead want to examine correlation among words, which indicates how often they appear together relative to how often they appear separately.   
+
+In particular, we compute the $\phi$ coefficient. Introduced by Karl Pearson, this measure is similar to the Pearson correlation coefficient in its interpretation. In fact, a Pearson correlation coefficient estimated for two binary variables will return the $\phi$ coefficient. The phi coefficient is related to the chi-squared statistic for a 2 × 2 contingency table 
+
+$$
+\phi = \sqrt{\frac{\chi^2}{n}}
+$$
+
+where $n$ denotes sample size. In the case of pairwise counts, $\phi$ is calculated by 
+
+```{r, echo = FALSE}
+knitr::include_graphics("images/phi.png")
+```
+
+
+$$
+\phi = \frac{n_{11}n_{00} - n_{10}n_{01}}{\sqrt{n_{1·}n_{0·}n_{·1}n_{·0}}}
+$$
+
+We see, from the above quation, that $\phi$ is "standarized" by individual counts, so various word pair with different individual frequency can be compared to each other:  
+
+The computation of $\phi$ can be simply done by `pairwise_cor` (other choice of correlation coefficients specified by `method`). The procedure can be somewhat computationally expensive, so we filter out uncommon words
+
+```{r}
+word_cors <- austen_section_words %>% 
+  add_count(word) %>% 
+  filter(n >= 20) %>% 
+  select(-n) %>%
+  pairwise_cor(word, section, sort = TRUE)
+
+word_cors
+```
+
+Which word is most correlated with "lady"?  
+
+```{r}
+word_cors %>% 
+  filter(item1 == "lady")
+```
+
+This lets us pick particular interesting words and find the other words most associated with them  
+
+```{r, fig.height = 10, fig.width = 10}
+word_cors %>%
+  filter(item1 %in% c("elizabeth", "pounds", "married", "pride")) %>%
+  group_by(item1) %>%
+  top_n(6) %>%
+  ungroup() %>%
+  ggplot(aes(y = reorder_within(item2, correlation, item1), x = correlation)) + 
+  geom_col(aes(fill = item1), show.legend = FALSE) + 
+  scale_y_reordered() + 
+  facet_wrap(~ item1, scales = "free")
+```
+
+How about a network visualization to see the overall correlation pattern? 
+
+```{r, fig.height = 10, fig.width = 10}
+word_cors %>%
+  filter(correlation > .15) %>%
+  as_tbl_graph() %>%
+  ggraph(layout = "fr") +
+  geom_edge_link(aes(edge_alpha = correlation), show.legend = FALSE) +
+  geom_node_point(color = "lightblue", size = 5) +
+  geom_node_text(aes(label = name), repel = TRUE)
+```
+
+
+Note that unlike the bigram analysis, the relationships here are **symmetrical, rather than directional** (there are no arrows). We can also see that while pairings of names and titles that dominated bigram pairings are common, such as “colonel/fitzwilliam”, we can also see pairings of words that appear close to each other, such as “walk” and “park”, or “dance” and “ball”.

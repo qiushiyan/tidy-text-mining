@@ -160,13 +160,12 @@ blockquote p {
 }
 
 blockquote > p:last-child {
-  font-size: 14px !important;
+  font-size: 16px !important;
   margin-top: -1em !important;
 }
 
 blockquote > p:first-child {
   text-align: inherit;
-  font-style: italic;
 }
 
 

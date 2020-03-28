@@ -4,15 +4,16 @@ new_session: yes
 
 rmd_files: [
   "index.Rmd",
+  
   "tidytextformat.Rmd",
   "sentiment-analysis.Rmd",
   "analyzing-word-and-document-frequency.Rmd",
   "relationship-between-words.Rmd",
   
+#  "ggpage.Rmd",
   
   "references.Rmd",
-  "stringr.Rmd",
-  "textclean.Rmd"
+#  "wrangling.Rmd"
 ]
 
 
