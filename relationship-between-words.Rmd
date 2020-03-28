@@ -169,13 +169,76 @@ bigram_counts <- austen_separated %>%
 ```
 
 
-```{r, fig.width = 12, fig.height = 12, fig.align = "default"}
-bigram_counts %>% 
+```{r}
+bigram_graph <- bigram_counts %>% 
   filter(n > 20) %>%
-  as_tbl_graph() %>% 
-  ggraph(layout = "fr") + 
+  as_tbl_graph()
+
+bigram_graph
+```
+
+Note how `tidygraph` handles network data, the main `tbl_graph` object splits a network into two data frames: **Node data** and **Edge data**   
+
+
+```{r, fig.width = 12, fig.height = 12, fig.align = "default"}
+ggraph(bigram_graph, layout = "fr") + 
   geom_edge_link() + 
   geom_node_point() + 
   geom_node_text(aes(label = name), vjust = 1, hjust = 1)
+```
+
+We see that salutations such as “miss”, “lady”, “sir”, “and”colonel" are common centers of nodes, which are often followed by names. We also see pairs or triplets along the outside that form common short phrases (“half hour”, “thousand pounds”, or “short time/pause”).    
+
+Note that this is a visualization of a Markov chain, a common model in text processing, where the choice of a word only depends on its previous word. In this case, a random generator following this model might spit out “dear”, then “sir”, then “william/walter/thomas/thomas’s”, by following each word to the most common words that follow it. 
+
+A polished graph:  
+
+```{r, fig.height = 12, fig.width = 12}
+arrow <- grid::arrow(type = "closed", length = unit(.15, "inches"))
+
+ggraph(bigram_graph, layout = "fr") + 
+  geom_edge_link(aes(alpha = n), show.legend = F, 
+                 arrow = arrow, end_cap = circle(0.07, "inches")) + 
+  geom_node_point(color = "lightblue", size = 5) + 
+  geom_node_text(aes(label = name), vjust = 1, hjust = 1)
+```
+
+### Visualizing  "friends"  
+
+Here I deviate from the original text, where Julia and David analyzed King James Version of the Bible. However, I have collected the transcripts of the famous TV series, friends (season 1). Let's start a simple analysis first by loading the data 
+
+```{r}
+friends <- read_csv("data/friends_season_1.csv") %>% 
+  select(-type)
+glimpse(friends)
+```
+
+Retrieve a clean data frame with word counts (bigrams did not work very well)
+
+```{r}
+friends_bigram <- friends %>% 
+  unnest_tokens(word, line, token = "ngrams", n = 2) %>%
+  separate(word, into = c("word1", "word2"), sep = " ") %>% 
+  filter(!word1 %in% stop_words$word,
+         !word2 %in% stop_words$word) %>% 
+  filter(! (is.na(word1) | is.na(word2)))
+
+friends_count <- friends_bigram %>% 
+  count(word1, word2, sort = TRUE)
+
+friends_count
+```
+
+Draw a network  
+
+```{r, fig.height = 12, fig.width = 12}
+friends_count %>% 
+  filter(n > 3) %>%
+  as_tbl_graph() %>% 
+  ggraph(layout = "fr") + 
+  geom_edge_link(aes(alpha = n), show.legend = FALSE,
+                 arrow = arrow, end_cap = circle(0.07, "inches")) + 
+  geom_node_point(color = "lightblue", size = 5) + 
+  geom_node_text(aes(label = name), size = 4, vjust = 1, hjust = 1)
 ```
 
