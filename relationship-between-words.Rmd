@@ -254,7 +254,7 @@ knitr::include_graphics("images/widyr.jpg")
 
 ### Counting and correlating among sections  
 
-We devide the book “Pride and Prejudice” into 10-line sections , as we did for Section \@ref(Sentiment-analysis-with-inner-join) (80 lines). We may be interested in what words tend to appear within the same section.  
+We devide the book “Pride and Prejudice” into 10-line sections , as we did for Section \@ref(sentiment-analysis-with-inner-join) (80 lines). We may be interested in what words tend to appear within the same section.  
 
 
 ```{r}
@@ -301,7 +301,7 @@ $$
 
 where $n$ denotes sample size. In the case of pairwise counts, $\phi$ is calculated by 
 
-```{r, echo = FALSE}
+```{r, echo = FALSE, out.width = "120%"}
 knitr::include_graphics("images/phi.png")
 ```
 

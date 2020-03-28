@@ -9,6 +9,7 @@ rmd_files: [
   "sentiment-analysis.Rmd",
   "analyzing-word-and-document-frequency.Rmd",
   "relationship-between-words.Rmd",
+  "non-tidy.Rmd",
   
 #  "ggpage.Rmd",
   
