@@ -1,2 +1,102 @@
 
-# Converting to and from non-tidy formats
+# Converting to and from non-tidy formats    
+
+
+```{r}
+knitr::opts_chunk$set(cache = TRUE)
+```
+
+
+Non-tidy data structures, in particular matrcies, is essential in topic modeling where other packages for NLP in R play a major role. 
+
+The book has a diagram describing the "glue" part functions in this chapter play:  
+
+```{r, echo = FALSE, out.width = "120%"}
+knitr::include_graphics("images/non-tidy.png")
+```
+
+As shown in the figure, **a tidied DTM is typically equivalent with a per-token-per-document-per-row data frame after counting**.  
+
+## Tidying a document-term matrix  
+
+A document-term matrix or term-document matrix is a mathematical matrix that describes the frequency of terms that occur in a collection of documents. This is a matrix where 
+
+- each row represents one document  
+
+- each column represents one term (word)  
+
+- each value (typically) contains the number of appearances of that term in that document  
+
+
+Document-term matrices are often stored as a sparse matrix object. These objects can be treated as though they were matrices (for example, accessing particular rows and columns), but are stored in a more efficient format.  
+
+`tidytext` provides ways of converting between these two formats:  
+
+- `tidy()` turns a document-term matrix into a tidy data frame (one-token-per-document-per-row)
+
+- `cast()` turns a tidy data frame into a matrix.There are three variations of this verb corresponding to different classes of matricies : `cast_sparse()` (converting to a sparse matrix from the `Matrix` package), `cast_dtm()` (converting to a `DocumentTermMatrix` object from `tm`), and `cast_dfm()` (converting to a `dfm` object from quanteda)  
+
+
+`DocumentTermMatrix` class is built into the `tm` package. Notice that this DTM is 99% sparse (99% of document-word pairs are zero). 
+
+```{r}
+library(tm)
+library(topicmodels)
+data("AssociatedPress", package = "topicmodels")
+
+AssociatedPress
+# convert to tidy data frames with counts
+tidy(AssociatedPress)
+```
+
+```{r}
+
+```
+
+`Terms()` is a accessor function to extract the full distinct word vector  
+
+```{r}
+Terms(AssociatedPress) %>% head()
+```
+
+
+`quanteda` uses `dfm` (document-feauture matrix) as a common data structure for text data. For example, the `quanteda` package comes with a corpus of presidential inauguration speeches, which can be converted to a dfm using the appropriate function. 
+
+```{r}
+data("data_corpus_inaugural", package = "quanteda")
+quanteda::dfm(data_corpus_inaugural)
+```
+
+We, of course, want to `tidy` it  
+
+```{r}
+inaugural <- quanteda::dfm(data_corpus_inaugural) %>% 
+  tidy()
+
+inaugural
+```
+
+Suppose we would like to see how the usage of some user specified words change over time. We start by `complete()` the data frame, and then total words per speech:   
+
+```{r}
+year_term_counts <- inaugural %>% 
+  extract(document, into = "year", regex = "(\\d{4})", convert = TRUE) %>% 
+  complete(year, term, fill = list(count = 0)) %>% 
+  add_count(year, wt = count, name = "year_total")
+
+year_term_counts
+```
+
+
+
+```{r, fig.height = 8, fig.width = 8}
+year_term_counts %>%
+  filter(term %in% c("god", "america", "foreign", "union", "constitution", "freedom")) %>%
+  ggplot(aes(year, count / year_total)) +
+  geom_point() +
+  geom_smooth() +
+  facet_wrap(~ term, scales = "free_y") +
+  scale_y_continuous(labels = scales::percent_format()) +
+  lab(title = "% frequency of word in inaugural address")
+```
+
