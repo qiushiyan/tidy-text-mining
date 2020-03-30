@@ -143,7 +143,6 @@ books <- gutenberg_works(title %in% titles) %>%
 ```
 
 ```{r}
-
 # add a chapter column
 by_chapter <- books %>%
   group_by(title) %>%
@@ -164,12 +163,160 @@ word_counts <- by_chapter %>%
 word_counts
 ```
 
+### LDA on chapters  
+
 
 ```{r}
-books_lda <- word_counts %>% 
-  cast_dtm(document = chapter, term = word, value = n) %>%
+chapters_dtm <- word_counts %>% 
+  cast_dtm(document = chapter, term = word, value = n)
+
+chapters_lda <- chapters_dtm %>%
   LDA(k  = 4)
-
-
 ```
+
+
+Much as we did on the Associated Press data, we can examine per-topic-per-word probabilities.  
+
+```{r}
+chapter_topics <- tidy(chapters_lda, matrix = "beta")
+chapter_topics
+```
+
+We can find top 5 terms within each topic.  
+
+```{r}
+chapter_topics %>% 
+  group_by(topic) %>% 
+  top_n(5) %>% 
+  ungroup() %>% 
+  mutate(topic = factor(topic) %>% fct_inseq()) %>%
+  ggplot(aes(y = reorder_within(term, beta, topic),
+             x = beta)) + 
+  geom_col(aes(fill = topic), show.legend = FALSE) + 
+  scale_y_reordered() + 
+  facet_wrap(~ topic, scales = "free") + 
+  labs(y = NULL,
+       title = "terms that are most common within each topic ")
+```
+
+I am not an expert on the other 3 books aside from Pride & Prejudice, but according to [Julia](https://www.tidytextmining.com/topicmodeling#lda-on-chapters), each topic did correspond to one book by and large!  
+
+### Per-document classification
+
+We may want to how which topics are associated with each document, in particular, the majority of chapters in the same book should belong to the same topic (if we assign a chapter$_m$ to a topic$_k$ when the $k$th postion in $\hat{\theta}_m$ is significantly higher).  
+
+```{r}
+chapters_gamma <- tidy(chapters_lda, matrix = "gamma") %>% 
+  separate(document, c("title", "chapter"), sep = "_", convert = TRUE) %>% 
+  mutate(topic = factor(topic) %>% fct_inseq())
+chapters_gamma
+```
+
+
+
+```{r}
+ggplot(chapters_gamma) + 
+  geom_boxplot(aes(topic, gamma)) + 
+  facet_wrap(~ title)
+```
+
+Ideally we would expect that in every book panel, there is one boxplot highly centered at 1 with the other 3 boxes at 0, since chapters in the same book are categorized in the same topic. 
+
+It does look like some chapters from Great Expectations (which should be topic 4) were somewhat associated with other topics. Are there any cases where the topic most associated with a chapter belonged to another book?   
+
+First we’d find the topic that was most associated with each chapter using `top_n()`, which is effectively the “classification” of that chapter.
+
+```{r}
+chapter_classifications <- chapters_gamma %>%
+  group_by(title, chapter) %>%
+  top_n(1, gamma) %>%
+  ungroup()
+
+chapter_classifications
+```
+
+We can then compare each to the “consensus” topic for each book (the most common topic among its chapters), and see which were most often misidentified.  
+
+```{r}
+# identify which topic is most related to which book
+book_topics <- chapter_classifications %>%
+  count(title, topic) %>%
+  group_by(title) %>%
+  top_n(1, n) %>%
+  ungroup() %>%
+  transmute(consensus = title, topic)
+
+# which chapter in misidentified
+chapter_classifications %>% 
+  inner_join(book_topics) %>% 
+  filter(consensus != title)
+```
+
+We see that one chapter in "Great Expectation" is misidentified as a member of topic 3, which is essentially "The War of the Worlds" 
+
+
+### By word assignments: `augment()`   
+
+One step of the LDA algorithm is assigning each word in each document to a topic $z_{m, n}$. The more words in a document are assigned to that topic, generally, the more weight $\theta_m$ will go on that document-topic classification.
+
+We may want to take the original document-word pairs and find which words in each document were assigned to which topic. This is the job of the `augment()` function, which is to add information to each observation in the original data.  
+
+```{r}
+assignments <- augment(chapters_lda, data = chapters_dtm) %>% 
+  rename(chapter = document)
+assignments
+```
+
+To get a sense of how our model works, we can draw a bar plot of assigned topics in each book  
+
+```{r}
+assignments %>% 
+  separate(chapter, into = c("title", "chapter"), sep = "_") %>%
+  count(title, .topic, wt = count) %>%
+  ggplot(aes(.topic, n)) + 
+  geom_col(width = 0.5) + 
+  facet_wrap(~ title)
+```
+
+
+We can combine this assignments table with the `consensus` book titles to find which words were incorrectly classified by a coofusion matrix.  
+
+```{r}
+assignments <- assignments %>%
+  separate(chapter, c("title", "chapter"), sep = "_", convert = TRUE) %>%
+  inner_join(book_topics, by = c(".topic" = "topic"))
+
+assignments
+```
+
+```{r}
+# confusion matrix  
+assignments %>% 
+  count(title, consensus, wt = count) %>% 
+  group_by(title) %>% 
+  mutate(percent = n / sum(n)) %>% 
+  ungroup() %>% 
+  ggplot(aes(consensus, title, fill = percent)) + 
+  geom_tile() + 
+  scale_fill_gradient2(high = "red", label = scales::percent_format()) +
+  scale_x_discrete(guide = guide_axis(n.dodge = 2)) + 
+  theme_minimal() +
+  theme(legend.position = "top") + 
+  labs(x = "Book words were assigned to",
+       y = "Book words came from",
+       fill = "% of assignments")
+```
+
+What were the most commonly mistaken words?  
+
+```{r}
+assignments %>% 
+  filter(title != consensus) %>% 
+  count(title, consensus, term, .wt = count) %>%
+  arrange(desc(n))
+```
+
+We can see that a number of words were often assigned to the Pride and Prejudice or War of the Worlds cluster even when they appeared in Great Expectations. For some of these words, such as “love” and “lady”, that’s because they’re more common in Pride and Prejudice (we could confirm that by examining the counts).
+
+It is possible that a word is assigned to a book, even though it never appears in that book. 
 
