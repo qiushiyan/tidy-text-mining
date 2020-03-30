@@ -10,6 +10,7 @@ rmd_files: [
   "analyzing-word-and-document-frequency.Rmd",
   "relationship-between-words.Rmd",
   "non-tidy.Rmd",
+  "topic_modeling.Rmd",
   
 #  "ggpage.Rmd",
   

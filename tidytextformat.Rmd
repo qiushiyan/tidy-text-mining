@@ -137,3 +137,7 @@ cor.test(data = filter(comparison_df, other == "H.G. Wells"),
          ~ proportion + `Jane Austen`)
 ```
 
+
+## Other tokenization methods  
+
+
