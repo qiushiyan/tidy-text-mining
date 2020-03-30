@@ -15,7 +15,7 @@ The book has a diagram describing the "glue" part functions in this chapter play
 knitr::include_graphics("images/non-tidy.png")
 ```
 
-As shown in the figure, **a tidied DTM is typically equivalent with a per-token-per-document-per-row data frame after counting**.  
+As shown in the figure, **a tidied DTM is typically equivalent with a one-token-per-row data frame after counting**.  
 
 ## Tidying a document-term matrix  
 
@@ -32,7 +32,7 @@ Document-term matrices are often stored as a sparse matrix object. These objects
 
 `tidytext` provides ways of converting between these two formats:  
 
-- `tidy()` turns a document-term matrix into a tidy data frame (one-token-per-document-per-row)
+- `tidy()` turns a document-term matrix into a tidy data frame (one-token-per-row)
 
 - `cast()` turns a tidy data frame into a matrix.There are three variations of this verb corresponding to different classes of matricies : `cast_sparse()` (converting to a sparse matrix from the `Matrix` package), `cast_dtm()` (converting to a `DocumentTermMatrix` object from `tm`), and `cast_dfm()` (converting to a `dfm` object from quanteda)  
 
@@ -45,12 +45,6 @@ library(topicmodels)
 data("AssociatedPress", package = "topicmodels")
 
 AssociatedPress
-# convert to tidy data frames with counts
-tidy(AssociatedPress)
-```
-
-```{r}
-
 ```
 
 `Terms()` is a accessor function to extract the full distinct word vector  
@@ -58,6 +52,16 @@ tidy(AssociatedPress)
 ```{r}
 Terms(AssociatedPress) %>% head()
 ```
+
+
+`tidy` it to get a tidy data frame 
+
+```{r}
+# convert to tidy data frames with counts
+ap_tidy <- tidy(AssociatedPress)
+ap_tidy
+```
+
 
 
 `quanteda` uses `dfm` (document-feauture matrix) as a common data structure for text data. For example, the `quanteda` package comes with a corpus of presidential inauguration speeches, which can be converted to a dfm using the appropriate function. 
@@ -99,4 +103,59 @@ year_term_counts %>%
   scale_y_continuous(labels = scales::percent_format()) +
   lab(title = "% frequency of word in inaugural address")
 ```
+
+## Casting tidy text data into a matrix  
+
+`csat_` verbs convert a tidy data frame (counted) into a document-term matrix  
+
+```{r}
+ap_tidy %>%
+  cast_dtm(document = document, term = term, value = count)
+```
+
+Similarly, we could cast `ap_tidy` into a `dfm` object from `quanteda`’s docuemnt term matrix with `cast_dfm()`  
+
+```{r}
+ap_tidy %>% 
+  cast_dfm(document = document, term = term, value = count)
+```
+
+`cast_sparse` returns a sparse matrix 
+
+```{r}
+ap_tidy %>% 
+  cast_sparse(row = document, column = term, value = count)
+```
+
+## Tidying corpus objects with metadata  
+
+Notwithstanding discrepancies in their form, document term matrix and one-token-per-row data frame are exchangable for they both store the same information after tokenization. A corpus object, however, is a data structure for text data **before** tokenization.  One common example is Corpus objects from the tm package. These store text alongside **metadata**, which may include an ID, date/time, title, or language for each document.
+
+The `tm` package comes with the `acq` corpus, containing 50 articles from the news service Reuters.  
+```{r}
+data("acq")
+acq
+```
+
+
+A corpus object is structured like a list, with each item containing both text and metadata, wh.  
+
+```{r}
+acq[[1]]
+acq[[1]]$content
+acq[[1]]$meta
+```
+
+
+
+We can thus use the `tidy()` method to construct a table with one row per document, including the metadata  
+
+```{r}
+acq_tidy <- tidy(acq)
+acq_tidy
+```
+
+
+
+
 

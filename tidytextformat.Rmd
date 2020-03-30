@@ -1,12 +1,13 @@
 
 # (PART) Text Mining with R {-}
 
-# tidy text format {#tidytextformat}  
+# Tidy text format  
 
 ```{r, echo = FALSE}
 knitr::opts_chunk$set(cache = TRUE)
 ```
 
+A "tidy" text format is defined as a per-token-per row data frame.  
 
 ```{r}
 library(janeaustenr)
@@ -34,7 +35,7 @@ original_books %>%
   unnest_tokens(word, text)
 ```
 
-```{r,cache=T}
+```{r}
 stop_words 
 
 tidy_books <- original_books %>%
@@ -51,67 +52,88 @@ tidy_books
 library(gutenbergr)
 ```
 
-```{r,cache=T}
-hgwells <- gutenberg_download(c(35, 36, 5230, 159))
-
-hgwells
-
-tidy_hgwells <- hgwells %>%
-  unnest_tokens(word, text) %>%
-  anti_join(stop_words)
-```
-
-```{r,cache=T}
-bronte <- gutenberg_download(c(1260, 768, 969, 9182, 767))
-
-tidy_bronte <- bronte %>%
-  unnest_tokens(word, text) %>%
-  anti_join(stop_words)
-```
 
 
+## Compare word frequency  
 
-```{r,cache=T}
-df <- bind_rows(mutate(tidy_bronte, author = "Brontë Sisters"),
-                       mutate(tidy_hgwells, author = "H.G. Wells"), 
-                       mutate(tidy_books, author = "Jane Austen")) %>% 
-  mutate(word = str_extract(word, "[a-z']+")) %>%
-  count(author, word) %>%
-  group_by(author) %>% 
-  mutate(proportion = n / sum(n))
+As a common task in text analysis, compariosn of word frequencies is often employed as a tool to extract linguistic characteristics. A rule of thumb is to compare word **proporations** instead of raw counts.  
 
-df
+In this example, we compare novels of Jane Austen, H.G. Wells, and the Bronte Sisters. 
+
+```{r}
+austen <- austen_books() %>% 
+  select(-book) %>% 
+  mutate(author = "Jane Austen")
+bronte <- gutenberg_download(c(1260, 768, 969, 9182, 767)) %>%
+  select(-gutenberg_id) %>% 
+  mutate(author = "Brontë Sisters")
+hgwells <- gutenberg_download(c(35, 36, 5230, 159)) %>% 
+  select(-gutenberg_id) %>% 
+  mutate(author = "H.G. Wells")
+
+tidy_book <- function(author) {
+  author %>% 
+    unnest_tokens(word, text) %>% 
+    anti_join(stop_words)
+}
+
+
+
+books <- bind_rows(tidy_book(austen),
+          tidy_book(bronte),
+          tidy_book(hgwells)) %>% 
+  mutate(word = str_extract(word, "[:alpha:]+")) %>% 
+  count(author, word, sort = TRUE)
 ```
 
 
 ```{r}
-df %>% 
-  select(-n) %>% 
-  pivot_wider(names_from = author, values_from = proportion) %>%
-  pivot_longer(names_to = "author", values_to = "proportion", `Brontë Sisters`:`H.G. Wells`)
-
-
-frequency <- df %>% 
-  select(-n) %>% 
-  pivot_wider(names_from = author, values_from = proportion) %>%
-  pivot_longer(names_to = "author", values_to = "proportion", `Brontë Sisters`:`H.G. Wells`) %>%
-  janitor::clean_names()
-
-
-
-
-
-ggplot(frequency, aes(x = proportion, y = jane_austen, color = abs(jane_austen - proportion))) +
-  geom_abline(color = "gray40", lty = 2) +
-  geom_jitter(alpha = 0.1, size = 2.5, width = 0.3, height = 0.3) +
-  geom_text(aes(label = word), check_overlap = TRUE, vjust = 1.5) +
-  scale_x_log10(labels = scales::percent) +
-  scale_y_log10(labels = scales::percent) +
-  scale_color_gradient(limits = c(0, 0.001), low = "darkslategray4", high = "gray75",
-                        guide = FALSE) +
-  facet_wrap(~ author, ncol = 2) +
-  labs(y = "Jane Austen", x = NULL) + 
-  theme_classic() 
+books
 ```
 
+Now, our goal is to use Jane Austen as a reference to which the other two authors are compared to in terms of word frequency. The data manipulation requires a bit trick, after computing proportions of word usage, we first `pivot_wider` three authors altogether, an then `pivot_wider` the other two authors back.  
+
+```{r}
+comparison_df <- books %>%
+  add_count(author, wt = n, name = "total_word") %>% 
+  mutate(proportion = n / total_word) %>% 
+  select(-total_word, -n) %>% 
+  pivot_wider(names_from = author, values_from = proportion, 
+              values_fill = list(proportion = 0)) %>%
+  pivot_longer(3:4, names_to = "other", values_to = "proportion")
+
+comparison_df
+```
+
+
+```{r, fig.height = 8, fig.width = 10}
+library(scales)
+
+comparison_df %>% 
+  filter(proportion > 1 / 1e5) %>% 
+  ggplot(aes(proportion, `Jane Austen`)) +
+  geom_abline(color = "gray40", lty = 2) +
+  geom_jitter(aes(color = abs(`Jane Austen` - proportion)),
+              alpha = 0.1, size = 2.5, width = 0.3, height = 0.3) +
+  geom_text(aes(label = word), check_overlap = TRUE, vjust = 1.5) + 
+  scale_x_log10(labels = percent_format()) +
+  scale_y_log10(labels = percent_format()) + 
+  scale_color_gradient(limits = c(0, 0.001), low = "darkslategray4", high = "gray75") + 
+  facet_wrap(~ other) + 
+  guides(color = FALSE)
+```
+
+Words that are close to the line in these plots have similar frequencies in both sets of texts, for example, in both Austen and Brontë texts (“miss”, “time”, “day” at the upper frequency end) or in both Austen and Wells texts (“time”, “day”, “brother” at the high frequency end). Words that are far from the line are words that are found more in one set of texts than another. For example, in the Austen-Brontë panel, words like “elizabeth”, “emma”, and “fanny” (all proper nouns) are found in Austen’s texts but not much in the Brontë texts, while words like “arthur” and “dog” are found in the Brontë texts but not the Austen texts. In comparing H.G. Wells with Jane Austen, Wells uses words like “beast”, “guns”, “feet”, and “black” that Austen does not, while Austen uses words like “family”, “friend”, “letter”, and “dear” that Wells does not.
+
+Notice that  the words in the Austen-Brontë panel are closer to the zero-slope line than in the Austen-Wells panel. Also notice that the words extend to lower frequencies in the Austen-Brontë panel; there is empty space in the Austen-Wells panel at low frequency. These characteristics indicate that Austen and the Brontë sisters use more similar words than Austen and H.G. Wells. Also, we see that not all the words are found in all three sets of texts and there are fewer data points in the panel for Austen and H.G. Wells.
+
+Furhter, we can conduct a simple correlation test
+
+```{r}
+cor.test(data = filter(comparison_df, other == "Brontë Sisters"),
+         ~ proportion + `Jane Austen`)
+
+cor.test(data = filter(comparison_df, other == "H.G. Wells"),
+         ~ proportion + `Jane Austen`)
+```
 

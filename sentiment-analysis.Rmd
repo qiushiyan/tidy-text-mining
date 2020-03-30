@@ -26,7 +26,7 @@ There are a variety of methods and dictionaries that exist for evaluating the op
 
 * `nrc` from [Saif Mohammad and Peter Turney](http://saifmohammad.com/WebPages/NRC-Emotion-Lexicon.htm).  
 
-* `loughran`  
+* `loughran`: he Loughran and McDonald dictionary of financial sentiment terms. This dictionary was developed based on analyses of financial reports, and intentionally avoids words like “share” and “fool”, as well as subtler terms like “liability” and “risk” that may not have a negative meaning in a financial context.
 
 
 All three of these lexicons are based on unigrams. These lexicons contain many English words and the words are assigned scores for positive / negative sentiment, and also possibly emotions like joy, anger, sadness, and so forth. The `nrc` lexicon categorizes words into classes of positive, negative, anger, anticipation, disgust, fear, joy, sadness, surprise, and trust. The `bing` lexicon categorizes words in a binary fashion into positive and negative categories. The `AFINN` lexicon assigns words with a score that runs between -5 and 5, with negative scores indicating negative sentiment and positive scores indicating positive sentiment. The `loughran` lexicon divided words into constraining, litigious, negative, positive, superfluous and uncertainty
