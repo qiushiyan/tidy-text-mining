@@ -90,7 +90,7 @@ jane_austen_sentiment <- tidy_books %>%
 jane_austen_sentiment
 ```
 
-```{r, fig.height = 8, fig.width = 7}
+```{r, fig.height = 8, fig.width = 8}
 ggplot(jane_austen_sentiment) + 
   geom_col(aes(index, sentiment, fill = book), show.legend = F) + 
   facet_wrap( ~ book, ncol = 2, scales = "free_x") 
@@ -137,7 +137,7 @@ nrc <- pride_prejudice %>%
 ```
 
 
-```{r, fig.height = 6, fig.width = 8}
+```{r, fig.height = 7, fig.width = 8}
 bind_rows(afinn, bing, nrc) %>% 
   ggplot() + 
   geom_col(aes(index, value, fill = dict), show.legend = FALSE) + 
@@ -193,14 +193,8 @@ bing_word_counts %>%
   group_by(sentiment) %>% 
   top_n(10) %>%
   ungroup()  %>% 
-  mutate(word = reorder_within(word, n, sentiment)) %>% 
-  ggplot(aes(y = word, x = n)) + 
-  geom_col(aes(fill = sentiment), show.legend = F) +
-  scale_y_reordered() + 
-  facet_wrap(~ sentiment, scales = "free_y") + 
-  labs(x = NULL, y = NULL,
-       title = "Top 10 words of sentiment in Jane Austen's books") + 
-  theme(plot.title.position = "plot")
+  facet_bar(y = word, x = n, by = sentiment, nrow = 1) + 
+  labs(title = "Top 10 words of sentiment in Jane Austen's books") 
 ```
 
 

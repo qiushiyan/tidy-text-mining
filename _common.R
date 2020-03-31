@@ -16,5 +16,6 @@ knitr::opts_chunk$set(
 library(tidyverse)
 library(tidytext)
 theme_set(theme_light())
+source("R/facet_bar.R")
 
 options(dplyr.print_min = 6, dplyr.print_max = 6)

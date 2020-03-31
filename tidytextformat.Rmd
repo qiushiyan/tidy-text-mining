@@ -7,7 +7,9 @@
 knitr::opts_chunk$set(cache = TRUE)
 ```
 
-A "tidy" text format is defined as a per-token-per row data frame.  
+A "tidy" text format is defined as a per-token-per row data frame. This one-token-per-row structure is in contrast to the ways text is often stored in current analyses, perhaps as strings or in a document-term matrix (Chapter \@ref(converting-to-and-from-non-tidy-formats)). For tidy text mining, the token that is stored in each row is most often a single word, but can also be an n-gram, sentence, or paragraph. In the tidytext package, we provide functionality to tokenize by commonly used units of text like these and convert to a one-term-per-row format. 
+
+## The `unnest_tokens()` function
 
 ```{r}
 library(janeaustenr)
@@ -46,17 +48,43 @@ tidy_books
 ```
 
 
-## gutenbergr   
+## The `gutenbergr` package   
 
 ```{r}
 library(gutenbergr)
 ```
 
+The gutenbergr package provides access to the public domain works from the Project Gutenberg collection. The package includes tools both for downloading books (stripping out the unhelpful header/footer information), and a complete dataset of Project Gutenberg metadata that can be used to find works of interest. In this book, we will mostly use the function `gutenberg_download()` that downloads one or more works from Project Gutenberg by ID.  
+
+The dataset gutenberg_metadata contains information about each work, pairing Gutenberg ID with title, author, language, etc:  
+
+```{r}
+gutenberg_metadata
+```
+
+
+
+
+For example, you could find the Gutenberg ID of Wuthering Heights by doing:  
+
+```{r}
+gutenberg_metadata %>%
+  filter(title == "Wuthering Heights")
+
+gutenberg_download(768)
+```
+
+
+In many analyses, you may want to filter just for English works, avoid duplicates, and include only books that have text that can be downloaded. The `gutenberg_works()` function does this pre-filtering. It also allows you to perform filtering as an argument:
+
+```{r}
+gutenberg_works(author == "Austen, Jane")
+```
 
 
 ## Compare word frequency  
 
-As a common task in text analysis, compariosn of word frequencies is often employed as a tool to extract linguistic characteristics. A rule of thumb is to compare word **proporations** instead of raw counts.  
+As a common task in text analysis, compariosn of word frequencies is often employed as a tool to extract linguistic characteristics. A rule of thumb is to compare word **proportions** instead of raw counts.  
 
 In this example, we compare novels of Jane Austen, H.G. Wells, and the Bronte Sisters. 
 
@@ -140,4 +168,45 @@ cor.test(data = filter(comparison_df, other == "H.G. Wells"),
 
 ## Other tokenization methods  
 
+`unnest_tokens` supports other ways to split a column into tokens. 
 
+```{r}
+text <- c("This is, my bookdown book.",
+          "Chapter 1: Preface\n", 
+          "Thanks for \n reading this book\n",
+          "Chapter 2: Introduction\n",
+          "Chapter 3: Methods\n",
+          "I demonstrate all of the methods here,",
+          "well, not all actually.\n\n",
+          "Chapter 4: Discussion\n",
+          "blablabla,",
+          "blablabla,",
+          "blablabla.")
+df <- tibble(text = text)
+cat(df$text)
+```
+
+
+
+
+```{r}
+# lines
+df %>% unnest_tokens(line, text, token = "lines")
+# sentences, split by period
+df %>% unnest_tokens(sentences, text, token = "sentences")
+# paragraphs
+df %>% unnest_tokens(paragraphs, text, token = "paragraphs")
+```
+
+
+```{r}
+# split into characters or multiple characters 
+df %>% unnest_tokens(character, text, token = "characters")
+df %>% unnest_tokens(characters, text, token = "character_shingles", n = 4)
+```
+
+```{r}
+# split by regex
+df %>% 
+  unnest_tokens(chapter, text, token = "regex", pattern = "Chapter \\d:")
+```

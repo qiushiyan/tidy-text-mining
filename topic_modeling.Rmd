@@ -72,12 +72,10 @@ Which words have a relateve higher probabiltity to appear in each topic?
 tidy(ap_lda) %>% 
   group_by(topic) %>%
   top_n(10) %>% 
-  ggplot(aes(y = reorder_within(term, beta, topic), x = beta)) + 
-  geom_col(aes(fill = factor(topic)), show.legend = FALSE) + 
-  scale_y_reordered() + 
-  facet_wrap(~ topic, scales = "free") + 
-  labs(y = "",
-       title = "Words with highest probability in each topic")
+  ungroup() %>% 
+  mutate(topic = str_c("topic", topic)) %>%
+  facet_bar(y = term, x = beta, by = topic) +
+  labs(title = "Words with highest probability in each topic")
 ```
 
 As an alternative, we could consider the terms that had the **greatest difference** in $\vec{\phi_k}$ between topic 1 and topic 2. This can be estimated based on the log ratio of the two: $\log_2(\frac{\phi_{1n}}{\phi_{2n}})$, $\phi_{1n} / \phi_{2n}$ being the probability ratio of the sam e word $n$ in two topics (a log ratio is useful because it makes the difference symmetrical)  
@@ -189,14 +187,8 @@ chapter_topics %>%
   group_by(topic) %>% 
   top_n(5) %>% 
   ungroup() %>% 
-  mutate(topic = factor(topic) %>% fct_inseq()) %>%
-  ggplot(aes(y = reorder_within(term, beta, topic),
-             x = beta)) + 
-  geom_col(aes(fill = topic), show.legend = FALSE) + 
-  scale_y_reordered() + 
-  facet_wrap(~ topic, scales = "free") + 
-  labs(y = NULL,
-       title = "terms that are most common within each topic ")
+  mutate(topic = str_c("topic", topic)) %>% 
+  facet_bar(y = term, x = beta, by = topic)
 ```
 
 I am not an expert on the other 3 books aside from Pride & Prejudice, but according to [Julia](https://www.tidytextmining.com/topicmodeling#lda-on-chapters), each topic did correspond to one book by and large!  
@@ -209,6 +201,7 @@ We may want to how which topics are associated with each document, in particular
 chapters_gamma <- tidy(chapters_lda, matrix = "gamma") %>% 
   separate(document, c("title", "chapter"), sep = "_", convert = TRUE) %>% 
   mutate(topic = factor(topic) %>% fct_inseq())
+
 chapters_gamma
 ```
 

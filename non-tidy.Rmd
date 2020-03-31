@@ -2,7 +2,7 @@
 # Converting to and from non-tidy formats    
 
 
-```{r}
+```{r, echo = FALSE}
 knitr::opts_chunk$set(cache = TRUE)
 ```
 
@@ -101,7 +101,7 @@ year_term_counts %>%
   geom_smooth() +
   facet_wrap(~ term, scales = "free_y") +
   scale_y_continuous(labels = scales::percent_format()) +
-  lab(title = "% frequency of word in inaugural address")
+  labs(title = "% frequency of word in inaugural address")
 ```
 
 ## Casting tidy text data into a matrix  

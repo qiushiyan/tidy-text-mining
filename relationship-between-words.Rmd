@@ -76,13 +76,8 @@ austen_bigrams %>%
   bind_log_odds(set = book, feature = bigram, n = n) %>% 
   group_by(book) %>% 
   top_n(15) %>% 
-  ggplot() + 
-  geom_col(aes(y = reorder_within(bigram, log_odds, book),
-               x = log_odds,
-               fill = book),
-           show.legend = FALSE) + 
-  scale_y_reordered() + 
-  facet_wrap(~ book, scales = "free", nrow = 3)
+  ungroup() %>%
+  facet_bar(y = bigram, x = log_odds, by = book, nrow = 3)
 ```
 
 
@@ -144,7 +139,10 @@ negated_words %>%
          sign = if_else(value > 0, "postive", "negative")) %>%
   group_by(word1) %>% 
   top_n(20, abs(contribution)) %>%
-  ggplot(aes(y = reorder_within(word2, contribution, word1), x = contribution, fill = sign)) +
+  ungroup() %>%
+  ggplot(aes(y = reorder_within(word2, contribution, word1), 
+             x = contribution, 
+             fill = sign)) +
   geom_col() + 
   scale_y_reordered() + 
   facet_wrap(~ word1, scales = "free") + 
@@ -202,6 +200,10 @@ ggraph(bigram_graph, layout = "fr") +
   geom_node_point(color = "lightblue", size = 5) + 
   geom_node_text(aes(label = name), vjust = 1, hjust = 1)
 ```
+
+
+
+
 
 ### Visualizing  "friends"  
 
@@ -339,10 +341,7 @@ word_cors %>%
   group_by(item1) %>%
   top_n(6) %>%
   ungroup() %>%
-  ggplot(aes(y = reorder_within(item2, correlation, item1), x = correlation)) + 
-  geom_col(aes(fill = item1), show.legend = FALSE) + 
-  scale_y_reordered() + 
-  facet_wrap(~ item1, scales = "free")
+  facet_bar(y = item2, x = correlation, by = item1)
 ```
 
 How about a network visualization to see the overall correlation pattern? 

@@ -208,16 +208,12 @@ book_words %>%
 
 Proper nouns are often favoured by tf-idf, in this case names of important characters in each novel will generally have high tf-idf value. None of them occur in all of novels, and they are important, characteristic words for each text within the corpus of Jane Austen’s novels.  
 
-```{r, fig.width = 9}
+```{r, fig.width = 9, fig.height = 9}
 book_words %>% 
   group_by(book) %>% 
   top_n(15) %>%
-  ggplot() + 
-  geom_col(aes(y = reorder_within(word, tf_idf, book), 
-               x = tf_idf, 
-               fill = book), show.legend = FALSE) + 
-  scale_y_reordered() + 
-  facet_wrap(~ book, scales = "free", nrow = 3)
+  ungroup() %>%
+  facet_bar(y = word, x = tf_idf, by = book, nrow = 3)
 ```
 
 ## Weighted log odds ratio
@@ -342,32 +338,24 @@ book_words %>%
 
 Now let's compare the result between tf-idf and weighted log odds in a subset of `book_words`  
 
-```{r}
+```{r, fig.width = 12, fig.height = 8}
 words_tf_idf <- book_words %>%
   filter(book %in% c("Emma", "Pride & Prejudice", "Persuasion")) %>% 
   bind_tf_idf(term = word, document = book, n = n) %>%
   group_by(book) %>% 
   top_n(10) %>%
-  ggplot() + 
-  geom_col(aes(y = reorder_within(word, tf_idf, book), 
-               x = tf_idf, fill = book), 
-           show.legend = FALSE) + 
-  scale_y_reordered() + 
-  facet_wrap(~ book, scales = "free_y") + 
-  labs(x = NULL, y = NULL, title = "Top 10 words picked tf-idf")
+  ungroup() %>% 
+  facet_bar(y = word, x = tf_idf, by = book, ncol = 3) + 
+  labs(title = "Top 10 words picked tf-idf")
 
 words_wlo <- book_words %>%
   filter(book %in% c("Emma", "Pride & Prejudice", "Persuasion")) %>% 
   bind_log_odds(feature = word, set = book, n = n) %>%
   group_by(book) %>% 
   top_n(10) %>%
-  ggplot() + 
-  geom_col(aes(y = reorder_within(word, log_odds, book), 
-               x = log_odds, fill = book), 
-           show.legend = FALSE) + 
-  scale_y_reordered() + 
-  facet_wrap(~ book, scales = "free_y") + 
-  labs(x = NULL, y = NULL, title = "Top 10 words picked by weighted log odds")
+  ungroup() %>% 
+  facet_bar(y = word, x = log_odds, by = book, ncol = 3) + 
+  labs(title = "Top 10 words picked by weighted log odds")
 
 words_tf_idf / words_wlo
 ```
@@ -397,12 +385,12 @@ physics_words <- physics %>%
 physics_words
 ```
 
-Visualize the highest tf-idf words  
+Visualize the highest log odds words (log odds is particularly useful in comparing wrting styles)  
 
-```{r, fig.height = 8}
+```{r, fig.height = 9, fig.width = 9}
 plot_physics <- physics_words %>%
-  bind_tf_idf(word, author, n) %>%
-  mutate(word = fct_reorder(word, tf_idf)) %>%
+  bind_log_odds(word, author, n) %>%
+  mutate(word = fct_reorder(word, log_odds)) %>%
   mutate(author = factor(author, levels = c("Galilei, Galileo",
                                             "Huygens, Christiaan", 
                                             "Tesla, Nikola",
@@ -410,15 +398,9 @@ plot_physics <- physics_words %>%
 
 plot_physics %>% 
   group_by(author) %>% 
-  top_n(15, tf_idf) %>% 
-  ungroup() %>%
-  ggplot(aes(y = reorder_within(word, tf_idf, author), 
-             x = tf_idf,
-             fill = author)) +
-  geom_col(show.legend = FALSE) +
-  scale_y_reordered() + 
-  labs(x = NULL, y = "tf-idf") +
-  facet_wrap(~ author, ncol = 2, scales = "free_y") 
+  top_n(15, log_odds) %>% 
+  ungroup() %>% 
+  facet_bar(y = word, x = log_odds, by = author)
 ```
 
 Why there is `_k` and `_x` in Einstein's text ?  
@@ -440,32 +422,30 @@ physics %>%
   select(text)
 ```
 
-```{r, fig.height = 8}
+```{r, fig.height = 9, fig.width = 9}
 my_stop_words <- tibble(word = c("eq", "co", "rc", "ac", "ak", "bn", 
                                    "fig", "file", "cg", "cb", "cm",
-                               "ab", "_k", "_k_", "_x"))
+                               "ab", "_k", "_k_", "k", "_x"))
 
 physics_words <- anti_join(physics_words, 
                            my_stop_words, 
                            by = "word")
 
 plot_physics <- physics_words %>%
-  bind_tf_idf(word, author, n) %>%
+  bind_log_odds(word, author, n) %>%
   mutate(word = str_remove_all(word, "_")) %>%
   group_by(author) %>% 
-  top_n(15, tf_idf) %>%
+  top_n(15, log_odds) %>%
   ungroup() %>%
-  mutate(word = reorder_within(word, tf_idf, author)) %>%
   mutate(author = factor(author, levels = c("Galilei, Galileo",
                                             "Huygens, Christiaan",
                                             "Tesla, Nikola",
                                             "Einstein, Albert")))
 
-ggplot(plot_physics, aes(word, tf_idf, fill = author)) +
-  geom_col(show.legend = FALSE) +
-  labs(x = NULL, y = "tf-idf") +
-  facet_wrap(~author, ncol = 2, scales = "free") +
-  coord_flip() +
-  scale_x_reordered()
+
+facet_bar(plot_physics,
+          y = word,
+          x = log_odds,
+          by = author)
 ```
 
