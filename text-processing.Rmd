@@ -1,12 +1,9 @@
 
 
+# Text processing examples in R 
 
-# (APPENDIX) Appendix {-}   
+ A manual of problem-solving techniques in some common use cases dealing with text data, employing tools like [stringr](https://stringr.tidyverse.org/index.html) and [textclean](https://github.com/trinker/textclean)
 
-
-# A manual of wrangling text data, with a primary focus on [stringr](https://stringr.tidyverse.org/index.html) and [textclean](https://github.com/trinker/textclean)
-
-`stringr`, 
 
 ## Replacing and removing  
 
@@ -15,7 +12,6 @@
 Combine multiple line tokens to one paragraph (with a defined length) and the other way around  
 
 ```{r}
-library(tidytext)
 library(ggpage)
 
 tinderbox_line <- head(tinderbox)
@@ -33,12 +29,18 @@ tinderbox_paragraph %>%
   nest_paragraphs(text, width = 50)  # no more than 50 characters per row
 ```
 
-## Extracting text from pdf, word  
+## Extracting text from pdf and other files  
 
 ```{r}
 library(pdftools)
+```
 
+```{r, eval = FALSE}
 download.file("http://arxiv.org/pdf/1403.2805.pdf", "data/1403.2805.pdf", mode = "wb")
+```
+
+
+```{r}
 txt <- pdf_text("data/1403.2805.pdf")
 
 # all 29 pages  
@@ -48,5 +50,11 @@ cat(txt[[2]])
 
 enframe(txt) %>% 
   rename(page = name) %>% 
-  nest_paragraphs(input = value, width = 100)
+  nest_paragraphs(input = value, width = 100) %>%
+  head()
 ```
+
+### Office documents  
+
+
+### Images
