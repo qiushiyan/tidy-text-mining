@@ -46,7 +46,7 @@ txt <- pdf_text("data/1403.2805.pdf")
 # all 29 pages  
 length(txt) 
 
-cat(txt[[2]])
+cat(txt[[1]])
 
 enframe(txt) %>% 
   rename(page = name) %>% 

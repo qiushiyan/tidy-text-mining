@@ -1,5 +1,5 @@
 --- 
-title: 'Text Mining with R --- Notes'
+title: 'Notes for "Text Mining with R: A Tidy Approach"'
 author: "Qiushi Yan"
 date: "`r Sys.Date()`"
 site: bookdown::bookdown_site

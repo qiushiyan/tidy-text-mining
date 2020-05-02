@@ -11,6 +11,7 @@ rmd_files: [
   "relationship-between-words.Rmd",
   "non-tidy.Rmd",
   "topic-modeling.Rmd",
+  "text-classification.Rmd",
   
 #  "ggpage.Rmd",
   

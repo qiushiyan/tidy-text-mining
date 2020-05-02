@@ -54,17 +54,23 @@ To actually infer the topics in a corpus, we imagine the generative process as f
   
 ### Example: Associated Press  
 
-We come to the `AssociatedPress` document term matrix (the required data strcture for the modeling function) and fit a two topic LDA model with `topicmodels::LDA()`  
+We come to the `AssociatedPress` document term matrix (the required data strcture for the modeling function) and fit a two topic LDA model with `stm::stm` (stm stands for structural equation modeling). The `stm` takes as its input a document-term matrix, either as a sparse matrix (using `cast_sparse`) or a `dfm` from `quanteda` (using `cast_dfm`). Here we specify a two topic model by setting $K = 2$ for demonstration purposes, in \@ref(tuning-number-of-topics) we will see how to choose $K$ with metrics such as semantic coherence. 
 
 ```{r}
-library(topicmodels)
-data("AssociatedPress")
+library(stm)
+data("AssociatedPress", package = "topicmodels")
 
-ap_lda <- LDA(AssociatedPress, k = 2)
-ap_lda
+ap_dfm <- tidy(AssociatedPress) %>% 
+  cast_dfm(document = document, term = term, value = count)
+
+ap_lda <- stm(ap_dfm, 
+              K = 2, 
+              verbose = FALSE, 
+              init.type = "LDA")
+summary(ap_lda)
 ```
 
-For tidying model objects, `tidy(model_object, matrix = "beta")` (the default) access the topic-word probability vector (we denotes with $\vec{\phi_k}$)  
+`stm` objects have a `summary()` method for displaying words with highest probability in each topic. But we want to go back to data frames to take advantage of `dplyr` and `ggplot2`. For tidying model objects, `tidy(model_object, matrix = "beta")` (the default) access the topic-word probability vector (we denotes with $\vec{\phi_k}$)  
 
 ```{r}
 tidy(ap_lda)
@@ -130,13 +136,23 @@ tidy(ap_lda, matrix = "gamma") %>%
 
 This plot would definitely be more insightful if we have document titles rather than an ID.  
 
+```{block2, type = "rmdnote"}
+To sum up, the topic modeling workflow involves:  
+- use tidy tools like dplyr, tidyr, and ggplot2 for initial data exploration and preparation.  
+- **cast** to a non-tidy structure to perform some machine learning algorithm.
+- **tidy** the modeling results to to use tidy tools again (exploring, visualization, etc.)
+```
+
+
 ## Example: the great library heist  
 
 To evaluate our topic model, we first divided 4 books into chapters. If a topic model with $K = 4$ performs well, then there should be a corresponding segmentation among those chpaters coming from those 4 different books.  
 
 ```{r}
-titles <- c("Twenty Thousand Leagues under the Sea", "The War of the Worlds",
-            "Pride and Prejudice", "Great Expectations")  
+titles <- c("Twenty Thousand Leagues under the Sea", 
+            "The War of the Worlds",
+            "Pride and Prejudice", 
+            "Great Expectations")  
 
 library(gutenbergr)
 
@@ -148,10 +164,11 @@ books <- gutenberg_works(title %in% titles) %>%
 # add a chapter column
 by_chapter <- books %>%
   group_by(title) %>%
-  mutate(chapter = cumsum(str_detect(text, regex("^chapter ", ignore_case = TRUE)))) %>%
+  mutate(chapter = cumsum(str_detect(text, regex("^chapter ", 
+                                                 ignore_case = TRUE)))) %>%
   ungroup() %>%
   filter(chapter > 0) %>%
-  unite(document, title, chapter)
+  unite(col = document, title, chapter)
 
 
 # find document-word counts
@@ -169,11 +186,10 @@ word_counts
 
 
 ```{r}
-chapters_dtm <- word_counts %>% 
-  cast_dtm(document = chapter, term = word, value = n)
+chapters_dfm <- word_counts %>% 
+  cast_dfm(document = chapter, term = word, value = n)
 
-chapters_lda <- chapters_dtm %>%
-  LDA(k  = 4)
+chapters_lda <- stm(chapters_dfm, K = 4, init.type = "LDA", verbose = FALSE)
 ```
 
 
@@ -192,17 +208,21 @@ chapter_topics %>%
   top_n(5) %>% 
   ungroup() %>% 
   mutate(topic = str_c("topic", topic)) %>% 
-  facet_bar(y = term, x = beta, by = topic)
+  facet_bar(y = term, x = beta, by = topic) + 
+  labs(x = expression(beta), 
+       title = "topic-term probabilities")
 ```
 
 I am not an expert on the other 3 books aside from Pride & Prejudice, but according to [Julia](https://www.tidytextmining.com/topicmodeling#lda-on-chapters), each topic did correspond to one book by and large!  
 
 ### Per-document classification
 
-We may want to how which topics are associated with each document, in particular, the majority of chapters in the same book should belong to the same topic (if we assign a chapter$_m$ to a topic$_k$ when the $k$th postion in $\hat{\theta}_m$ is significantly higher).  
+We may want to how and which topics are associated with each document, in particular, the majority of chapters in the same book should belong to the same topic (if we assign a chapter$_m$ to a topic$_k$ when the $k$th postion in $\hat{\theta}_m$ is significantly higher).  
 
 ```{r}
-chapters_gamma <- tidy(chapters_lda, matrix = "gamma") %>% 
+chapters_gamma <- tidy(chapters_lda,
+                       matrix = "gamma",
+                       document_names = rownames(chapters_dfm)) %>% 
   separate(document, c("title", "chapter"), sep = "_", convert = TRUE) %>% 
   mutate(topic = factor(topic) %>% fct_inseq())
 
@@ -214,14 +234,50 @@ chapters_gamma
 ```{r}
 ggplot(chapters_gamma) + 
   geom_boxplot(aes(topic, gamma)) + 
-  facet_wrap(~ title)
+  facet_wrap(~ title) + 
+  labs(title = "chapter-topic proportion", y = expression(gamma))
 ```
 
 Ideally we would expect that in every book panel, there is one boxplot highly centered at 1 with the other 3 boxes at 0, since chapters in the same book are categorized in the same topic. 
 
-It does look like some chapters from Great Expectations (which should be topic 4) were somewhat associated with other topics. Are there any cases where the topic most associated with a chapter belonged to another book?   
 
-First we’d find the topic that was most associated with each chapter using `top_n()`, which is effectively the “classification” of that chapter.
+Another way of visualizaing this is to plot the histogaram of chapter-topic proportions of each topic. We would expect to see two extremes  
+
+```{r}
+ggplot(chapters_gamma) + 
+  geom_histogram(aes(gamma, fill = topic), show.legend = FALSE) + 
+  facet_wrap(~ topic) + 
+  labs(y = "Number of chapters",
+       x = expression(gamma),
+       title = "Distribution of document probabilities for each topic")
+```
+
+
+It does look like some chapters from *Twenty Thousand Leagues under the Sea* were somewhat associated with other topic 3 (whereas most chapters are assigned to topic 2). Let's put in some investigation
+
+```{r}
+chapters_gamma %>% 
+  filter(title == "Twenty Thousand Leagues under the Sea") %>%
+  ggplot() + 
+  geom_histogram(aes(gamma, fill = topic),
+                 position = "identity",
+                 alpha = 0.6) + 
+  guides(fill = guide_legend(override.aes = list(alpha = 1))) + 
+  labs(title = "Twenty Thousand Leagues under the Sea",
+       subtitle = "chapter-topic proportions")
+```
+
+Which chapters have a relatively high proportion of topic 3?
+
+```{r}
+chapters_gamma %>% 
+  filter(title == "Twenty Thousand Leagues under the Sea") %>% 
+  filter(topic == "3", gamma > 0.1)
+```
+
+
+
+As we see here, topci modeling can be viewed as text classification to some degree. We can find the topic that was most associated with each chapter using `top_n()`, which is essentially the "classification" of that chapter. For example, the 57th chapter of *Great Expectations* are assigned to topic 1.
 
 ```{r}
 chapter_classifications <- chapters_gamma %>%
@@ -232,24 +288,26 @@ chapter_classifications <- chapters_gamma %>%
 chapter_classifications
 ```
 
-We can then compare each to the “consensus” topic for each book (the most common topic among its chapters), and see which were most often misidentified.  
+We can then compare each to the "consensus" topic for each book (the most common topic among its chapters), and see if there is misidentification
 
 ```{r}
-# identify which topic is most related to which book
-book_topics <- chapter_classifications %>%
-  count(title, topic) %>%
-  group_by(title) %>%
-  top_n(1, n) %>%
-  ungroup() %>%
-  transmute(consensus = title, topic)
-
-# which chapter in misidentified
 chapter_classifications %>% 
-  inner_join(book_topics) %>% 
-  filter(consensus != title)
+  count(title, topic)
 ```
 
-We see that one chapter in "Great Expectation" is misidentified as a member of topic 3, which is essentially "The War of the Worlds" 
+In all of the 4 books, no single chapter is misidentified to another topic! 
+
+For future need, classification results are stored in `classification` 
+
+```{r}
+classification <- chapter_classifications %>% 
+    count(title, topic) %>%
+    group_by(title) %>% 
+    top_n(1, n) %>% 
+    ungroup() %>%
+    transmute(assigned_book = title, topic)
+```
+
 
 
 ### By word assignments: `augment()`   
@@ -259,8 +317,12 @@ One step of the LDA algorithm is assigning each word in each document to a topic
 We may want to take the original document-word pairs and find which words in each document were assigned to which topic. This is the job of the `augment()` function, which is to add information to each observation in the original data.  
 
 ```{r}
-assignments <- augment(chapters_lda, data = chapters_dtm) %>% 
-  rename(chapter = document)
+assignments <- augment(chapters_lda, data = chapters_dfm) %>% 
+  transmute(chapter = document, 
+            term,
+            count,
+            topic = factor(.topic))
+
 assignments
 ```
 
@@ -269,33 +331,43 @@ To get a sense of how our model works, we can draw a bar plot of assigned topics
 ```{r}
 assignments %>% 
   separate(chapter, into = c("title", "chapter"), sep = "_") %>%
-  count(title, .topic, wt = count) %>%
-  ggplot(aes(.topic, n)) + 
+  count(title, topic, wt = count) %>%
+  ggplot(aes(topic, n)) + 
   geom_col(width = 0.5) + 
-  facet_wrap(~ title)
+  facet_wrap(~ title, scales = "free") + 
+  labs(y = "Number of words",
+       x = "topic",
+       title = "By word assignments")
 ```
 
 
-We can combine this assignments table with the `consensus` book titles to find which words were incorrectly classified by a coofusion matrix.  
+We can combine this assignments table with the `classification` to find which words were incorrectly classified by a coofusion matrix.  
 
 ```{r}
 assignments <- assignments %>%
   separate(chapter, c("title", "chapter"), sep = "_", convert = TRUE) %>%
-  inner_join(book_topics, by = c(".topic" = "topic"))
+  left_join(classification, by = c("topic" = "topic"))
 
-assignments
+# misidentified words
+assignments %>% 
+  filter(title != assigned_book)
 ```
 
-```{r}
+```{r, fig.height = 7, fig.width = 10}
 # confusion matrix  
-assignments %>% 
-  count(title, consensus, wt = count) %>% 
+confusion_df <- assignments %>% 
+  count(title, topic, wt = count) %>% 
   group_by(title) %>% 
   mutate(percent = n / sum(n)) %>% 
-  ungroup() %>% 
-  ggplot(aes(consensus, title, fill = percent)) + 
+  ungroup()
+
+ 
+confusion_df %>% 
+  ggplot(aes(topic, title, fill = percent)) + 
   geom_tile() + 
-  scale_fill_gradient2(high = "red", label = scales::percent_format()) +
+  scale_fill_distiller(type = "div",
+                       palette = "RdBu",
+                       label = scales::percent_format()) +
   scale_x_discrete(guide = guide_axis(n.dodge = 2)) + 
   theme_minimal() +
   theme(legend.position = "top") + 
@@ -308,12 +380,82 @@ What were the most commonly mistaken words?
 
 ```{r}
 assignments %>% 
-  filter(title != consensus) %>% 
-  count(title, consensus, term, .wt = count) %>%
+  filter(title != assigned_book) %>% 
+  count(title, assigned_book, term, wt = count) %>%
   arrange(desc(n))
 ```
 
-We can see that a number of words were often assigned to the Pride and Prejudice or War of the Worlds cluster even when they appeared in Great Expectations. For some of these words, such as “love” and “lady”, that’s because they’re more common in Pride and Prejudice (we could confirm that by examining the counts).
+We can see that a number of words were often assigned to *Pride and Prejudice* or *The War of the Worlds* cluster even when they appeared in *Great Expectations* or *Twenty Thousand Leagues under the Sea*. For some of these words, such as "Jane", it comes as no surprise that it will be assigned to *Pride and Prejudice*.
 
 It is possible that a word is assigned to a book, even though it never appears in that book. 
+
+## Tuning number of topics
+
+https://juliasilge.com/blog/evaluating-stm/
+
+To compare topic models (not necessarily LDA) with different number of topic $K$, we need first to propose metrics for comparison or topic quality. **Semantic coherence** s maximized when the most probable words in a given topic frequently co-occur together, which correlates human judgement of topic quality.
+
+https://rdrr.io/cran/stm/man/exclusivity.html
+
+```{r}
+data("data_corpus_inaugural", package = "quanteda")
+inaugural_counts <- tidy(data_corpus_inaugural) %>%
+  mutate(document = str_c(Year, President, sep = "_")) %>% 
+  unnest_tokens(word, text) %>% 
+  anti_join(stop_words) %>% 
+  count(document, word, sort = TRUE)
+
+inaugural_dfm <- inaugural_counts %>% 
+  cast_dfm(document = document, term = word, value = n)
+```
+
+
+It took several minutes and quite a lot computing power to run the following code. So 
+
+```{r, eval = FALSE}
+library(furrr)
+plan(multiprocess)
+
+models <- tibble(K = 2:6) %>%
+  mutate(topic_model = future_map(K, ~ stm(inaugural_dfm,
+                                           init.type = "Spectral",
+                                           K = .,
+                                           verbose = FALSE)))
+```
+
+```{r, echo = FALSE}
+models <- pins::pin_get("inaugural_topic_models")
+```
+
+```{r}
+models
+```
+
+```{r}
+heldout <- make.heldout(inaugural_dfm)
+
+k_result <- models %>%
+  mutate(exclusivity        = map(topic_model, exclusivity),
+         semantic_coherence = map(topic_model, semanticCoherence, inaugural_dfm),
+         eval_heldout       = map(topic_model, eval.heldout, heldout$missing),
+         residual           = map(topic_model, checkResiduals, inaugural_dfm),
+         bound              = map_dbl(topic_model, function(x) max(x$convergence$bound)),
+         lfact              = map_dbl(topic_model, function(x) lfactorial(x$settings$dim$K)),
+         lbound             = bound + lfact,
+         iterations         = map_dbl(topic_model, function(x) length(x$convergence$bound)))
+```
+
+
+```{r}
+k_result %>%
+  transmute(K,
+            `Lower bound`         = lbound,
+            Residuals             = map_dbl(residual, "dispersion"),
+            `Semantic coherence`  = map_dbl(semantic_coherence, mean),
+            `Held-out likelihood` = map_dbl(eval_heldout, "expected.heldout")) %>%
+  pivot_longer(-K, names_to = "metrics", values_to = "value") %>%
+  ggplot(aes(K, value, color = metrics)) +
+  geom_line(size = 1.5) +
+  facet_wrap(~ metrics, scales = "free_y")
+```
 

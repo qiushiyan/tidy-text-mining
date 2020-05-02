@@ -202,18 +202,20 @@ Although it is often not necessary to remove stopwords when extracting tf-idf on
 
 Let’s look at terms with high tf-idf in Jane Austen’s works.
 ```{r}
-book_words %>%
-  arrange(desc(tf_idf))
+book_words %>% arrange(desc(tf_idf))
 ```
 
 Proper nouns are often favoured by tf-idf, in this case names of important characters in each novel will generally have high tf-idf value. None of them occur in all of novels, and they are important, characteristic words for each text within the corpus of Jane Austen’s novels.  
 
-```{r, fig.width = 9, fig.height = 9}
+```{r, fig.width = 10, fig.height = 10}
 book_words %>% 
   group_by(book) %>% 
   top_n(15) %>%
   ungroup() %>%
-  facet_bar(y = word, x = tf_idf, by = book, nrow = 3)
+  facet_bar(y = word, 
+            x = tf_idf, 
+            by = book, 
+            nrow = 3)
 ```
 
 ## Weighted log odds ratio
@@ -338,7 +340,7 @@ book_words %>%
 
 Now let's compare the result between tf-idf and weighted log odds in a subset of `book_words`  
 
-```{r, fig.width = 12, fig.height = 8}
+```{r, fig.width = 12, fig.height = 9}
 words_tf_idf <- book_words %>%
   filter(book %in% c("Emma", "Pride & Prejudice", "Persuasion")) %>% 
   bind_tf_idf(term = word, document = book, n = n) %>%
@@ -356,8 +358,9 @@ words_wlo <- book_words %>%
   ungroup() %>% 
   facet_bar(y = word, x = log_odds, by = book, ncol = 3) + 
   labs(title = "Top 10 words picked by weighted log odds")
-
-words_tf_idf / words_wlo
+```
+```{r}
+wrap_plots(words_tf_idf, words_wlo)
 ```
 
 
@@ -422,7 +425,7 @@ physics %>%
   select(text)
 ```
 
-```{r, fig.height = 9, fig.width = 9}
+```{r, fig.height = 10, fig.width = 10}
 my_stop_words <- tibble(word = c("eq", "co", "rc", "ac", "ak", "bn", 
                                    "fig", "file", "cg", "cb", "cm",
                                "ab", "_k", "_k_", "k", "_x"))
@@ -446,6 +449,7 @@ plot_physics <- physics_words %>%
 facet_bar(plot_physics,
           y = word,
           x = log_odds,
-          by = author)
+          by = author,
+          nrow = 2)
 ```
 

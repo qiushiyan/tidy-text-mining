@@ -11,7 +11,7 @@ Non-tidy data structures, in particular matrcies, is essential in topic modeling
 
 The book has a diagram describing the "glue" part functions in this chapter play:  
 
-```{r, echo = FALSE, out.width = "120%"}
+```{r, echo = FALSE, out.width = "120%", fig.cap = "Taken from the book, Chapter 5"}
 knitr::include_graphics("images/non-tidy.png")
 ```
 

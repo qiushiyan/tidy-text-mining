@@ -119,7 +119,7 @@ books <- bind_rows(tidy_book(austen),
 books
 ```
 
-Now, our goal is to use Jane Austen as a reference to which the other two authors are compared to in terms of word frequency. The data manipulation requires a bit trick, after computing proportions of word usage, we first `pivot_wider` three authors altogether, an then `pivot_wider` the other two authors back.  
+Now, our goal is to use Jane Austen as a reference to which the other two authors are compared to in terms of word frequency. The data manipulation requires a bit trick, after computing proportions of word usage, we first `pivot_wider` three authors altogether, an then `pivot_longer` the other two authors back.  
 
 ```{r}
 comparison_df <- books %>%
@@ -144,8 +144,8 @@ comparison_df %>%
   geom_jitter(aes(color = abs(`Jane Austen` - proportion)),
               alpha = 0.1, size = 2.5, width = 0.3, height = 0.3) +
   geom_text(aes(label = word), check_overlap = TRUE, vjust = 1.5) + 
-  scale_x_log10(labels = percent_format()) +
-  scale_y_log10(labels = percent_format()) + 
+  scale_x_log10(labels = label_percent()) +
+  scale_y_log10(labels = label_percent()) + 
   scale_color_gradient(limits = c(0, 0.001), low = "darkslategray4", high = "gray75") + 
   facet_wrap(~ other) + 
   guides(color = FALSE)
