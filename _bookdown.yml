@@ -2,6 +2,8 @@ book_filename: "tidy-text-mining"
 delete_merged_file: true
 new_session: yes
 
+output_dir: 'docs'
+
 rmd_files: [
   "index.Rmd",
   
