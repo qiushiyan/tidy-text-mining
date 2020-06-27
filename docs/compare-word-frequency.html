@@ -6,7 +6,7 @@
   <meta http-equiv="X-UA-Compatible" content="IE=edge" />
   <title>1.3 Compare word frequency | Notes for “Text Mining with R: A Tidy Approach”</title>
   <meta name="description" content="1.3 Compare word frequency | Notes for “Text Mining with R: A Tidy Approach”" />
-  <meta name="generator" content="bookdown 0.18 and GitBook 2.6.7" />
+  <meta name="generator" content="bookdown 0.20 and GitBook 2.6.7" />
 
   <meta property="og:title" content="1.3 Compare word frequency | Notes for “Text Mining with R: A Tidy Approach”" />
   <meta property="og:type" content="book" />
@@ -24,7 +24,7 @@
 <meta name="author" content="Qiushi Yan" />
 
 
-<meta name="date" content="2020-05-11" />
+<meta name="date" content="2020-06-27" />
 
   <meta name="viewport" content="width=device-width, initial-scale=1" />
   <meta name="apple-mobile-web-app-capable" content="yes" />
@@ -50,15 +50,16 @@
 
 
 
+<script src="libs/accessible-code-block-0.0.1/empty-anchor.js"></script>
 <script src="libs/htmlwidgets-1.5.1/htmlwidgets.js"></script>
 <link href="libs/str_view-0.1.0/str_view.css" rel="stylesheet" />
 <script src="libs/str_view-binding-1.4.0/str_view.js"></script>
 
 
 <style type="text/css">
-a.sourceLine { display: inline-block; line-height: 1.25; }
-a.sourceLine { pointer-events: none; color: inherit; text-decoration: inherit; }
-a.sourceLine:empty { height: 1.2em; }
+code.sourceCode > span { display: inline-block; line-height: 1.25; }
+code.sourceCode > span { color: inherit; text-decoration: inherit; }
+code.sourceCode > span:empty { height: 1.2em; }
 .sourceCode { overflow: visible; }
 code.sourceCode { white-space: pre; position: relative; }
 pre.sourceCode { margin: 0; }
@@ -67,14 +68,16 @@ div.sourceCode { overflow: auto; }
 }
 @media print {
 code.sourceCode { white-space: pre-wrap; }
-a.sourceLine { text-indent: -1em; padding-left: 1em; }
+code.sourceCode > span { text-indent: -5em; padding-left: 5em; }
 }
-pre.numberSource a.sourceLine
-  { position: relative; left: -4em; }
-pre.numberSource a.sourceLine::before
-  { content: attr(title);
+pre.numberSource code
+  { counter-reset: source-line 0; }
+pre.numberSource code > span
+  { position: relative; left: -4em; counter-increment: source-line; }
+pre.numberSource code > span > a:first-child::before
+  { content: counter(source-line);
     position: relative; left: -1em; text-align: right; vertical-align: baseline;
-    border: none; pointer-events: all; display: inline-block;
+    border: none; display: inline-block;
     -webkit-touch-callout: none; -webkit-user-select: none;
     -khtml-user-select: none; -moz-user-select: none;
     -ms-user-select: none; user-select: none;
@@ -83,9 +86,9 @@ pre.numberSource a.sourceLine::before
   }
 pre.numberSource { margin-left: 3em; border-left: 1px solid #aaaaaa;  padding-left: 4px; }
 div.sourceCode
-  {  }
+  {   }
 @media screen {
-a.sourceLine::before { text-decoration: underline; }
+code.sourceCode > span > a:first-child::before { text-decoration: underline; }
 }
 code span.al { color: #ff0000; font-weight: bold; } /* Alert */
 code span.an { color: #60a0b0; font-weight: bold; font-style: italic; } /* Annotation */
@@ -235,105 +238,105 @@ code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } /* Warni
 <h2><span class="header-section-number">1.3</span> Compare word frequency</h2>
 <p>As a common task in text analysis, compariosn of word frequencies is often employed as a tool to extract linguistic characteristics. A rule of thumb is to compare word <strong>proportions</strong> instead of raw counts.</p>
 <p>In this example, we compare novels of Jane Austen, H.G. Wells, and the Bronte Sisters.</p>
-<div class="sourceCode" id="cb14"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb14-1" title="1">austen &lt;-<span class="st"> </span><span class="kw">austen_books</span>() <span class="op">%&gt;%</span><span class="st"> </span></a>
-<a class="sourceLine" id="cb14-2" title="2"><span class="st">  </span><span class="kw">select</span>(<span class="op">-</span>book) <span class="op">%&gt;%</span><span class="st"> </span></a>
-<a class="sourceLine" id="cb14-3" title="3"><span class="st">  </span><span class="kw">mutate</span>(<span class="dt">author =</span> <span class="st">&quot;Jane Austen&quot;</span>)</a>
-<a class="sourceLine" id="cb14-4" title="4">bronte &lt;-<span class="st"> </span><span class="kw">gutenberg_download</span>(<span class="kw">c</span>(<span class="dv">1260</span>, <span class="dv">768</span>, <span class="dv">969</span>, <span class="dv">9182</span>, <span class="dv">767</span>)) <span class="op">%&gt;%</span></a>
-<a class="sourceLine" id="cb14-5" title="5"><span class="st">  </span><span class="kw">select</span>(<span class="op">-</span>gutenberg_id) <span class="op">%&gt;%</span><span class="st"> </span></a>
-<a class="sourceLine" id="cb14-6" title="6"><span class="st">  </span><span class="kw">mutate</span>(<span class="dt">author =</span> <span class="st">&quot;Brontë Sisters&quot;</span>)</a>
-<a class="sourceLine" id="cb14-7" title="7">hgwells &lt;-<span class="st"> </span><span class="kw">gutenberg_download</span>(<span class="kw">c</span>(<span class="dv">35</span>, <span class="dv">36</span>, <span class="dv">5230</span>, <span class="dv">159</span>)) <span class="op">%&gt;%</span><span class="st"> </span></a>
-<a class="sourceLine" id="cb14-8" title="8"><span class="st">  </span><span class="kw">select</span>(<span class="op">-</span>gutenberg_id) <span class="op">%&gt;%</span><span class="st"> </span></a>
-<a class="sourceLine" id="cb14-9" title="9"><span class="st">  </span><span class="kw">mutate</span>(<span class="dt">author =</span> <span class="st">&quot;H.G. Wells&quot;</span>)</a>
-<a class="sourceLine" id="cb14-10" title="10"></a>
-<a class="sourceLine" id="cb14-11" title="11">tidy_book &lt;-<span class="st"> </span><span class="cf">function</span>(author) {</a>
-<a class="sourceLine" id="cb14-12" title="12">  author <span class="op">%&gt;%</span><span class="st"> </span></a>
-<a class="sourceLine" id="cb14-13" title="13"><span class="st">    </span><span class="kw">unnest_tokens</span>(word, text) <span class="op">%&gt;%</span><span class="st"> </span></a>
-<a class="sourceLine" id="cb14-14" title="14"><span class="st">    </span><span class="kw">anti_join</span>(stop_words)</a>
-<a class="sourceLine" id="cb14-15" title="15">}</a>
-<a class="sourceLine" id="cb14-16" title="16"></a>
-<a class="sourceLine" id="cb14-17" title="17"></a>
-<a class="sourceLine" id="cb14-18" title="18"></a>
-<a class="sourceLine" id="cb14-19" title="19">books &lt;-<span class="st"> </span><span class="kw">bind_rows</span>(<span class="kw">tidy_book</span>(austen),</a>
-<a class="sourceLine" id="cb14-20" title="20">          <span class="kw">tidy_book</span>(bronte),</a>
-<a class="sourceLine" id="cb14-21" title="21">          <span class="kw">tidy_book</span>(hgwells)) <span class="op">%&gt;%</span><span class="st"> </span></a>
-<a class="sourceLine" id="cb14-22" title="22"><span class="st">  </span><span class="kw">mutate</span>(<span class="dt">word =</span> <span class="kw">str_extract</span>(word, <span class="st">&quot;[:alpha:]+&quot;</span>)) <span class="op">%&gt;%</span><span class="st"> </span></a>
-<a class="sourceLine" id="cb14-23" title="23"><span class="st">  </span><span class="kw">count</span>(author, word, <span class="dt">sort =</span> <span class="ot">TRUE</span>)</a></code></pre></div>
-<div class="sourceCode" id="cb15"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb15-1" title="1">books</a>
-<a class="sourceLine" id="cb15-2" title="2"><span class="co">#&gt; # A tibble: 46,956 x 3</span></a>
-<a class="sourceLine" id="cb15-3" title="3"><span class="co">#&gt;   author         word       n</span></a>
-<a class="sourceLine" id="cb15-4" title="4"><span class="co">#&gt;   &lt;chr&gt;          &lt;chr&gt;  &lt;int&gt;</span></a>
-<a class="sourceLine" id="cb15-5" title="5"><span class="co">#&gt; 1 Jane Austen    miss    1860</span></a>
-<a class="sourceLine" id="cb15-6" title="6"><span class="co">#&gt; 2 Jane Austen    time    1339</span></a>
-<a class="sourceLine" id="cb15-7" title="7"><span class="co">#&gt; 3 Brontë Sisters time    1065</span></a>
-<a class="sourceLine" id="cb15-8" title="8"><span class="co">#&gt; 4 Jane Austen    fanny    977</span></a>
-<a class="sourceLine" id="cb15-9" title="9"><span class="co">#&gt; 5 Jane Austen    emma     866</span></a>
-<a class="sourceLine" id="cb15-10" title="10"><span class="co">#&gt; 6 Jane Austen    sister   865</span></a>
-<a class="sourceLine" id="cb15-11" title="11"><span class="co">#&gt; # ... with 4.695e+04 more rows</span></a></code></pre></div>
+<div class="sourceCode" id="cb14"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb14-1"><a href="compare-word-frequency.html#cb14-1"></a>austen &lt;-<span class="st"> </span><span class="kw">austen_books</span>() <span class="op">%&gt;%</span><span class="st"> </span></span>
+<span id="cb14-2"><a href="compare-word-frequency.html#cb14-2"></a><span class="st">  </span><span class="kw">select</span>(<span class="op">-</span>book) <span class="op">%&gt;%</span><span class="st"> </span></span>
+<span id="cb14-3"><a href="compare-word-frequency.html#cb14-3"></a><span class="st">  </span><span class="kw">mutate</span>(<span class="dt">author =</span> <span class="st">&quot;Jane Austen&quot;</span>)</span>
+<span id="cb14-4"><a href="compare-word-frequency.html#cb14-4"></a>bronte &lt;-<span class="st"> </span><span class="kw">gutenberg_download</span>(<span class="kw">c</span>(<span class="dv">1260</span>, <span class="dv">768</span>, <span class="dv">969</span>, <span class="dv">9182</span>, <span class="dv">767</span>)) <span class="op">%&gt;%</span></span>
+<span id="cb14-5"><a href="compare-word-frequency.html#cb14-5"></a><span class="st">  </span><span class="kw">select</span>(<span class="op">-</span>gutenberg_id) <span class="op">%&gt;%</span><span class="st"> </span></span>
+<span id="cb14-6"><a href="compare-word-frequency.html#cb14-6"></a><span class="st">  </span><span class="kw">mutate</span>(<span class="dt">author =</span> <span class="st">&quot;Brontë Sisters&quot;</span>)</span>
+<span id="cb14-7"><a href="compare-word-frequency.html#cb14-7"></a>hgwells &lt;-<span class="st"> </span><span class="kw">gutenberg_download</span>(<span class="kw">c</span>(<span class="dv">35</span>, <span class="dv">36</span>, <span class="dv">5230</span>, <span class="dv">159</span>)) <span class="op">%&gt;%</span><span class="st"> </span></span>
+<span id="cb14-8"><a href="compare-word-frequency.html#cb14-8"></a><span class="st">  </span><span class="kw">select</span>(<span class="op">-</span>gutenberg_id) <span class="op">%&gt;%</span><span class="st"> </span></span>
+<span id="cb14-9"><a href="compare-word-frequency.html#cb14-9"></a><span class="st">  </span><span class="kw">mutate</span>(<span class="dt">author =</span> <span class="st">&quot;H.G. Wells&quot;</span>)</span>
+<span id="cb14-10"><a href="compare-word-frequency.html#cb14-10"></a></span>
+<span id="cb14-11"><a href="compare-word-frequency.html#cb14-11"></a>tidy_book &lt;-<span class="st"> </span><span class="cf">function</span>(author) {</span>
+<span id="cb14-12"><a href="compare-word-frequency.html#cb14-12"></a>  author <span class="op">%&gt;%</span><span class="st"> </span></span>
+<span id="cb14-13"><a href="compare-word-frequency.html#cb14-13"></a><span class="st">    </span><span class="kw">unnest_tokens</span>(word, text) <span class="op">%&gt;%</span><span class="st"> </span></span>
+<span id="cb14-14"><a href="compare-word-frequency.html#cb14-14"></a><span class="st">    </span><span class="kw">anti_join</span>(stop_words)</span>
+<span id="cb14-15"><a href="compare-word-frequency.html#cb14-15"></a>}</span>
+<span id="cb14-16"><a href="compare-word-frequency.html#cb14-16"></a></span>
+<span id="cb14-17"><a href="compare-word-frequency.html#cb14-17"></a></span>
+<span id="cb14-18"><a href="compare-word-frequency.html#cb14-18"></a></span>
+<span id="cb14-19"><a href="compare-word-frequency.html#cb14-19"></a>books &lt;-<span class="st"> </span><span class="kw">bind_rows</span>(<span class="kw">tidy_book</span>(austen),</span>
+<span id="cb14-20"><a href="compare-word-frequency.html#cb14-20"></a>          <span class="kw">tidy_book</span>(bronte),</span>
+<span id="cb14-21"><a href="compare-word-frequency.html#cb14-21"></a>          <span class="kw">tidy_book</span>(hgwells)) <span class="op">%&gt;%</span><span class="st"> </span></span>
+<span id="cb14-22"><a href="compare-word-frequency.html#cb14-22"></a><span class="st">  </span><span class="kw">mutate</span>(<span class="dt">word =</span> <span class="kw">str_extract</span>(word, <span class="st">&quot;[:alpha:]+&quot;</span>)) <span class="op">%&gt;%</span><span class="st"> </span></span>
+<span id="cb14-23"><a href="compare-word-frequency.html#cb14-23"></a><span class="st">  </span><span class="kw">count</span>(author, word, <span class="dt">sort =</span> <span class="ot">TRUE</span>)</span></code></pre></div>
+<div class="sourceCode" id="cb15"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb15-1"><a href="compare-word-frequency.html#cb15-1"></a>books</span>
+<span id="cb15-2"><a href="compare-word-frequency.html#cb15-2"></a><span class="co">#&gt; # A tibble: 46,956 x 3</span></span>
+<span id="cb15-3"><a href="compare-word-frequency.html#cb15-3"></a><span class="co">#&gt;   author         word       n</span></span>
+<span id="cb15-4"><a href="compare-word-frequency.html#cb15-4"></a><span class="co">#&gt;   &lt;chr&gt;          &lt;chr&gt;  &lt;int&gt;</span></span>
+<span id="cb15-5"><a href="compare-word-frequency.html#cb15-5"></a><span class="co">#&gt; 1 Jane Austen    miss    1860</span></span>
+<span id="cb15-6"><a href="compare-word-frequency.html#cb15-6"></a><span class="co">#&gt; 2 Jane Austen    time    1339</span></span>
+<span id="cb15-7"><a href="compare-word-frequency.html#cb15-7"></a><span class="co">#&gt; 3 Bront&lt;eb&gt; Sisters time    1065</span></span>
+<span id="cb15-8"><a href="compare-word-frequency.html#cb15-8"></a><span class="co">#&gt; 4 Jane Austen    fanny    977</span></span>
+<span id="cb15-9"><a href="compare-word-frequency.html#cb15-9"></a><span class="co">#&gt; 5 Jane Austen    emma     866</span></span>
+<span id="cb15-10"><a href="compare-word-frequency.html#cb15-10"></a><span class="co">#&gt; 6 Jane Austen    sister   865</span></span>
+<span id="cb15-11"><a href="compare-word-frequency.html#cb15-11"></a><span class="co">#&gt; # ... with 4.695e+04 more rows</span></span></code></pre></div>
 <p>Now, our goal is to use Jane Austen as a reference to which the other two authors are compared to in terms of word frequency. The data manipulation requires a bit trick, after computing proportions of word usage, we first <code>pivot_wider</code> three authors altogether, an then <code>pivot_longer</code> the other two authors back.</p>
-<div class="sourceCode" id="cb16"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb16-1" title="1">comparison_df &lt;-<span class="st"> </span>books <span class="op">%&gt;%</span></a>
-<a class="sourceLine" id="cb16-2" title="2"><span class="st">  </span><span class="kw">add_count</span>(author, <span class="dt">wt =</span> n, <span class="dt">name =</span> <span class="st">&quot;total_word&quot;</span>) <span class="op">%&gt;%</span><span class="st"> </span></a>
-<a class="sourceLine" id="cb16-3" title="3"><span class="st">  </span><span class="kw">mutate</span>(<span class="dt">proportion =</span> n <span class="op">/</span><span class="st"> </span>total_word) <span class="op">%&gt;%</span><span class="st"> </span></a>
-<a class="sourceLine" id="cb16-4" title="4"><span class="st">  </span><span class="kw">select</span>(<span class="op">-</span>total_word, <span class="op">-</span>n) <span class="op">%&gt;%</span><span class="st"> </span></a>
-<a class="sourceLine" id="cb16-5" title="5"><span class="st">  </span><span class="kw">pivot_wider</span>(<span class="dt">names_from =</span> author, <span class="dt">values_from =</span> proportion, </a>
-<a class="sourceLine" id="cb16-6" title="6">              <span class="dt">values_fill =</span> <span class="kw">list</span>(<span class="dt">proportion =</span> <span class="dv">0</span>)) <span class="op">%&gt;%</span></a>
-<a class="sourceLine" id="cb16-7" title="7"><span class="st">  </span><span class="kw">pivot_longer</span>(<span class="dv">3</span><span class="op">:</span><span class="dv">4</span>, <span class="dt">names_to =</span> <span class="st">&quot;other&quot;</span>, <span class="dt">values_to =</span> <span class="st">&quot;proportion&quot;</span>)</a>
-<a class="sourceLine" id="cb16-8" title="8"></a>
-<a class="sourceLine" id="cb16-9" title="9">comparison_df</a>
-<a class="sourceLine" id="cb16-10" title="10"><span class="co">#&gt; # A tibble: 56,002 x 4</span></a>
-<a class="sourceLine" id="cb16-11" title="11"><span class="co">#&gt;   word  `Jane Austen` other          proportion</span></a>
-<a class="sourceLine" id="cb16-12" title="12"><span class="co">#&gt;   &lt;chr&gt;         &lt;dbl&gt; &lt;chr&gt;               &lt;dbl&gt;</span></a>
-<a class="sourceLine" id="cb16-13" title="13"><span class="co">#&gt; 1 miss        0.00855 Brontë Sisters  0.00342  </span></a>
-<a class="sourceLine" id="cb16-14" title="14"><span class="co">#&gt; 2 miss        0.00855 H.G. Wells      0.000120 </span></a>
-<a class="sourceLine" id="cb16-15" title="15"><span class="co">#&gt; 3 time        0.00615 Brontë Sisters  0.00424  </span></a>
-<a class="sourceLine" id="cb16-16" title="16"><span class="co">#&gt; 4 time        0.00615 H.G. Wells      0.00682  </span></a>
-<a class="sourceLine" id="cb16-17" title="17"><span class="co">#&gt; 5 fanny       0.00449 Brontë Sisters  0.0000438</span></a>
-<a class="sourceLine" id="cb16-18" title="18"><span class="co">#&gt; 6 fanny       0.00449 H.G. Wells      0        </span></a>
-<a class="sourceLine" id="cb16-19" title="19"><span class="co">#&gt; # ... with 5.6e+04 more rows</span></a></code></pre></div>
-<div class="sourceCode" id="cb17"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb17-1" title="1"><span class="kw">library</span>(scales)</a>
-<a class="sourceLine" id="cb17-2" title="2"></a>
-<a class="sourceLine" id="cb17-3" title="3">comparison_df <span class="op">%&gt;%</span><span class="st"> </span></a>
-<a class="sourceLine" id="cb17-4" title="4"><span class="st">  </span><span class="kw">filter</span>(proportion <span class="op">&gt;</span><span class="st"> </span><span class="dv">1</span> <span class="op">/</span><span class="st"> </span><span class="fl">1e5</span>) <span class="op">%&gt;%</span><span class="st"> </span></a>
-<a class="sourceLine" id="cb17-5" title="5"><span class="st">  </span><span class="kw">ggplot</span>(<span class="kw">aes</span>(proportion, <span class="st">`</span><span class="dt">Jane Austen</span><span class="st">`</span>)) <span class="op">+</span></a>
-<a class="sourceLine" id="cb17-6" title="6"><span class="st">  </span><span class="kw">geom_abline</span>(<span class="dt">color =</span> <span class="st">&quot;gray40&quot;</span>, <span class="dt">lty =</span> <span class="dv">2</span>) <span class="op">+</span></a>
-<a class="sourceLine" id="cb17-7" title="7"><span class="st">  </span><span class="kw">geom_jitter</span>(<span class="kw">aes</span>(<span class="dt">color =</span> <span class="kw">abs</span>(<span class="st">`</span><span class="dt">Jane Austen</span><span class="st">`</span> <span class="op">-</span><span class="st"> </span>proportion)),</a>
-<a class="sourceLine" id="cb17-8" title="8">              <span class="dt">alpha =</span> <span class="fl">0.1</span>, <span class="dt">size =</span> <span class="fl">2.5</span>, <span class="dt">width =</span> <span class="fl">0.3</span>, <span class="dt">height =</span> <span class="fl">0.3</span>) <span class="op">+</span></a>
-<a class="sourceLine" id="cb17-9" title="9"><span class="st">  </span><span class="kw">geom_text</span>(<span class="kw">aes</span>(<span class="dt">label =</span> word), <span class="dt">check_overlap =</span> <span class="ot">TRUE</span>, <span class="dt">vjust =</span> <span class="fl">1.5</span>) <span class="op">+</span><span class="st"> </span></a>
-<a class="sourceLine" id="cb17-10" title="10"><span class="st">  </span><span class="kw">scale_x_log10</span>(<span class="dt">labels =</span> <span class="kw">label_percent</span>()) <span class="op">+</span></a>
-<a class="sourceLine" id="cb17-11" title="11"><span class="st">  </span><span class="kw">scale_y_log10</span>(<span class="dt">labels =</span> <span class="kw">label_percent</span>()) <span class="op">+</span><span class="st"> </span></a>
-<a class="sourceLine" id="cb17-12" title="12"><span class="st">  </span><span class="kw">scale_color_gradient</span>(<span class="dt">limits =</span> <span class="kw">c</span>(<span class="dv">0</span>, <span class="fl">0.001</span>), <span class="dt">low =</span> <span class="st">&quot;darkslategray4&quot;</span>, <span class="dt">high =</span> <span class="st">&quot;gray75&quot;</span>) <span class="op">+</span><span class="st"> </span></a>
-<a class="sourceLine" id="cb17-13" title="13"><span class="st">  </span><span class="kw">facet_wrap</span>(<span class="op">~</span><span class="st"> </span>other) <span class="op">+</span><span class="st"> </span></a>
-<a class="sourceLine" id="cb17-14" title="14"><span class="st">  </span><span class="kw">guides</span>(<span class="dt">color =</span> <span class="ot">FALSE</span>)</a></code></pre></div>
+<div class="sourceCode" id="cb16"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb16-1"><a href="compare-word-frequency.html#cb16-1"></a>comparison_df &lt;-<span class="st"> </span>books <span class="op">%&gt;%</span></span>
+<span id="cb16-2"><a href="compare-word-frequency.html#cb16-2"></a><span class="st">  </span><span class="kw">add_count</span>(author, <span class="dt">wt =</span> n, <span class="dt">name =</span> <span class="st">&quot;total_word&quot;</span>) <span class="op">%&gt;%</span><span class="st"> </span></span>
+<span id="cb16-3"><a href="compare-word-frequency.html#cb16-3"></a><span class="st">  </span><span class="kw">mutate</span>(<span class="dt">proportion =</span> n <span class="op">/</span><span class="st"> </span>total_word) <span class="op">%&gt;%</span><span class="st"> </span></span>
+<span id="cb16-4"><a href="compare-word-frequency.html#cb16-4"></a><span class="st">  </span><span class="kw">select</span>(<span class="op">-</span>total_word, <span class="op">-</span>n) <span class="op">%&gt;%</span><span class="st"> </span></span>
+<span id="cb16-5"><a href="compare-word-frequency.html#cb16-5"></a><span class="st">  </span><span class="kw">pivot_wider</span>(<span class="dt">names_from =</span> author, <span class="dt">values_from =</span> proportion, </span>
+<span id="cb16-6"><a href="compare-word-frequency.html#cb16-6"></a>              <span class="dt">values_fill =</span> <span class="kw">list</span>(<span class="dt">proportion =</span> <span class="dv">0</span>)) <span class="op">%&gt;%</span></span>
+<span id="cb16-7"><a href="compare-word-frequency.html#cb16-7"></a><span class="st">  </span><span class="kw">pivot_longer</span>(<span class="dv">3</span><span class="op">:</span><span class="dv">4</span>, <span class="dt">names_to =</span> <span class="st">&quot;other&quot;</span>, <span class="dt">values_to =</span> <span class="st">&quot;proportion&quot;</span>)</span>
+<span id="cb16-8"><a href="compare-word-frequency.html#cb16-8"></a></span>
+<span id="cb16-9"><a href="compare-word-frequency.html#cb16-9"></a>comparison_df</span>
+<span id="cb16-10"><a href="compare-word-frequency.html#cb16-10"></a><span class="co">#&gt; # A tibble: 56,002 x 4</span></span>
+<span id="cb16-11"><a href="compare-word-frequency.html#cb16-11"></a><span class="co">#&gt;   word  `Jane Austen` other          proportion</span></span>
+<span id="cb16-12"><a href="compare-word-frequency.html#cb16-12"></a><span class="co">#&gt;   &lt;chr&gt;         &lt;dbl&gt; &lt;chr&gt;               &lt;dbl&gt;</span></span>
+<span id="cb16-13"><a href="compare-word-frequency.html#cb16-13"></a><span class="co">#&gt; 1 miss        0.00855 Bront&lt;eb&gt; Sisters  0.00342  </span></span>
+<span id="cb16-14"><a href="compare-word-frequency.html#cb16-14"></a><span class="co">#&gt; 2 miss        0.00855 H.G. Wells      0.000120 </span></span>
+<span id="cb16-15"><a href="compare-word-frequency.html#cb16-15"></a><span class="co">#&gt; 3 time        0.00615 Bront&lt;eb&gt; Sisters  0.00424  </span></span>
+<span id="cb16-16"><a href="compare-word-frequency.html#cb16-16"></a><span class="co">#&gt; 4 time        0.00615 H.G. Wells      0.00682  </span></span>
+<span id="cb16-17"><a href="compare-word-frequency.html#cb16-17"></a><span class="co">#&gt; 5 fanny       0.00449 Bront&lt;eb&gt; Sisters  0.0000438</span></span>
+<span id="cb16-18"><a href="compare-word-frequency.html#cb16-18"></a><span class="co">#&gt; 6 fanny       0.00449 H.G. Wells      0        </span></span>
+<span id="cb16-19"><a href="compare-word-frequency.html#cb16-19"></a><span class="co">#&gt; # ... with 5.6e+04 more rows</span></span></code></pre></div>
+<div class="sourceCode" id="cb17"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb17-1"><a href="compare-word-frequency.html#cb17-1"></a><span class="kw">library</span>(scales)</span>
+<span id="cb17-2"><a href="compare-word-frequency.html#cb17-2"></a></span>
+<span id="cb17-3"><a href="compare-word-frequency.html#cb17-3"></a>comparison_df <span class="op">%&gt;%</span><span class="st"> </span></span>
+<span id="cb17-4"><a href="compare-word-frequency.html#cb17-4"></a><span class="st">  </span><span class="kw">filter</span>(proportion <span class="op">&gt;</span><span class="st"> </span><span class="dv">1</span> <span class="op">/</span><span class="st"> </span><span class="fl">1e5</span>) <span class="op">%&gt;%</span><span class="st"> </span></span>
+<span id="cb17-5"><a href="compare-word-frequency.html#cb17-5"></a><span class="st">  </span><span class="kw">ggplot</span>(<span class="kw">aes</span>(proportion, <span class="st">`</span><span class="dt">Jane Austen</span><span class="st">`</span>)) <span class="op">+</span></span>
+<span id="cb17-6"><a href="compare-word-frequency.html#cb17-6"></a><span class="st">  </span><span class="kw">geom_abline</span>(<span class="dt">color =</span> <span class="st">&quot;gray40&quot;</span>, <span class="dt">lty =</span> <span class="dv">2</span>) <span class="op">+</span></span>
+<span id="cb17-7"><a href="compare-word-frequency.html#cb17-7"></a><span class="st">  </span><span class="kw">geom_jitter</span>(<span class="kw">aes</span>(<span class="dt">color =</span> <span class="kw">abs</span>(<span class="st">`</span><span class="dt">Jane Austen</span><span class="st">`</span> <span class="op">-</span><span class="st"> </span>proportion)),</span>
+<span id="cb17-8"><a href="compare-word-frequency.html#cb17-8"></a>              <span class="dt">alpha =</span> <span class="fl">0.1</span>, <span class="dt">size =</span> <span class="fl">2.5</span>, <span class="dt">width =</span> <span class="fl">0.3</span>, <span class="dt">height =</span> <span class="fl">0.3</span>) <span class="op">+</span></span>
+<span id="cb17-9"><a href="compare-word-frequency.html#cb17-9"></a><span class="st">  </span><span class="kw">geom_text</span>(<span class="kw">aes</span>(<span class="dt">label =</span> word), <span class="dt">check_overlap =</span> <span class="ot">TRUE</span>, <span class="dt">vjust =</span> <span class="fl">1.5</span>) <span class="op">+</span><span class="st"> </span></span>
+<span id="cb17-10"><a href="compare-word-frequency.html#cb17-10"></a><span class="st">  </span><span class="kw">scale_x_log10</span>(<span class="dt">labels =</span> <span class="kw">label_percent</span>()) <span class="op">+</span></span>
+<span id="cb17-11"><a href="compare-word-frequency.html#cb17-11"></a><span class="st">  </span><span class="kw">scale_y_log10</span>(<span class="dt">labels =</span> <span class="kw">label_percent</span>()) <span class="op">+</span><span class="st"> </span></span>
+<span id="cb17-12"><a href="compare-word-frequency.html#cb17-12"></a><span class="st">  </span><span class="kw">scale_color_gradient</span>(<span class="dt">limits =</span> <span class="kw">c</span>(<span class="dv">0</span>, <span class="fl">0.001</span>), <span class="dt">low =</span> <span class="st">&quot;darkslategray4&quot;</span>, <span class="dt">high =</span> <span class="st">&quot;gray75&quot;</span>) <span class="op">+</span><span class="st"> </span></span>
+<span id="cb17-13"><a href="compare-word-frequency.html#cb17-13"></a><span class="st">  </span><span class="kw">facet_wrap</span>(<span class="op">~</span><span class="st"> </span>other) <span class="op">+</span><span class="st"> </span></span>
+<span id="cb17-14"><a href="compare-word-frequency.html#cb17-14"></a><span class="st">  </span><span class="kw">guides</span>(<span class="dt">color =</span> <span class="ot">FALSE</span>)</span></code></pre></div>
 <p><img src="tidytextformat_files/figure-html/unnamed-chunk-14-1.png" width="960" style="display: block; margin: auto;" /></p>
 <p>Words that are close to the line in these plots have similar frequencies in both sets of texts, for example, in both Austen and Brontë texts (“miss”, “time”, “day” at the upper frequency end) or in both Austen and Wells texts (“time”, “day”, “brother” at the high frequency end). Words that are far from the line are words that are found more in one set of texts than another. For example, in the Austen-Brontë panel, words like “elizabeth”, “emma”, and “fanny” (all proper nouns) are found in Austen’s texts but not much in the Brontë texts, while words like “arthur” and “dog” are found in the Brontë texts but not the Austen texts. In comparing H.G. Wells with Jane Austen, Wells uses words like “beast”, “guns”, “feet”, and “black” that Austen does not, while Austen uses words like “family”, “friend”, “letter”, and “dear” that Wells does not.</p>
 <p>Notice that the words in the Austen-Brontë panel are closer to the zero-slope line than in the Austen-Wells panel. Also notice that the words extend to lower frequencies in the Austen-Brontë panel; there is empty space in the Austen-Wells panel at low frequency. These characteristics indicate that Austen and the Brontë sisters use more similar words than Austen and H.G. Wells. Also, we see that not all the words are found in all three sets of texts and there are fewer data points in the panel for Austen and H.G. Wells.</p>
 <p>Furhter, we can conduct a simple correlation test</p>
-<div class="sourceCode" id="cb18"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb18-1" title="1"><span class="kw">cor.test</span>(<span class="dt">data =</span> <span class="kw">filter</span>(comparison_df, other <span class="op">==</span><span class="st"> &quot;Brontë Sisters&quot;</span>),</a>
-<a class="sourceLine" id="cb18-2" title="2">         <span class="op">~</span><span class="st"> </span>proportion <span class="op">+</span><span class="st"> `</span><span class="dt">Jane Austen</span><span class="st">`</span>)</a>
-<a class="sourceLine" id="cb18-3" title="3"><span class="co">#&gt; </span></a>
-<a class="sourceLine" id="cb18-4" title="4"><span class="co">#&gt;  Pearson&#39;s product-moment correlation</span></a>
-<a class="sourceLine" id="cb18-5" title="5"><span class="co">#&gt; </span></a>
-<a class="sourceLine" id="cb18-6" title="6"><span class="co">#&gt; data:  proportion and Jane Austen</span></a>
-<a class="sourceLine" id="cb18-7" title="7"><span class="co">#&gt; t = 169, df = 27999, p-value &lt;0.0000000000000002</span></a>
-<a class="sourceLine" id="cb18-8" title="8"><span class="co">#&gt; alternative hypothesis: true correlation is not equal to 0</span></a>
-<a class="sourceLine" id="cb18-9" title="9"><span class="co">#&gt; 95 percent confidence interval:</span></a>
-<a class="sourceLine" id="cb18-10" title="10"><span class="co">#&gt;  0.705 0.716</span></a>
-<a class="sourceLine" id="cb18-11" title="11"><span class="co">#&gt; sample estimates:</span></a>
-<a class="sourceLine" id="cb18-12" title="12"><span class="co">#&gt;   cor </span></a>
-<a class="sourceLine" id="cb18-13" title="13"><span class="co">#&gt; 0.711</span></a>
-<a class="sourceLine" id="cb18-14" title="14"></a>
-<a class="sourceLine" id="cb18-15" title="15"><span class="kw">cor.test</span>(<span class="dt">data =</span> <span class="kw">filter</span>(comparison_df, other <span class="op">==</span><span class="st"> &quot;H.G. Wells&quot;</span>),</a>
-<a class="sourceLine" id="cb18-16" title="16">         <span class="op">~</span><span class="st"> </span>proportion <span class="op">+</span><span class="st"> `</span><span class="dt">Jane Austen</span><span class="st">`</span>)</a>
-<a class="sourceLine" id="cb18-17" title="17"><span class="co">#&gt; </span></a>
-<a class="sourceLine" id="cb18-18" title="18"><span class="co">#&gt;  Pearson&#39;s product-moment correlation</span></a>
-<a class="sourceLine" id="cb18-19" title="19"><span class="co">#&gt; </span></a>
-<a class="sourceLine" id="cb18-20" title="20"><span class="co">#&gt; data:  proportion and Jane Austen</span></a>
-<a class="sourceLine" id="cb18-21" title="21"><span class="co">#&gt; t = 72, df = 27999, p-value &lt;0.0000000000000002</span></a>
-<a class="sourceLine" id="cb18-22" title="22"><span class="co">#&gt; alternative hypothesis: true correlation is not equal to 0</span></a>
-<a class="sourceLine" id="cb18-23" title="23"><span class="co">#&gt; 95 percent confidence interval:</span></a>
-<a class="sourceLine" id="cb18-24" title="24"><span class="co">#&gt;  0.383 0.403</span></a>
-<a class="sourceLine" id="cb18-25" title="25"><span class="co">#&gt; sample estimates:</span></a>
-<a class="sourceLine" id="cb18-26" title="26"><span class="co">#&gt;   cor </span></a>
-<a class="sourceLine" id="cb18-27" title="27"><span class="co">#&gt; 0.393</span></a></code></pre></div>
+<div class="sourceCode" id="cb18"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb18-1"><a href="compare-word-frequency.html#cb18-1"></a><span class="kw">cor.test</span>(<span class="dt">data =</span> <span class="kw">filter</span>(comparison_df, other <span class="op">==</span><span class="st"> &quot;Brontë Sisters&quot;</span>),</span>
+<span id="cb18-2"><a href="compare-word-frequency.html#cb18-2"></a>         <span class="op">~</span><span class="st"> </span>proportion <span class="op">+</span><span class="st"> `</span><span class="dt">Jane Austen</span><span class="st">`</span>)</span>
+<span id="cb18-3"><a href="compare-word-frequency.html#cb18-3"></a><span class="co">#&gt; </span></span>
+<span id="cb18-4"><a href="compare-word-frequency.html#cb18-4"></a><span class="co">#&gt; 	Pearson&#39;s product-moment correlation</span></span>
+<span id="cb18-5"><a href="compare-word-frequency.html#cb18-5"></a><span class="co">#&gt; </span></span>
+<span id="cb18-6"><a href="compare-word-frequency.html#cb18-6"></a><span class="co">#&gt; data:  proportion and Jane Austen</span></span>
+<span id="cb18-7"><a href="compare-word-frequency.html#cb18-7"></a><span class="co">#&gt; t = 169, df = 27999, p-value &lt;0.0000000000000002</span></span>
+<span id="cb18-8"><a href="compare-word-frequency.html#cb18-8"></a><span class="co">#&gt; alternative hypothesis: true correlation is not equal to 0</span></span>
+<span id="cb18-9"><a href="compare-word-frequency.html#cb18-9"></a><span class="co">#&gt; 95 percent confidence interval:</span></span>
+<span id="cb18-10"><a href="compare-word-frequency.html#cb18-10"></a><span class="co">#&gt;  0.705 0.716</span></span>
+<span id="cb18-11"><a href="compare-word-frequency.html#cb18-11"></a><span class="co">#&gt; sample estimates:</span></span>
+<span id="cb18-12"><a href="compare-word-frequency.html#cb18-12"></a><span class="co">#&gt;   cor </span></span>
+<span id="cb18-13"><a href="compare-word-frequency.html#cb18-13"></a><span class="co">#&gt; 0.711</span></span>
+<span id="cb18-14"><a href="compare-word-frequency.html#cb18-14"></a></span>
+<span id="cb18-15"><a href="compare-word-frequency.html#cb18-15"></a><span class="kw">cor.test</span>(<span class="dt">data =</span> <span class="kw">filter</span>(comparison_df, other <span class="op">==</span><span class="st"> &quot;H.G. Wells&quot;</span>),</span>
+<span id="cb18-16"><a href="compare-word-frequency.html#cb18-16"></a>         <span class="op">~</span><span class="st"> </span>proportion <span class="op">+</span><span class="st"> `</span><span class="dt">Jane Austen</span><span class="st">`</span>)</span>
+<span id="cb18-17"><a href="compare-word-frequency.html#cb18-17"></a><span class="co">#&gt; </span></span>
+<span id="cb18-18"><a href="compare-word-frequency.html#cb18-18"></a><span class="co">#&gt; 	Pearson&#39;s product-moment correlation</span></span>
+<span id="cb18-19"><a href="compare-word-frequency.html#cb18-19"></a><span class="co">#&gt; </span></span>
+<span id="cb18-20"><a href="compare-word-frequency.html#cb18-20"></a><span class="co">#&gt; data:  proportion and Jane Austen</span></span>
+<span id="cb18-21"><a href="compare-word-frequency.html#cb18-21"></a><span class="co">#&gt; t = 72, df = 27999, p-value &lt;0.0000000000000002</span></span>
+<span id="cb18-22"><a href="compare-word-frequency.html#cb18-22"></a><span class="co">#&gt; alternative hypothesis: true correlation is not equal to 0</span></span>
+<span id="cb18-23"><a href="compare-word-frequency.html#cb18-23"></a><span class="co">#&gt; 95 percent confidence interval:</span></span>
+<span id="cb18-24"><a href="compare-word-frequency.html#cb18-24"></a><span class="co">#&gt;  0.383 0.403</span></span>
+<span id="cb18-25"><a href="compare-word-frequency.html#cb18-25"></a><span class="co">#&gt; sample estimates:</span></span>
+<span id="cb18-26"><a href="compare-word-frequency.html#cb18-26"></a><span class="co">#&gt;   cor </span></span>
+<span id="cb18-27"><a href="compare-word-frequency.html#cb18-27"></a><span class="co">#&gt; 0.393</span></span></code></pre></div>
 </div>
             </section>
 

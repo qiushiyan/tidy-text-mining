@@ -6,7 +6,7 @@
   <meta http-equiv="X-UA-Compatible" content="IE=edge" />
   <title>5.3 Tidying corpus objects with metadata | Notes for “Text Mining with R: A Tidy Approach”</title>
   <meta name="description" content="5.3 Tidying corpus objects with metadata | Notes for “Text Mining with R: A Tidy Approach”" />
-  <meta name="generator" content="bookdown 0.18 and GitBook 2.6.7" />
+  <meta name="generator" content="bookdown 0.20 and GitBook 2.6.7" />
 
   <meta property="og:title" content="5.3 Tidying corpus objects with metadata | Notes for “Text Mining with R: A Tidy Approach”" />
   <meta property="og:type" content="book" />
@@ -24,7 +24,7 @@
 <meta name="author" content="Qiushi Yan" />
 
 
-<meta name="date" content="2020-05-11" />
+<meta name="date" content="2020-06-27" />
 
   <meta name="viewport" content="width=device-width, initial-scale=1" />
   <meta name="apple-mobile-web-app-capable" content="yes" />
@@ -50,15 +50,16 @@
 
 
 
+<script src="libs/accessible-code-block-0.0.1/empty-anchor.js"></script>
 <script src="libs/htmlwidgets-1.5.1/htmlwidgets.js"></script>
 <link href="libs/str_view-0.1.0/str_view.css" rel="stylesheet" />
 <script src="libs/str_view-binding-1.4.0/str_view.js"></script>
 
 
 <style type="text/css">
-a.sourceLine { display: inline-block; line-height: 1.25; }
-a.sourceLine { pointer-events: none; color: inherit; text-decoration: inherit; }
-a.sourceLine:empty { height: 1.2em; }
+code.sourceCode > span { display: inline-block; line-height: 1.25; }
+code.sourceCode > span { color: inherit; text-decoration: inherit; }
+code.sourceCode > span:empty { height: 1.2em; }
 .sourceCode { overflow: visible; }
 code.sourceCode { white-space: pre; position: relative; }
 pre.sourceCode { margin: 0; }
@@ -67,14 +68,16 @@ div.sourceCode { overflow: auto; }
 }
 @media print {
 code.sourceCode { white-space: pre-wrap; }
-a.sourceLine { text-indent: -1em; padding-left: 1em; }
+code.sourceCode > span { text-indent: -5em; padding-left: 5em; }
 }
-pre.numberSource a.sourceLine
-  { position: relative; left: -4em; }
-pre.numberSource a.sourceLine::before
-  { content: attr(title);
+pre.numberSource code
+  { counter-reset: source-line 0; }
+pre.numberSource code > span
+  { position: relative; left: -4em; counter-increment: source-line; }
+pre.numberSource code > span > a:first-child::before
+  { content: counter(source-line);
     position: relative; left: -1em; text-align: right; vertical-align: baseline;
-    border: none; pointer-events: all; display: inline-block;
+    border: none; display: inline-block;
     -webkit-touch-callout: none; -webkit-user-select: none;
     -khtml-user-select: none; -moz-user-select: none;
     -ms-user-select: none; user-select: none;
@@ -83,9 +86,9 @@ pre.numberSource a.sourceLine::before
   }
 pre.numberSource { margin-left: 3em; border-left: 1px solid #aaaaaa;  padding-left: 4px; }
 div.sourceCode
-  {  }
+  {   }
 @media screen {
-a.sourceLine::before { text-decoration: underline; }
+code.sourceCode > span > a:first-child::before { text-decoration: underline; }
 }
 code span.al { color: #ff0000; font-weight: bold; } /* Alert */
 code span.an { color: #60a0b0; font-weight: bold; font-style: italic; } /* Annotation */
@@ -235,49 +238,49 @@ code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } /* Warni
 <h2><span class="header-section-number">5.3</span> Tidying corpus objects with metadata</h2>
 <p>Notwithstanding discrepancies in their form, document term matrix and one-token-per-row data frame are exchangable for they both store the same information after tokenization. A corpus object, however, is a data structure for text data <strong>before</strong> tokenization. One common example is Corpus objects from the tm package. These store text alongside <strong>metadata</strong>, which may include an ID, date/time, title, or language for each document.</p>
 <p>The <code>tm</code> package comes with the <code>acq</code> corpus, containing 50 articles from the news service Reuters.</p>
-<div class="sourceCode" id="cb100"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb100-1" title="1"><span class="kw">data</span>(<span class="st">&quot;acq&quot;</span>)</a>
-<a class="sourceLine" id="cb100-2" title="2">acq</a>
-<a class="sourceLine" id="cb100-3" title="3"><span class="co">#&gt; &lt;&lt;VCorpus&gt;&gt;</span></a>
-<a class="sourceLine" id="cb100-4" title="4"><span class="co">#&gt; Metadata:  corpus specific: 0, document level (indexed): 0</span></a>
-<a class="sourceLine" id="cb100-5" title="5"><span class="co">#&gt; Content:  documents: 50</span></a></code></pre></div>
+<div class="sourceCode" id="cb100"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb100-1"><a href="tidying-corpus-objects-with-metadata.html#cb100-1"></a><span class="kw">data</span>(<span class="st">&quot;acq&quot;</span>)</span>
+<span id="cb100-2"><a href="tidying-corpus-objects-with-metadata.html#cb100-2"></a>acq</span>
+<span id="cb100-3"><a href="tidying-corpus-objects-with-metadata.html#cb100-3"></a><span class="co">#&gt; &lt;&lt;VCorpus&gt;&gt;</span></span>
+<span id="cb100-4"><a href="tidying-corpus-objects-with-metadata.html#cb100-4"></a><span class="co">#&gt; Metadata:  corpus specific: 0, document level (indexed): 0</span></span>
+<span id="cb100-5"><a href="tidying-corpus-objects-with-metadata.html#cb100-5"></a><span class="co">#&gt; Content:  documents: 50</span></span></code></pre></div>
 <p>A corpus object is structured like a list, with each item containing both text and metadata, wh.</p>
-<div class="sourceCode" id="cb101"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb101-1" title="1">acq[[<span class="dv">1</span>]]</a>
-<a class="sourceLine" id="cb101-2" title="2"><span class="co">#&gt; &lt;&lt;PlainTextDocument&gt;&gt;</span></a>
-<a class="sourceLine" id="cb101-3" title="3"><span class="co">#&gt; Metadata:  15</span></a>
-<a class="sourceLine" id="cb101-4" title="4"><span class="co">#&gt; Content:  chars: 1287</span></a>
-<a class="sourceLine" id="cb101-5" title="5">acq[[<span class="dv">1</span>]]<span class="op">$</span>content</a>
-<a class="sourceLine" id="cb101-6" title="6"><span class="co">#&gt; [1] &quot;Computer Terminal Systems Inc said\nit has completed the sale of 200,000 shares of its common\nstock, and warrants to acquire an additional one mln shares, to\n&lt;Sedio N.V.&gt; of Lugano, Switzerland for 50,000 dlrs.\n    The company said the warrants are exercisable for five\nyears at a purchase price of .125 dlrs per share.\n    Computer Terminal said Sedio also has the right to buy\nadditional shares and increase its total holdings up to 40 pct\nof the Computer Terminal&#39;s outstanding common stock under\ncertain circumstances involving change of control at the\ncompany.\n    The company said if the conditions occur the warrants would\nbe exercisable at a price equal to 75 pct of its common stock&#39;s\nmarket price at the time, not to exceed 1.50 dlrs per share.\n    Computer Terminal also said it sold the technolgy rights to\nits Dot Matrix impact technology, including any future\nimprovements, to &lt;Woodco Inc&gt; of Houston, Tex. for 200,000\ndlrs. But, it said it would continue to be the exclusive\nworldwide licensee of the technology for Woodco.\n    The company said the moves were part of its reorganization\nplan and would help pay current operation costs and ensure\nproduct delivery.\n    Computer Terminal makes computer generated labels, forms,\ntags and ticket printers and terminals.\n Reuter&quot;</span></a>
-<a class="sourceLine" id="cb101-7" title="7">acq[[<span class="dv">1</span>]]<span class="op">$</span>meta</a>
-<a class="sourceLine" id="cb101-8" title="8"><span class="co">#&gt;   author       : character(0)</span></a>
-<a class="sourceLine" id="cb101-9" title="9"><span class="co">#&gt;   datetimestamp: 1987-02-26 15:18:06</span></a>
-<a class="sourceLine" id="cb101-10" title="10"><span class="co">#&gt;   description  : </span></a>
-<a class="sourceLine" id="cb101-11" title="11"><span class="co">#&gt;   heading      : COMPUTER TERMINAL SYSTEMS &lt;CPML&gt; COMPLETES SALE</span></a>
-<a class="sourceLine" id="cb101-12" title="12"><span class="co">#&gt;   id           : 10</span></a>
-<a class="sourceLine" id="cb101-13" title="13"><span class="co">#&gt;   language     : en</span></a>
-<a class="sourceLine" id="cb101-14" title="14"><span class="co">#&gt;   origin       : Reuters-21578 XML</span></a>
-<a class="sourceLine" id="cb101-15" title="15"><span class="co">#&gt;   topics       : YES</span></a>
-<a class="sourceLine" id="cb101-16" title="16"><span class="co">#&gt;   lewissplit   : TRAIN</span></a>
-<a class="sourceLine" id="cb101-17" title="17"><span class="co">#&gt;   cgisplit     : TRAINING-SET</span></a>
-<a class="sourceLine" id="cb101-18" title="18"><span class="co">#&gt;   oldid        : 5553</span></a>
-<a class="sourceLine" id="cb101-19" title="19"><span class="co">#&gt;   places       : usa</span></a>
-<a class="sourceLine" id="cb101-20" title="20"><span class="co">#&gt;   people       : character(0)</span></a>
-<a class="sourceLine" id="cb101-21" title="21"><span class="co">#&gt;   orgs         : character(0)</span></a>
-<a class="sourceLine" id="cb101-22" title="22"><span class="co">#&gt;   exchanges    : character(0)</span></a></code></pre></div>
+<div class="sourceCode" id="cb101"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb101-1"><a href="tidying-corpus-objects-with-metadata.html#cb101-1"></a>acq[[<span class="dv">1</span>]]</span>
+<span id="cb101-2"><a href="tidying-corpus-objects-with-metadata.html#cb101-2"></a><span class="co">#&gt; &lt;&lt;PlainTextDocument&gt;&gt;</span></span>
+<span id="cb101-3"><a href="tidying-corpus-objects-with-metadata.html#cb101-3"></a><span class="co">#&gt; Metadata:  15</span></span>
+<span id="cb101-4"><a href="tidying-corpus-objects-with-metadata.html#cb101-4"></a><span class="co">#&gt; Content:  chars: 1287</span></span>
+<span id="cb101-5"><a href="tidying-corpus-objects-with-metadata.html#cb101-5"></a>acq[[<span class="dv">1</span>]]<span class="op">$</span>content</span>
+<span id="cb101-6"><a href="tidying-corpus-objects-with-metadata.html#cb101-6"></a><span class="co">#&gt; [1] &quot;Computer Terminal Systems Inc said\nit has completed the sale of 200,000 shares of its common\nstock, and warrants to acquire an additional one mln shares, to\n&lt;Sedio N.V.&gt; of Lugano, Switzerland for 50,000 dlrs.\n    The company said the warrants are exercisable for five\nyears at a purchase price of .125 dlrs per share.\n    Computer Terminal said Sedio also has the right to buy\nadditional shares and increase its total holdings up to 40 pct\nof the Computer Terminal&#39;s outstanding common stock under\ncertain circumstances involving change of control at the\ncompany.\n    The company said if the conditions occur the warrants would\nbe exercisable at a price equal to 75 pct of its common stock&#39;s\nmarket price at the time, not to exceed 1.50 dlrs per share.\n    Computer Terminal also said it sold the technolgy rights to\nits Dot Matrix impact technology, including any future\nimprovements, to &lt;Woodco Inc&gt; of Houston, Tex. for 200,000\ndlrs. But, it said it would continue to be the exclusive\nworldwide licensee of the technology for Woodco.\n    The company said the moves were part of its reorganization\nplan and would help pay current operation costs and ensure\nproduct delivery.\n    Computer Terminal makes computer generated labels, forms,\ntags and ticket printers and terminals.\n Reuter&quot;</span></span>
+<span id="cb101-7"><a href="tidying-corpus-objects-with-metadata.html#cb101-7"></a>acq[[<span class="dv">1</span>]]<span class="op">$</span>meta</span>
+<span id="cb101-8"><a href="tidying-corpus-objects-with-metadata.html#cb101-8"></a><span class="co">#&gt;   author       : character(0)</span></span>
+<span id="cb101-9"><a href="tidying-corpus-objects-with-metadata.html#cb101-9"></a><span class="co">#&gt;   datetimestamp: 1987-02-26 15:18:06</span></span>
+<span id="cb101-10"><a href="tidying-corpus-objects-with-metadata.html#cb101-10"></a><span class="co">#&gt;   description  : </span></span>
+<span id="cb101-11"><a href="tidying-corpus-objects-with-metadata.html#cb101-11"></a><span class="co">#&gt;   heading      : COMPUTER TERMINAL SYSTEMS &lt;CPML&gt; COMPLETES SALE</span></span>
+<span id="cb101-12"><a href="tidying-corpus-objects-with-metadata.html#cb101-12"></a><span class="co">#&gt;   id           : 10</span></span>
+<span id="cb101-13"><a href="tidying-corpus-objects-with-metadata.html#cb101-13"></a><span class="co">#&gt;   language     : en</span></span>
+<span id="cb101-14"><a href="tidying-corpus-objects-with-metadata.html#cb101-14"></a><span class="co">#&gt;   origin       : Reuters-21578 XML</span></span>
+<span id="cb101-15"><a href="tidying-corpus-objects-with-metadata.html#cb101-15"></a><span class="co">#&gt;   topics       : YES</span></span>
+<span id="cb101-16"><a href="tidying-corpus-objects-with-metadata.html#cb101-16"></a><span class="co">#&gt;   lewissplit   : TRAIN</span></span>
+<span id="cb101-17"><a href="tidying-corpus-objects-with-metadata.html#cb101-17"></a><span class="co">#&gt;   cgisplit     : TRAINING-SET</span></span>
+<span id="cb101-18"><a href="tidying-corpus-objects-with-metadata.html#cb101-18"></a><span class="co">#&gt;   oldid        : 5553</span></span>
+<span id="cb101-19"><a href="tidying-corpus-objects-with-metadata.html#cb101-19"></a><span class="co">#&gt;   places       : usa</span></span>
+<span id="cb101-20"><a href="tidying-corpus-objects-with-metadata.html#cb101-20"></a><span class="co">#&gt;   people       : character(0)</span></span>
+<span id="cb101-21"><a href="tidying-corpus-objects-with-metadata.html#cb101-21"></a><span class="co">#&gt;   orgs         : character(0)</span></span>
+<span id="cb101-22"><a href="tidying-corpus-objects-with-metadata.html#cb101-22"></a><span class="co">#&gt;   exchanges    : character(0)</span></span></code></pre></div>
 <p>We can thus use the <code>tidy()</code> method to construct a table with one row per document, including the metadata</p>
-<div class="sourceCode" id="cb102"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb102-1" title="1">acq_tidy &lt;-<span class="st"> </span><span class="kw">tidy</span>(acq)</a>
-<a class="sourceLine" id="cb102-2" title="2">acq_tidy</a>
-<a class="sourceLine" id="cb102-3" title="3"><span class="co">#&gt; # A tibble: 50 x 16</span></a>
-<a class="sourceLine" id="cb102-4" title="4"><span class="co">#&gt;   author datetimestamp       description heading id    language origin topics</span></a>
-<a class="sourceLine" id="cb102-5" title="5"><span class="co">#&gt;   &lt;chr&gt;  &lt;dttm&gt;              &lt;chr&gt;       &lt;chr&gt;   &lt;chr&gt; &lt;chr&gt;    &lt;chr&gt;  &lt;chr&gt; </span></a>
-<a class="sourceLine" id="cb102-6" title="6"><span class="co">#&gt; 1 &lt;NA&gt;   1987-02-26 23:18:06 &quot;&quot;          COMPUT~ 10    en       Reute~ YES   </span></a>
-<a class="sourceLine" id="cb102-7" title="7"><span class="co">#&gt; 2 &lt;NA&gt;   1987-02-26 23:19:15 &quot;&quot;          OHIO M~ 12    en       Reute~ YES   </span></a>
-<a class="sourceLine" id="cb102-8" title="8"><span class="co">#&gt; 3 &lt;NA&gt;   1987-02-26 23:49:56 &quot;&quot;          MCLEAN~ 44    en       Reute~ YES   </span></a>
-<a class="sourceLine" id="cb102-9" title="9"><span class="co">#&gt; 4 By Ca~ 1987-02-26 23:51:17 &quot;&quot;          CHEMLA~ 45    en       Reute~ YES   </span></a>
-<a class="sourceLine" id="cb102-10" title="10"><span class="co">#&gt; 5 &lt;NA&gt;   1987-02-27 00:08:33 &quot;&quot;          &lt;COFAB~ 68    en       Reute~ YES   </span></a>
-<a class="sourceLine" id="cb102-11" title="11"><span class="co">#&gt; 6 &lt;NA&gt;   1987-02-27 00:32:37 &quot;&quot;          INVEST~ 96    en       Reute~ YES   </span></a>
-<a class="sourceLine" id="cb102-12" title="12"><span class="co">#&gt; # ... with 44 more rows, and 8 more variables: lewissplit &lt;chr&gt;,</span></a>
-<a class="sourceLine" id="cb102-13" title="13"><span class="co">#&gt; #   cgisplit &lt;chr&gt;, oldid &lt;chr&gt;, places &lt;named list&gt;, people &lt;lgl&gt;, orgs &lt;lgl&gt;,</span></a>
-<a class="sourceLine" id="cb102-14" title="14"><span class="co">#&gt; #   exchanges &lt;lgl&gt;, text &lt;chr&gt;</span></a></code></pre></div>
+<div class="sourceCode" id="cb102"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb102-1"><a href="tidying-corpus-objects-with-metadata.html#cb102-1"></a>acq_tidy &lt;-<span class="st"> </span><span class="kw">tidy</span>(acq)</span>
+<span id="cb102-2"><a href="tidying-corpus-objects-with-metadata.html#cb102-2"></a>acq_tidy</span>
+<span id="cb102-3"><a href="tidying-corpus-objects-with-metadata.html#cb102-3"></a><span class="co">#&gt; # A tibble: 50 x 16</span></span>
+<span id="cb102-4"><a href="tidying-corpus-objects-with-metadata.html#cb102-4"></a><span class="co">#&gt;   author datetimestamp       description heading id    language origin topics</span></span>
+<span id="cb102-5"><a href="tidying-corpus-objects-with-metadata.html#cb102-5"></a><span class="co">#&gt;   &lt;chr&gt;  &lt;dttm&gt;              &lt;chr&gt;       &lt;chr&gt;   &lt;chr&gt; &lt;chr&gt;    &lt;chr&gt;  &lt;chr&gt; </span></span>
+<span id="cb102-6"><a href="tidying-corpus-objects-with-metadata.html#cb102-6"></a><span class="co">#&gt; 1 &lt;NA&gt;   1987-02-26 23:18:06 &quot;&quot;          COMPUT~ 10    en       Reute~ YES   </span></span>
+<span id="cb102-7"><a href="tidying-corpus-objects-with-metadata.html#cb102-7"></a><span class="co">#&gt; 2 &lt;NA&gt;   1987-02-26 23:19:15 &quot;&quot;          OHIO M~ 12    en       Reute~ YES   </span></span>
+<span id="cb102-8"><a href="tidying-corpus-objects-with-metadata.html#cb102-8"></a><span class="co">#&gt; 3 &lt;NA&gt;   1987-02-26 23:49:56 &quot;&quot;          MCLEAN~ 44    en       Reute~ YES   </span></span>
+<span id="cb102-9"><a href="tidying-corpus-objects-with-metadata.html#cb102-9"></a><span class="co">#&gt; 4 By Ca~ 1987-02-26 23:51:17 &quot;&quot;          CHEMLA~ 45    en       Reute~ YES   </span></span>
+<span id="cb102-10"><a href="tidying-corpus-objects-with-metadata.html#cb102-10"></a><span class="co">#&gt; 5 &lt;NA&gt;   1987-02-27 00:08:33 &quot;&quot;          &lt;COFAB~ 68    en       Reute~ YES   </span></span>
+<span id="cb102-11"><a href="tidying-corpus-objects-with-metadata.html#cb102-11"></a><span class="co">#&gt; 6 &lt;NA&gt;   1987-02-27 00:32:37 &quot;&quot;          INVEST~ 96    en       Reute~ YES   </span></span>
+<span id="cb102-12"><a href="tidying-corpus-objects-with-metadata.html#cb102-12"></a><span class="co">#&gt; # ... with 44 more rows, and 8 more variables: lewissplit &lt;chr&gt;,</span></span>
+<span id="cb102-13"><a href="tidying-corpus-objects-with-metadata.html#cb102-13"></a><span class="co">#&gt; #   cgisplit &lt;chr&gt;, oldid &lt;chr&gt;, places &lt;named list&gt;, people &lt;lgl&gt;, orgs &lt;lgl&gt;,</span></span>
+<span id="cb102-14"><a href="tidying-corpus-objects-with-metadata.html#cb102-14"></a><span class="co">#&gt; #   exchanges &lt;lgl&gt;, text &lt;chr&gt;</span></span></code></pre></div>
 
 </div>
 <!-- </div> -->

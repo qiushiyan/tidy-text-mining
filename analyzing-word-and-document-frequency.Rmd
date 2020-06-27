@@ -229,23 +229,23 @@ $$
 \log{O_{w}^i} = \log{\frac{f_w^i}{1 - f_w^i}} 
 $$
 
-Logging the odds ratio provides a measure that is symmetric when comparing the usage of word $w$ across different documents. **Log odds ratio** of word $w$ between document $i$ and $j$ is 
+Taking the log of the odds ratio provides a measure that is symmetric when comparing the usage of word $w$ across different documents. **Log odds ratio** of word $w$ between document $i$ and $j$ is 
 
 $$
 \log{\frac{O_{w}^i}{O_w^j}} = \log{\frac{f_w^i}{1 - f_w^i} / \frac{f_w^j}{1 - f_w^j}} = \log{\frac{f_w^i}{1 - f_w^i}} - log{\frac{f_w^j}{1 - f_w^j}} 
 $$
 A problem is that, when some word $w$ is only presented in document $i$, among other documents in the corpus, odds ratio will have zero denominator and the metric goes to infinity. One solution is to "add a little bit to the zeroes", in which smoothed word frequency is defined as $\tilde{f_w^i}  = f_w^i + \varepsilon$. 
 
-Note that regardless of the zero treatment, words with hightest log odds ratio are often obscure ones. The problem is again the failure to account for sampling variability. **With logodds ratios, the sampling variation goes down with increased frequency**. So that different words are not comparable.  
+Note that regardless of the zero treatment, words with highest log odds ratio are often obscure ones. The problem is again the failure to account for sampling variability. **With logodds ratios, the sampling variation goes down with increased frequency**. So that different words are not comparable.  
 
 A common response to this is to set some frequency "threshold" for features to ‘‘qualify’’ for consideration. For example, we only compute log odds ratio on words that appears at least 10 times. 
 
 ### Model-based approach: Weighted log odds ratio  
 
 
-[Monroe, Colaresi, and Quinn](https://www.cambridge.org/core/journals/political-analysis/article/fightin-words-lexical-feature-selection-and-evaluation-for-identifying-the-content-of-political-conflict/81B3703230D21620B81EB6E2266C7A66) then proposed a model-basded approach where the choice of word $w$ are modelled as a function oof document $P(w |j)$. In general, the strategy is to first model word usage in the full collection of documents and to then investigate how subgroup-specific word usage diverges from that in the full collection of documents.  
+[Monroe, Colaresi, and Quinn](https://www.cambridge.org/core/journals/political-analysis/article/fightin-words-lexical-feature-selection-and-evaluation-for-identifying-the-content-of-political-conflict/81B3703230D21620B81EB6E2266C7A66) then proposed a model-based approach where the choice of word $w$ are modeled as a function of document $P(w |j)$. In general, the strategy is to first model word usage in the full collection of documents and to then investigate how subgroup-specific word usage diverges from that in the full collection of documents.  
 
-First, the moel assumes that the W-vector $\boldsymbol{y}$ follows a multinomial distribution
+First, the model assumes that the W-vector $\boldsymbol{y}$ follows a multinomial distribution
 
 $$
 \boldsymbol{y} \sim \text{Multinomial}(n, \boldsymbol{\pi})
@@ -286,7 +286,7 @@ multinomial distribution, the Dirichlet:
 $$
 \boldsymbol{\pi} \sim \text{Dirichlet}(\boldsymbol{\alpha})
 $$
-where $\boldsymbol{\alpha}$ is a W-vector of parameters with each element $\alpha_w > 0$. There is a nice interpretation of $\alpha_w$, that is, use of any particular Dirichlet prior defined by $\boldsymbol{\alpha}$ affects the posterior exactly as if we had observed in the data an additional $\alpha_w – 1$ instances of word $w$. It follows this is a uninformative prior if all $\alpha_w$s are identitcal.  
+where $\boldsymbol{\alpha}$ is a W-vector of parameters with each element $\alpha_w > 0$. There is a nice interpretation of $\alpha_w$, that is, use of any particular Dirichlet prior defined by $\boldsymbol{\alpha}$ affects the posterior exactly as if we had observed in the data an additional $\alpha_w – 1$ instances of word $w$. It follows this is a uninformative prior if all $\alpha_w$s are identical.  
 
 Due to the conjugacy, the full Bayesian estimate using the Dirichlet prior is also analytically available in analogous form:  
 

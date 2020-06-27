@@ -6,7 +6,7 @@
   <meta http-equiv="X-UA-Compatible" content="IE=edge" />
   <title>Notes for “Text Mining with R: A Tidy Approach”</title>
   <meta name="description" content="Notes for “Text Mining with R: A Tidy Approach”" />
-  <meta name="generator" content="bookdown 0.18 and GitBook 2.6.7" />
+  <meta name="generator" content="bookdown 0.20 and GitBook 2.6.7" />
 
   <meta property="og:title" content="Notes for “Text Mining with R: A Tidy Approach”" />
   <meta property="og:type" content="book" />
@@ -24,7 +24,7 @@
 <meta name="author" content="Qiushi Yan" />
 
 
-<meta name="date" content="2020-05-11" />
+<meta name="date" content="2020-06-27" />
 
   <meta name="viewport" content="width=device-width, initial-scale=1" />
   <meta name="apple-mobile-web-app-capable" content="yes" />
@@ -50,15 +50,16 @@
 
 
 
+<script src="libs/accessible-code-block-0.0.1/empty-anchor.js"></script>
 <script src="libs/htmlwidgets-1.5.1/htmlwidgets.js"></script>
 <link href="libs/str_view-0.1.0/str_view.css" rel="stylesheet" />
 <script src="libs/str_view-binding-1.4.0/str_view.js"></script>
 
 
 <style type="text/css">
-a.sourceLine { display: inline-block; line-height: 1.25; }
-a.sourceLine { pointer-events: none; color: inherit; text-decoration: inherit; }
-a.sourceLine:empty { height: 1.2em; }
+code.sourceCode > span { display: inline-block; line-height: 1.25; }
+code.sourceCode > span { color: inherit; text-decoration: inherit; }
+code.sourceCode > span:empty { height: 1.2em; }
 .sourceCode { overflow: visible; }
 code.sourceCode { white-space: pre; position: relative; }
 pre.sourceCode { margin: 0; }
@@ -67,14 +68,16 @@ div.sourceCode { overflow: auto; }
 }
 @media print {
 code.sourceCode { white-space: pre-wrap; }
-a.sourceLine { text-indent: -1em; padding-left: 1em; }
+code.sourceCode > span { text-indent: -5em; padding-left: 5em; }
 }
-pre.numberSource a.sourceLine
-  { position: relative; left: -4em; }
-pre.numberSource a.sourceLine::before
-  { content: attr(title);
+pre.numberSource code
+  { counter-reset: source-line 0; }
+pre.numberSource code > span
+  { position: relative; left: -4em; counter-increment: source-line; }
+pre.numberSource code > span > a:first-child::before
+  { content: counter(source-line);
     position: relative; left: -1em; text-align: right; vertical-align: baseline;
-    border: none; pointer-events: all; display: inline-block;
+    border: none; display: inline-block;
     -webkit-touch-callout: none; -webkit-user-select: none;
     -khtml-user-select: none; -moz-user-select: none;
     -ms-user-select: none; user-select: none;
@@ -83,9 +86,9 @@ pre.numberSource a.sourceLine::before
   }
 pre.numberSource { margin-left: 3em; border-left: 1px solid #aaaaaa;  padding-left: 4px; }
 div.sourceCode
-  {  }
+  {   }
 @media screen {
-a.sourceLine::before { text-decoration: underline; }
+code.sourceCode > span > a:first-child::before { text-decoration: underline; }
 }
 code span.al { color: #ff0000; font-weight: bold; } /* Alert */
 code span.an { color: #60a0b0; font-weight: bold; font-style: italic; } /* Annotation */
@@ -234,59 +237,59 @@ code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } /* Warni
 <div id="header">
 <h1 class="title">Notes for “Text Mining with R: A Tidy Approach”</h1>
 <p class="author"><em>Qiushi Yan</em></p>
-<p class="date"><em>2020-05-11</em></p>
+<p class="date"><em>2020-06-27</em></p>
 </div>
 <div id="preface" class="section level1 unnumbered">
 <h1>Preface</h1>
 <p>This is a notebook concerning <a href="https://www.tidytextmining.com/">Text Mining with R: A Tidy Approach</a><span class="citation">(Silge and Robinson <a href="references.html#ref-10.5555/3165010" role="doc-biblioref">2017</a>)</span>.</p>
 <p><code>tidyverse</code> and <code>tidytext</code> are automatically loaded before each chapter:</p>
-<div class="sourceCode" id="cb1"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb1-1" title="1"><span class="kw">library</span>(tidyverse)</a>
-<a class="sourceLine" id="cb1-2" title="2"><span class="kw">library</span>(tidytext)</a></code></pre></div>
+<div class="sourceCode" id="cb1"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb1-1"><a href="index.html#cb1-1"></a><span class="kw">library</span>(tidyverse)</span>
+<span id="cb1-2"><a href="index.html#cb1-2"></a><span class="kw">library</span>(tidytext)</span></code></pre></div>
 <p>I have defined a simiple function, <code>facet_bar()</code> to meet the frequent need in this book to make a facetted bar plot, with the <code>y</code> variable reordered by <code>x</code> in each facet <code>by</code>:</p>
-<div class="sourceCode" id="cb2"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb2-1" title="1">facet_bar &lt;-<span class="st"> </span><span class="cf">function</span>(df, y, x, by, <span class="dt">nrow =</span> <span class="dv">2</span>, <span class="dt">ncol =</span> <span class="dv">2</span>, <span class="dt">scales =</span> <span class="st">&quot;free&quot;</span>) {</a>
-<a class="sourceLine" id="cb2-2" title="2">  mapping &lt;-<span class="st"> </span><span class="kw">aes</span>(<span class="dt">y =</span> <span class="kw">reorder_within</span>({{ y }}, {{ x }}, {{ by }}), </a>
-<a class="sourceLine" id="cb2-3" title="3">                 <span class="dt">x =</span> {{ x }}, </a>
-<a class="sourceLine" id="cb2-4" title="4">                 <span class="dt">fill =</span> {{ by }})</a>
-<a class="sourceLine" id="cb2-5" title="5">  </a>
-<a class="sourceLine" id="cb2-6" title="6">  facet &lt;-<span class="st"> </span><span class="kw">facet_wrap</span>(<span class="kw">vars</span>({{ by }}), </a>
-<a class="sourceLine" id="cb2-7" title="7">                      <span class="dt">nrow =</span> nrow, </a>
-<a class="sourceLine" id="cb2-8" title="8">                      <span class="dt">ncol =</span> ncol,</a>
-<a class="sourceLine" id="cb2-9" title="9">                      <span class="dt">scales =</span> scales) </a>
-<a class="sourceLine" id="cb2-10" title="10">  </a>
-<a class="sourceLine" id="cb2-11" title="11">  <span class="kw">ggplot</span>(df, <span class="dt">mapping =</span> mapping) <span class="op">+</span><span class="st"> </span></a>
-<a class="sourceLine" id="cb2-12" title="12"><span class="st">    </span><span class="kw">geom_col</span>(<span class="dt">show.legend =</span> <span class="ot">FALSE</span>) <span class="op">+</span><span class="st"> </span></a>
-<a class="sourceLine" id="cb2-13" title="13"><span class="st">    </span><span class="kw">scale_y_reordered</span>() <span class="op">+</span><span class="st"> </span></a>
-<a class="sourceLine" id="cb2-14" title="14"><span class="st">    </span>facet <span class="op">+</span><span class="st"> </span></a>
-<a class="sourceLine" id="cb2-15" title="15"><span class="st">    </span><span class="kw">ylab</span>(<span class="st">&quot;&quot;</span>)</a>
-<a class="sourceLine" id="cb2-16" title="16">} </a></code></pre></div>
+<div class="sourceCode" id="cb2"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb2-1"><a href="index.html#cb2-1"></a>facet_bar &lt;-<span class="st"> </span><span class="cf">function</span>(df, y, x, by, <span class="dt">nrow =</span> <span class="dv">2</span>, <span class="dt">ncol =</span> <span class="dv">2</span>, <span class="dt">scales =</span> <span class="st">&quot;free&quot;</span>) {</span>
+<span id="cb2-2"><a href="index.html#cb2-2"></a>  mapping &lt;-<span class="st"> </span><span class="kw">aes</span>(<span class="dt">y =</span> <span class="kw">reorder_within</span>({{ y }}, {{ x }}, {{ by }}), </span>
+<span id="cb2-3"><a href="index.html#cb2-3"></a>                 <span class="dt">x =</span> {{ x }}, </span>
+<span id="cb2-4"><a href="index.html#cb2-4"></a>                 <span class="dt">fill =</span> {{ by }})</span>
+<span id="cb2-5"><a href="index.html#cb2-5"></a>  </span>
+<span id="cb2-6"><a href="index.html#cb2-6"></a>  facet &lt;-<span class="st"> </span><span class="kw">facet_wrap</span>(<span class="kw">vars</span>({{ by }}), </span>
+<span id="cb2-7"><a href="index.html#cb2-7"></a>                      <span class="dt">nrow =</span> nrow, </span>
+<span id="cb2-8"><a href="index.html#cb2-8"></a>                      <span class="dt">ncol =</span> ncol,</span>
+<span id="cb2-9"><a href="index.html#cb2-9"></a>                      <span class="dt">scales =</span> scales) </span>
+<span id="cb2-10"><a href="index.html#cb2-10"></a>  </span>
+<span id="cb2-11"><a href="index.html#cb2-11"></a>  <span class="kw">ggplot</span>(df, <span class="dt">mapping =</span> mapping) <span class="op">+</span><span class="st"> </span></span>
+<span id="cb2-12"><a href="index.html#cb2-12"></a><span class="st">    </span><span class="kw">geom_col</span>(<span class="dt">show.legend =</span> <span class="ot">FALSE</span>) <span class="op">+</span><span class="st"> </span></span>
+<span id="cb2-13"><a href="index.html#cb2-13"></a><span class="st">    </span><span class="kw">scale_y_reordered</span>() <span class="op">+</span><span class="st"> </span></span>
+<span id="cb2-14"><a href="index.html#cb2-14"></a><span class="st">    </span>facet <span class="op">+</span><span class="st"> </span></span>
+<span id="cb2-15"><a href="index.html#cb2-15"></a><span class="st">    </span><span class="kw">ylab</span>(<span class="st">&quot;&quot;</span>)</span>
+<span id="cb2-16"><a href="index.html#cb2-16"></a>} </span></code></pre></div>
 <p>As a quick demostration of this function, we can plot the top 10 common words in Jane Austen’s six books:</p>
-<div class="sourceCode" id="cb3"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb3-1" title="1">austen_common &lt;-<span class="st"> </span>janeaustenr<span class="op">::</span><span class="kw">austen_books</span>() <span class="op">%&gt;%</span><span class="st"> </span></a>
-<a class="sourceLine" id="cb3-2" title="2"><span class="st">  </span><span class="kw">unnest_tokens</span>(word, text) <span class="op">%&gt;%</span><span class="st"> </span></a>
-<a class="sourceLine" id="cb3-3" title="3"><span class="st">  </span><span class="kw">anti_join</span>(stop_words) <span class="op">%&gt;%</span><span class="st"> </span></a>
-<a class="sourceLine" id="cb3-4" title="4"><span class="st">  </span><span class="kw">count</span>(book, word) <span class="op">%&gt;%</span><span class="st"> </span></a>
-<a class="sourceLine" id="cb3-5" title="5"><span class="st">  </span><span class="kw">group_by</span>(book) <span class="op">%&gt;%</span><span class="st"> </span></a>
-<a class="sourceLine" id="cb3-6" title="6"><span class="st">  </span><span class="kw">top_n</span>(<span class="dv">10</span>) <span class="op">%&gt;%</span><span class="st"> </span></a>
-<a class="sourceLine" id="cb3-7" title="7"><span class="st">  </span><span class="kw">ungroup</span>()</a>
-<a class="sourceLine" id="cb3-8" title="8"></a>
-<a class="sourceLine" id="cb3-9" title="9">austen_common</a>
-<a class="sourceLine" id="cb3-10" title="10"><span class="co">#&gt; # A tibble: 60 x 3</span></a>
-<a class="sourceLine" id="cb3-11" title="11"><span class="co">#&gt;   book                word         n</span></a>
-<a class="sourceLine" id="cb3-12" title="12"><span class="co">#&gt;   &lt;fct&gt;               &lt;chr&gt;    &lt;int&gt;</span></a>
-<a class="sourceLine" id="cb3-13" title="13"><span class="co">#&gt; 1 Sense &amp; Sensibility dashwood   231</span></a>
-<a class="sourceLine" id="cb3-14" title="14"><span class="co">#&gt; 2 Sense &amp; Sensibility edward     220</span></a>
-<a class="sourceLine" id="cb3-15" title="15"><span class="co">#&gt; 3 Sense &amp; Sensibility elinor     623</span></a>
-<a class="sourceLine" id="cb3-16" title="16"><span class="co">#&gt; 4 Sense &amp; Sensibility jennings   199</span></a>
-<a class="sourceLine" id="cb3-17" title="17"><span class="co">#&gt; 5 Sense &amp; Sensibility marianne   492</span></a>
-<a class="sourceLine" id="cb3-18" title="18"><span class="co">#&gt; 6 Sense &amp; Sensibility miss       210</span></a>
-<a class="sourceLine" id="cb3-19" title="19"><span class="co">#&gt; # ... with 54 more rows</span></a></code></pre></div>
-<div class="sourceCode" id="cb4"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb4-1" title="1"><span class="co"># make a bar plot </span></a>
-<a class="sourceLine" id="cb4-2" title="2"><span class="kw">facet_bar</span>(austen_common,</a>
-<a class="sourceLine" id="cb4-3" title="3">          <span class="dt">y =</span> word,</a>
-<a class="sourceLine" id="cb4-4" title="4">          <span class="dt">x =</span> n,</a>
-<a class="sourceLine" id="cb4-5" title="5">          <span class="dt">by =</span> book,</a>
-<a class="sourceLine" id="cb4-6" title="6">          <span class="dt">nrow =</span> <span class="dv">3</span>) <span class="op">+</span><span class="st"> </span></a>
-<a class="sourceLine" id="cb4-7" title="7"><span class="st">  </span><span class="kw">labs</span>(<span class="dt">title =</span> <span class="st">&quot;Top 10 common words in Jane Austen&#39;s novels&quot;</span>,</a>
-<a class="sourceLine" id="cb4-8" title="8">       <span class="dt">x =</span> <span class="st">&quot;&quot;</span>)</a></code></pre></div>
+<div class="sourceCode" id="cb3"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb3-1"><a href="index.html#cb3-1"></a>austen_common &lt;-<span class="st"> </span>janeaustenr<span class="op">::</span><span class="kw">austen_books</span>() <span class="op">%&gt;%</span><span class="st"> </span></span>
+<span id="cb3-2"><a href="index.html#cb3-2"></a><span class="st">  </span><span class="kw">unnest_tokens</span>(word, text) <span class="op">%&gt;%</span><span class="st"> </span></span>
+<span id="cb3-3"><a href="index.html#cb3-3"></a><span class="st">  </span><span class="kw">anti_join</span>(stop_words) <span class="op">%&gt;%</span><span class="st"> </span></span>
+<span id="cb3-4"><a href="index.html#cb3-4"></a><span class="st">  </span><span class="kw">count</span>(book, word) <span class="op">%&gt;%</span><span class="st"> </span></span>
+<span id="cb3-5"><a href="index.html#cb3-5"></a><span class="st">  </span><span class="kw">group_by</span>(book) <span class="op">%&gt;%</span><span class="st"> </span></span>
+<span id="cb3-6"><a href="index.html#cb3-6"></a><span class="st">  </span><span class="kw">top_n</span>(<span class="dv">10</span>) <span class="op">%&gt;%</span><span class="st"> </span></span>
+<span id="cb3-7"><a href="index.html#cb3-7"></a><span class="st">  </span><span class="kw">ungroup</span>()</span>
+<span id="cb3-8"><a href="index.html#cb3-8"></a></span>
+<span id="cb3-9"><a href="index.html#cb3-9"></a>austen_common</span>
+<span id="cb3-10"><a href="index.html#cb3-10"></a><span class="co">#&gt; # A tibble: 60 x 3</span></span>
+<span id="cb3-11"><a href="index.html#cb3-11"></a><span class="co">#&gt;   book                word         n</span></span>
+<span id="cb3-12"><a href="index.html#cb3-12"></a><span class="co">#&gt;   &lt;fct&gt;               &lt;chr&gt;    &lt;int&gt;</span></span>
+<span id="cb3-13"><a href="index.html#cb3-13"></a><span class="co">#&gt; 1 Sense &amp; Sensibility dashwood   231</span></span>
+<span id="cb3-14"><a href="index.html#cb3-14"></a><span class="co">#&gt; 2 Sense &amp; Sensibility edward     220</span></span>
+<span id="cb3-15"><a href="index.html#cb3-15"></a><span class="co">#&gt; 3 Sense &amp; Sensibility elinor     623</span></span>
+<span id="cb3-16"><a href="index.html#cb3-16"></a><span class="co">#&gt; 4 Sense &amp; Sensibility jennings   199</span></span>
+<span id="cb3-17"><a href="index.html#cb3-17"></a><span class="co">#&gt; 5 Sense &amp; Sensibility marianne   492</span></span>
+<span id="cb3-18"><a href="index.html#cb3-18"></a><span class="co">#&gt; 6 Sense &amp; Sensibility miss       210</span></span>
+<span id="cb3-19"><a href="index.html#cb3-19"></a><span class="co">#&gt; # ... with 54 more rows</span></span></code></pre></div>
+<div class="sourceCode" id="cb4"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb4-1"><a href="index.html#cb4-1"></a><span class="co"># make a bar plot </span></span>
+<span id="cb4-2"><a href="index.html#cb4-2"></a><span class="kw">facet_bar</span>(austen_common,</span>
+<span id="cb4-3"><a href="index.html#cb4-3"></a>          <span class="dt">y =</span> word,</span>
+<span id="cb4-4"><a href="index.html#cb4-4"></a>          <span class="dt">x =</span> n,</span>
+<span id="cb4-5"><a href="index.html#cb4-5"></a>          <span class="dt">by =</span> book,</span>
+<span id="cb4-6"><a href="index.html#cb4-6"></a>          <span class="dt">nrow =</span> <span class="dv">3</span>) <span class="op">+</span><span class="st"> </span></span>
+<span id="cb4-7"><a href="index.html#cb4-7"></a><span class="st">  </span><span class="kw">labs</span>(<span class="dt">title =</span> <span class="st">&quot;Top 10 common words in Jane Austen&#39;s novels&quot;</span>,</span>
+<span id="cb4-8"><a href="index.html#cb4-8"></a>       <span class="dt">x =</span> <span class="st">&quot;&quot;</span>)</span></code></pre></div>
 <p><img src="index_files/figure-html/unnamed-chunk-4-1.png" width="768" style="display: block; margin: auto;" /></p>
 
 </div>

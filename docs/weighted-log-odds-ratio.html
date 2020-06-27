@@ -6,7 +6,7 @@
   <meta http-equiv="X-UA-Compatible" content="IE=edge" />
   <title>3.2 Weighted log odds ratio | Notes for “Text Mining with R: A Tidy Approach”</title>
   <meta name="description" content="3.2 Weighted log odds ratio | Notes for “Text Mining with R: A Tidy Approach”" />
-  <meta name="generator" content="bookdown 0.18 and GitBook 2.6.7" />
+  <meta name="generator" content="bookdown 0.20 and GitBook 2.6.7" />
 
   <meta property="og:title" content="3.2 Weighted log odds ratio | Notes for “Text Mining with R: A Tidy Approach”" />
   <meta property="og:type" content="book" />
@@ -24,7 +24,7 @@
 <meta name="author" content="Qiushi Yan" />
 
 
-<meta name="date" content="2020-05-11" />
+<meta name="date" content="2020-06-27" />
 
   <meta name="viewport" content="width=device-width, initial-scale=1" />
   <meta name="apple-mobile-web-app-capable" content="yes" />
@@ -50,15 +50,16 @@
 
 
 
+<script src="libs/accessible-code-block-0.0.1/empty-anchor.js"></script>
 <script src="libs/htmlwidgets-1.5.1/htmlwidgets.js"></script>
 <link href="libs/str_view-0.1.0/str_view.css" rel="stylesheet" />
 <script src="libs/str_view-binding-1.4.0/str_view.js"></script>
 
 
 <style type="text/css">
-a.sourceLine { display: inline-block; line-height: 1.25; }
-a.sourceLine { pointer-events: none; color: inherit; text-decoration: inherit; }
-a.sourceLine:empty { height: 1.2em; }
+code.sourceCode > span { display: inline-block; line-height: 1.25; }
+code.sourceCode > span { color: inherit; text-decoration: inherit; }
+code.sourceCode > span:empty { height: 1.2em; }
 .sourceCode { overflow: visible; }
 code.sourceCode { white-space: pre; position: relative; }
 pre.sourceCode { margin: 0; }
@@ -67,14 +68,16 @@ div.sourceCode { overflow: auto; }
 }
 @media print {
 code.sourceCode { white-space: pre-wrap; }
-a.sourceLine { text-indent: -1em; padding-left: 1em; }
+code.sourceCode > span { text-indent: -5em; padding-left: 5em; }
 }
-pre.numberSource a.sourceLine
-  { position: relative; left: -4em; }
-pre.numberSource a.sourceLine::before
-  { content: attr(title);
+pre.numberSource code
+  { counter-reset: source-line 0; }
+pre.numberSource code > span
+  { position: relative; left: -4em; counter-increment: source-line; }
+pre.numberSource code > span > a:first-child::before
+  { content: counter(source-line);
     position: relative; left: -1em; text-align: right; vertical-align: baseline;
-    border: none; pointer-events: all; display: inline-block;
+    border: none; display: inline-block;
     -webkit-touch-callout: none; -webkit-user-select: none;
     -khtml-user-select: none; -moz-user-select: none;
     -ms-user-select: none; user-select: none;
@@ -83,9 +86,9 @@ pre.numberSource a.sourceLine::before
   }
 pre.numberSource { margin-left: 3em; border-left: 1px solid #aaaaaa;  padding-left: 4px; }
 div.sourceCode
-  {  }
+  {   }
 @media screen {
-a.sourceLine::before { text-decoration: underline; }
+code.sourceCode > span > a:first-child::before { text-decoration: underline; }
 }
 code span.al { color: #ff0000; font-weight: bold; } /* Alert */
 code span.an { color: #60a0b0; font-weight: bold; font-style: italic; } /* Annotation */
@@ -240,18 +243,18 @@ code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } /* Warni
 <p><span class="math display">\[
 \log{O_{w}^i} = \log{\frac{f_w^i}{1 - f_w^i}} 
 \]</span></p>
-<p>Logging the odds ratio provides a measure that is symmetric when comparing the usage of word <span class="math inline">\(w\)</span> across different documents. <strong>Log odds ratio</strong> of word <span class="math inline">\(w\)</span> between document <span class="math inline">\(i\)</span> and <span class="math inline">\(j\)</span> is</p>
+<p>Taking the log of the odds ratio provides a measure that is symmetric when comparing the usage of word <span class="math inline">\(w\)</span> across different documents. <strong>Log odds ratio</strong> of word <span class="math inline">\(w\)</span> between document <span class="math inline">\(i\)</span> and <span class="math inline">\(j\)</span> is</p>
 <p><span class="math display">\[
 \log{\frac{O_{w}^i}{O_w^j}} = \log{\frac{f_w^i}{1 - f_w^i} / \frac{f_w^j}{1 - f_w^j}} = \log{\frac{f_w^i}{1 - f_w^i}} - log{\frac{f_w^j}{1 - f_w^j}} 
 \]</span>
 A problem is that, when some word <span class="math inline">\(w\)</span> is only presented in document <span class="math inline">\(i\)</span>, among other documents in the corpus, odds ratio will have zero denominator and the metric goes to infinity. One solution is to “add a little bit to the zeroes”, in which smoothed word frequency is defined as <span class="math inline">\(\tilde{f_w^i} = f_w^i + \varepsilon\)</span>.</p>
-<p>Note that regardless of the zero treatment, words with hightest log odds ratio are often obscure ones. The problem is again the failure to account for sampling variability. <strong>With logodds ratios, the sampling variation goes down with increased frequency</strong>. So that different words are not comparable.</p>
+<p>Note that regardless of the zero treatment, words with highest log odds ratio are often obscure ones. The problem is again the failure to account for sampling variability. <strong>With logodds ratios, the sampling variation goes down with increased frequency</strong>. So that different words are not comparable.</p>
 <p>A common response to this is to set some frequency “threshold” for features to ‘‘qualify’’ for consideration. For example, we only compute log odds ratio on words that appears at least 10 times.</p>
 </div>
 <div id="model-based-approach-weighted-log-odds-ratio" class="section level3">
 <h3><span class="header-section-number">3.2.2</span> Model-based approach: Weighted log odds ratio</h3>
-<p><a href="https://www.cambridge.org/core/journals/political-analysis/article/fightin-words-lexical-feature-selection-and-evaluation-for-identifying-the-content-of-political-conflict/81B3703230D21620B81EB6E2266C7A66">Monroe, Colaresi, and Quinn</a> then proposed a model-basded approach where the choice of word <span class="math inline">\(w\)</span> are modelled as a function oof document <span class="math inline">\(P(w |j)\)</span>. In general, the strategy is to first model word usage in the full collection of documents and to then investigate how subgroup-specific word usage diverges from that in the full collection of documents.</p>
-<p>First, the moel assumes that the W-vector <span class="math inline">\(\boldsymbol{y}\)</span> follows a multinomial distribution</p>
+<p><a href="https://www.cambridge.org/core/journals/political-analysis/article/fightin-words-lexical-feature-selection-and-evaluation-for-identifying-the-content-of-political-conflict/81B3703230D21620B81EB6E2266C7A66">Monroe, Colaresi, and Quinn</a> then proposed a model-based approach where the choice of word <span class="math inline">\(w\)</span> are modeled as a function of document <span class="math inline">\(P(w |j)\)</span>. In general, the strategy is to first model word usage in the full collection of documents and to then investigate how subgroup-specific word usage diverges from that in the full collection of documents.</p>
+<p>First, the model assumes that the W-vector <span class="math inline">\(\boldsymbol{y}\)</span> follows a multinomial distribution</p>
 <p><span class="math display">\[
 \boldsymbol{y} \sim \text{Multinomial}(n, \boldsymbol{\pi})
 \]</span>
@@ -279,7 +282,7 @@ multinomial distribution, the Dirichlet:</p>
 <p><span class="math display">\[
 \boldsymbol{\pi} \sim \text{Dirichlet}(\boldsymbol{\alpha})
 \]</span>
-where <span class="math inline">\(\boldsymbol{\alpha}\)</span> is a W-vector of parameters with each element <span class="math inline">\(\alpha_w &gt; 0\)</span>. There is a nice interpretation of <span class="math inline">\(\alpha_w\)</span>, that is, use of any particular Dirichlet prior defined by <span class="math inline">\(\boldsymbol{\alpha}\)</span> affects the posterior exactly as if we had observed in the data an additional <span class="math inline">\(\alpha_w – 1\)</span> instances of word <span class="math inline">\(w\)</span>. It follows this is a uninformative prior if all <span class="math inline">\(\alpha_w\)</span>s are identitcal.</p>
+where <span class="math inline">\(\boldsymbol{\alpha}\)</span> is a W-vector of parameters with each element <span class="math inline">\(\alpha_w &gt; 0\)</span>. There is a nice interpretation of <span class="math inline">\(\alpha_w\)</span>, that is, use of any particular Dirichlet prior defined by <span class="math inline">\(\boldsymbol{\alpha}\)</span> affects the posterior exactly as if we had observed in the data an additional <span class="math inline">\(\alpha_w – 1\)</span> instances of word <span class="math inline">\(w\)</span>. It follows this is a uninformative prior if all <span class="math inline">\(\alpha_w\)</span>s are identical.</p>
 <p>Due to the conjugacy, the full Bayesian estimate using the Dirichlet prior is also analytically available in analogous form:</p>
 <p><span class="math display">\[
 \boldsymbol{\hat{\pi}} = \frac{(\boldsymbol{y} + \boldsymbol{\alpha})}{n + \alpha_0}
@@ -310,40 +313,40 @@ The final standardized statistic for a word <span class="math inline">\(w\)</spa
 <h3><span class="header-section-number">3.2.4</span> <code>bind_log_odds()</code></h3>
 <p>There is an <a href="https://github.com/juliasilge/tidylo/issues/3">issue</a> suggesting that <code>tidylo</code> is still experimental. However, it did provide a ussful function <code>bind_log_odds()</code> that implemented the weighted log odds we dicussed above, and it seems that it currently uses the marginal distributions (i.e., distribution of words across all documents combined) to construct an informative Dirichlet prior.</p>
 <p>The data structure <code>bind_log_odds()</code> requires is the same with <code>bind_tf_idf()</code></p>
-<div class="sourceCode" id="cb57"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb57-1" title="1"><span class="kw">library</span>(tidylo)</a>
-<a class="sourceLine" id="cb57-2" title="2"></a>
-<a class="sourceLine" id="cb57-3" title="3">book_words <span class="op">%&gt;%</span><span class="st"> </span></a>
-<a class="sourceLine" id="cb57-4" title="4"><span class="st">  </span><span class="kw">bind_log_odds</span>(<span class="dt">set =</span> book, <span class="dt">feature =</span> word, <span class="dt">n =</span> n) <span class="op">%&gt;%</span></a>
-<a class="sourceLine" id="cb57-5" title="5"><span class="st">  </span><span class="kw">arrange</span>(<span class="kw">desc</span>(log_odds))</a>
-<a class="sourceLine" id="cb57-6" title="6"><span class="co">#&gt; # A tibble: 40,379 x 7</span></a>
-<a class="sourceLine" id="cb57-7" title="7"><span class="co">#&gt;   book                word          n      tf   idf   tf_idf log_odds</span></a>
-<a class="sourceLine" id="cb57-8" title="8"><span class="co">#&gt;   &lt;fct&gt;               &lt;chr&gt;     &lt;int&gt;   &lt;dbl&gt; &lt;dbl&gt;    &lt;dbl&gt;    &lt;dbl&gt;</span></a>
-<a class="sourceLine" id="cb57-9" title="9"><span class="co">#&gt; 1 Emma                emma        786 0.00488 1.10  0.00536      24.5</span></a>
-<a class="sourceLine" id="cb57-10" title="10"><span class="co">#&gt; 2 Mansfield Park      fanny       816 0.00509 0.693 0.00352      24.1</span></a>
-<a class="sourceLine" id="cb57-11" title="11"><span class="co">#&gt; 3 Sense &amp; Sensibility elinor      623 0.00519 1.79  0.00931      23.4</span></a>
-<a class="sourceLine" id="cb57-12" title="12"><span class="co">#&gt; 4 Pride &amp; Prejudice   elizabeth   597 0.00489 0.693 0.00339      21.0</span></a>
-<a class="sourceLine" id="cb57-13" title="13"><span class="co">#&gt; 5 Sense &amp; Sensibility marianne    492 0.00410 1.79  0.00735      20.8</span></a>
-<a class="sourceLine" id="cb57-14" title="14"><span class="co">#&gt; 6 Persuasion          anne        447 0.00534 0.182 0.000974     20.6</span></a>
-<a class="sourceLine" id="cb57-15" title="15"><span class="co">#&gt; # ... with 4.037e+04 more rows</span></a></code></pre></div>
+<div class="sourceCode" id="cb57"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb57-1"><a href="weighted-log-odds-ratio.html#cb57-1"></a><span class="kw">library</span>(tidylo)</span>
+<span id="cb57-2"><a href="weighted-log-odds-ratio.html#cb57-2"></a></span>
+<span id="cb57-3"><a href="weighted-log-odds-ratio.html#cb57-3"></a>book_words <span class="op">%&gt;%</span><span class="st"> </span></span>
+<span id="cb57-4"><a href="weighted-log-odds-ratio.html#cb57-4"></a><span class="st">  </span><span class="kw">bind_log_odds</span>(<span class="dt">set =</span> book, <span class="dt">feature =</span> word, <span class="dt">n =</span> n) <span class="op">%&gt;%</span></span>
+<span id="cb57-5"><a href="weighted-log-odds-ratio.html#cb57-5"></a><span class="st">  </span><span class="kw">arrange</span>(<span class="kw">desc</span>(log_odds))</span>
+<span id="cb57-6"><a href="weighted-log-odds-ratio.html#cb57-6"></a><span class="co">#&gt; # A tibble: 40,379 x 7</span></span>
+<span id="cb57-7"><a href="weighted-log-odds-ratio.html#cb57-7"></a><span class="co">#&gt;   book                word          n      tf   idf   tf_idf log_odds</span></span>
+<span id="cb57-8"><a href="weighted-log-odds-ratio.html#cb57-8"></a><span class="co">#&gt;   &lt;fct&gt;               &lt;chr&gt;     &lt;int&gt;   &lt;dbl&gt; &lt;dbl&gt;    &lt;dbl&gt;    &lt;dbl&gt;</span></span>
+<span id="cb57-9"><a href="weighted-log-odds-ratio.html#cb57-9"></a><span class="co">#&gt; 1 Emma                emma        786 0.00488 1.10  0.00536      24.5</span></span>
+<span id="cb57-10"><a href="weighted-log-odds-ratio.html#cb57-10"></a><span class="co">#&gt; 2 Mansfield Park      fanny       816 0.00509 0.693 0.00352      24.1</span></span>
+<span id="cb57-11"><a href="weighted-log-odds-ratio.html#cb57-11"></a><span class="co">#&gt; 3 Sense &amp; Sensibility elinor      623 0.00519 1.79  0.00931      23.4</span></span>
+<span id="cb57-12"><a href="weighted-log-odds-ratio.html#cb57-12"></a><span class="co">#&gt; 4 Pride &amp; Prejudice   elizabeth   597 0.00489 0.693 0.00339      21.0</span></span>
+<span id="cb57-13"><a href="weighted-log-odds-ratio.html#cb57-13"></a><span class="co">#&gt; 5 Sense &amp; Sensibility marianne    492 0.00410 1.79  0.00735      20.8</span></span>
+<span id="cb57-14"><a href="weighted-log-odds-ratio.html#cb57-14"></a><span class="co">#&gt; 6 Persuasion          anne        447 0.00534 0.182 0.000974     20.6</span></span>
+<span id="cb57-15"><a href="weighted-log-odds-ratio.html#cb57-15"></a><span class="co">#&gt; # ... with 4.037e+04 more rows</span></span></code></pre></div>
 <p>Now let’s compare the result between tf-idf and weighted log odds in a subset of <code>book_words</code></p>
-<div class="sourceCode" id="cb58"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb58-1" title="1">words_tf_idf &lt;-<span class="st"> </span>book_words <span class="op">%&gt;%</span></a>
-<a class="sourceLine" id="cb58-2" title="2"><span class="st">  </span><span class="kw">filter</span>(book <span class="op">%in%</span><span class="st"> </span><span class="kw">c</span>(<span class="st">&quot;Emma&quot;</span>, <span class="st">&quot;Pride &amp; Prejudice&quot;</span>, <span class="st">&quot;Persuasion&quot;</span>)) <span class="op">%&gt;%</span><span class="st"> </span></a>
-<a class="sourceLine" id="cb58-3" title="3"><span class="st">  </span><span class="kw">bind_tf_idf</span>(<span class="dt">term =</span> word, <span class="dt">document =</span> book, <span class="dt">n =</span> n) <span class="op">%&gt;%</span></a>
-<a class="sourceLine" id="cb58-4" title="4"><span class="st">  </span><span class="kw">group_by</span>(book) <span class="op">%&gt;%</span><span class="st"> </span></a>
-<a class="sourceLine" id="cb58-5" title="5"><span class="st">  </span><span class="kw">top_n</span>(<span class="dv">10</span>) <span class="op">%&gt;%</span></a>
-<a class="sourceLine" id="cb58-6" title="6"><span class="st">  </span><span class="kw">ungroup</span>() <span class="op">%&gt;%</span><span class="st"> </span></a>
-<a class="sourceLine" id="cb58-7" title="7"><span class="st">  </span><span class="kw">facet_bar</span>(<span class="dt">y =</span> word, <span class="dt">x =</span> tf_idf, <span class="dt">by =</span> book, <span class="dt">ncol =</span> <span class="dv">3</span>) <span class="op">+</span><span class="st"> </span></a>
-<a class="sourceLine" id="cb58-8" title="8"><span class="st">  </span><span class="kw">labs</span>(<span class="dt">title =</span> <span class="st">&quot;Top 10 words picked tf-idf&quot;</span>)</a>
-<a class="sourceLine" id="cb58-9" title="9"></a>
-<a class="sourceLine" id="cb58-10" title="10">words_wlo &lt;-<span class="st"> </span>book_words <span class="op">%&gt;%</span></a>
-<a class="sourceLine" id="cb58-11" title="11"><span class="st">  </span><span class="kw">filter</span>(book <span class="op">%in%</span><span class="st"> </span><span class="kw">c</span>(<span class="st">&quot;Emma&quot;</span>, <span class="st">&quot;Pride &amp; Prejudice&quot;</span>, <span class="st">&quot;Persuasion&quot;</span>)) <span class="op">%&gt;%</span><span class="st"> </span></a>
-<a class="sourceLine" id="cb58-12" title="12"><span class="st">  </span><span class="kw">bind_log_odds</span>(<span class="dt">feature =</span> word, <span class="dt">set =</span> book, <span class="dt">n =</span> n) <span class="op">%&gt;%</span></a>
-<a class="sourceLine" id="cb58-13" title="13"><span class="st">  </span><span class="kw">group_by</span>(book) <span class="op">%&gt;%</span><span class="st"> </span></a>
-<a class="sourceLine" id="cb58-14" title="14"><span class="st">  </span><span class="kw">top_n</span>(<span class="dv">10</span>) <span class="op">%&gt;%</span></a>
-<a class="sourceLine" id="cb58-15" title="15"><span class="st">  </span><span class="kw">ungroup</span>() <span class="op">%&gt;%</span><span class="st"> </span></a>
-<a class="sourceLine" id="cb58-16" title="16"><span class="st">  </span><span class="kw">facet_bar</span>(<span class="dt">y =</span> word, <span class="dt">x =</span> log_odds, <span class="dt">by =</span> book, <span class="dt">ncol =</span> <span class="dv">3</span>) <span class="op">+</span><span class="st"> </span></a>
-<a class="sourceLine" id="cb58-17" title="17"><span class="st">  </span><span class="kw">labs</span>(<span class="dt">title =</span> <span class="st">&quot;Top 10 words picked by weighted log odds&quot;</span>)</a></code></pre></div>
-<div class="sourceCode" id="cb59"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb59-1" title="1"><span class="kw">wrap_plots</span>(words_tf_idf, words_wlo)</a></code></pre></div>
+<div class="sourceCode" id="cb58"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb58-1"><a href="weighted-log-odds-ratio.html#cb58-1"></a>words_tf_idf &lt;-<span class="st"> </span>book_words <span class="op">%&gt;%</span></span>
+<span id="cb58-2"><a href="weighted-log-odds-ratio.html#cb58-2"></a><span class="st">  </span><span class="kw">filter</span>(book <span class="op">%in%</span><span class="st"> </span><span class="kw">c</span>(<span class="st">&quot;Emma&quot;</span>, <span class="st">&quot;Pride &amp; Prejudice&quot;</span>, <span class="st">&quot;Persuasion&quot;</span>)) <span class="op">%&gt;%</span><span class="st"> </span></span>
+<span id="cb58-3"><a href="weighted-log-odds-ratio.html#cb58-3"></a><span class="st">  </span><span class="kw">bind_tf_idf</span>(<span class="dt">term =</span> word, <span class="dt">document =</span> book, <span class="dt">n =</span> n) <span class="op">%&gt;%</span></span>
+<span id="cb58-4"><a href="weighted-log-odds-ratio.html#cb58-4"></a><span class="st">  </span><span class="kw">group_by</span>(book) <span class="op">%&gt;%</span><span class="st"> </span></span>
+<span id="cb58-5"><a href="weighted-log-odds-ratio.html#cb58-5"></a><span class="st">  </span><span class="kw">top_n</span>(<span class="dv">10</span>) <span class="op">%&gt;%</span></span>
+<span id="cb58-6"><a href="weighted-log-odds-ratio.html#cb58-6"></a><span class="st">  </span><span class="kw">ungroup</span>() <span class="op">%&gt;%</span><span class="st"> </span></span>
+<span id="cb58-7"><a href="weighted-log-odds-ratio.html#cb58-7"></a><span class="st">  </span><span class="kw">facet_bar</span>(<span class="dt">y =</span> word, <span class="dt">x =</span> tf_idf, <span class="dt">by =</span> book, <span class="dt">ncol =</span> <span class="dv">3</span>) <span class="op">+</span><span class="st"> </span></span>
+<span id="cb58-8"><a href="weighted-log-odds-ratio.html#cb58-8"></a><span class="st">  </span><span class="kw">labs</span>(<span class="dt">title =</span> <span class="st">&quot;Top 10 words picked tf-idf&quot;</span>)</span>
+<span id="cb58-9"><a href="weighted-log-odds-ratio.html#cb58-9"></a></span>
+<span id="cb58-10"><a href="weighted-log-odds-ratio.html#cb58-10"></a>words_wlo &lt;-<span class="st"> </span>book_words <span class="op">%&gt;%</span></span>
+<span id="cb58-11"><a href="weighted-log-odds-ratio.html#cb58-11"></a><span class="st">  </span><span class="kw">filter</span>(book <span class="op">%in%</span><span class="st"> </span><span class="kw">c</span>(<span class="st">&quot;Emma&quot;</span>, <span class="st">&quot;Pride &amp; Prejudice&quot;</span>, <span class="st">&quot;Persuasion&quot;</span>)) <span class="op">%&gt;%</span><span class="st"> </span></span>
+<span id="cb58-12"><a href="weighted-log-odds-ratio.html#cb58-12"></a><span class="st">  </span><span class="kw">bind_log_odds</span>(<span class="dt">feature =</span> word, <span class="dt">set =</span> book, <span class="dt">n =</span> n) <span class="op">%&gt;%</span></span>
+<span id="cb58-13"><a href="weighted-log-odds-ratio.html#cb58-13"></a><span class="st">  </span><span class="kw">group_by</span>(book) <span class="op">%&gt;%</span><span class="st"> </span></span>
+<span id="cb58-14"><a href="weighted-log-odds-ratio.html#cb58-14"></a><span class="st">  </span><span class="kw">top_n</span>(<span class="dv">10</span>) <span class="op">%&gt;%</span></span>
+<span id="cb58-15"><a href="weighted-log-odds-ratio.html#cb58-15"></a><span class="st">  </span><span class="kw">ungroup</span>() <span class="op">%&gt;%</span><span class="st"> </span></span>
+<span id="cb58-16"><a href="weighted-log-odds-ratio.html#cb58-16"></a><span class="st">  </span><span class="kw">facet_bar</span>(<span class="dt">y =</span> word, <span class="dt">x =</span> log_odds, <span class="dt">by =</span> book, <span class="dt">ncol =</span> <span class="dv">3</span>) <span class="op">+</span><span class="st"> </span></span>
+<span id="cb58-17"><a href="weighted-log-odds-ratio.html#cb58-17"></a><span class="st">  </span><span class="kw">labs</span>(<span class="dt">title =</span> <span class="st">&quot;Top 10 words picked by weighted log odds&quot;</span>)</span></code></pre></div>
+<div class="sourceCode" id="cb59"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb59-1"><a href="weighted-log-odds-ratio.html#cb59-1"></a><span class="kw">wrap_plots</span>(words_tf_idf, words_wlo)</span></code></pre></div>
 <p><img src="analyzing-word-and-document-frequency_files/figure-html/unnamed-chunk-17-1.png" width="672" style="display: block; margin: auto;" /></p>
 </div>
 </div>

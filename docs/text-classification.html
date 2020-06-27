@@ -6,7 +6,7 @@
   <meta http-equiv="X-UA-Compatible" content="IE=edge" />
   <title>Chapter 7 Text classification | Notes for “Text Mining with R: A Tidy Approach”</title>
   <meta name="description" content="Chapter 7 Text classification | Notes for “Text Mining with R: A Tidy Approach”" />
-  <meta name="generator" content="bookdown 0.18 and GitBook 2.6.7" />
+  <meta name="generator" content="bookdown 0.20 and GitBook 2.6.7" />
 
   <meta property="og:title" content="Chapter 7 Text classification | Notes for “Text Mining with R: A Tidy Approach”" />
   <meta property="og:type" content="book" />
@@ -24,7 +24,7 @@
 <meta name="author" content="Qiushi Yan" />
 
 
-<meta name="date" content="2020-05-11" />
+<meta name="date" content="2020-06-27" />
 
   <meta name="viewport" content="width=device-width, initial-scale=1" />
   <meta name="apple-mobile-web-app-capable" content="yes" />
@@ -50,15 +50,16 @@
 
 
 
+<script src="libs/accessible-code-block-0.0.1/empty-anchor.js"></script>
 <script src="libs/htmlwidgets-1.5.1/htmlwidgets.js"></script>
 <link href="libs/str_view-0.1.0/str_view.css" rel="stylesheet" />
 <script src="libs/str_view-binding-1.4.0/str_view.js"></script>
 
 
 <style type="text/css">
-a.sourceLine { display: inline-block; line-height: 1.25; }
-a.sourceLine { pointer-events: none; color: inherit; text-decoration: inherit; }
-a.sourceLine:empty { height: 1.2em; }
+code.sourceCode > span { display: inline-block; line-height: 1.25; }
+code.sourceCode > span { color: inherit; text-decoration: inherit; }
+code.sourceCode > span:empty { height: 1.2em; }
 .sourceCode { overflow: visible; }
 code.sourceCode { white-space: pre; position: relative; }
 pre.sourceCode { margin: 0; }
@@ -67,14 +68,16 @@ div.sourceCode { overflow: auto; }
 }
 @media print {
 code.sourceCode { white-space: pre-wrap; }
-a.sourceLine { text-indent: -1em; padding-left: 1em; }
+code.sourceCode > span { text-indent: -5em; padding-left: 5em; }
 }
-pre.numberSource a.sourceLine
-  { position: relative; left: -4em; }
-pre.numberSource a.sourceLine::before
-  { content: attr(title);
+pre.numberSource code
+  { counter-reset: source-line 0; }
+pre.numberSource code > span
+  { position: relative; left: -4em; counter-increment: source-line; }
+pre.numberSource code > span > a:first-child::before
+  { content: counter(source-line);
     position: relative; left: -1em; text-align: right; vertical-align: baseline;
-    border: none; pointer-events: all; display: inline-block;
+    border: none; display: inline-block;
     -webkit-touch-callout: none; -webkit-user-select: none;
     -khtml-user-select: none; -moz-user-select: none;
     -ms-user-select: none; user-select: none;
@@ -83,9 +86,9 @@ pre.numberSource a.sourceLine::before
   }
 pre.numberSource { margin-left: 3em; border-left: 1px solid #aaaaaa;  padding-left: 4px; }
 div.sourceCode
-  {  }
+  {   }
 @media screen {
-a.sourceLine::before { text-decoration: underline; }
+code.sourceCode > span > a:first-child::before { text-decoration: underline; }
 }
 code span.al { color: #ff0000; font-weight: bold; } /* Alert */
 code span.an { color: #60a0b0; font-weight: bold; font-style: italic; } /* Annotation */
@@ -234,34 +237,34 @@ code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } /* Warni
 <div id="text-classification" class="section level1">
 <h1><span class="header-section-number">Chapter 7</span> Text classification</h1>
 <p><a href="https://juliasilge.com/blog/tidy-text-classification/" class="uri">https://juliasilge.com/blog/tidy-text-classification/</a></p>
-<div class="sourceCode" id="cb133"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb133-1" title="1"><span class="kw">library</span>(tidymodels)</a>
-<a class="sourceLine" id="cb133-2" title="2"><span class="kw">library</span>(gutenbergr)</a>
-<a class="sourceLine" id="cb133-3" title="3"></a>
-<a class="sourceLine" id="cb133-4" title="4">titles &lt;-<span class="st"> </span><span class="kw">c</span>(</a>
-<a class="sourceLine" id="cb133-5" title="5">  <span class="st">&quot;The War of the Worlds&quot;</span>,</a>
-<a class="sourceLine" id="cb133-6" title="6">  <span class="st">&quot;Pride and Prejudice&quot;</span></a>
-<a class="sourceLine" id="cb133-7" title="7">)</a>
-<a class="sourceLine" id="cb133-8" title="8"></a>
-<a class="sourceLine" id="cb133-9" title="9">books &lt;-<span class="st"> </span><span class="kw">gutenberg_works</span>() <span class="op">%&gt;%</span><span class="st"> </span></a>
-<a class="sourceLine" id="cb133-10" title="10"><span class="st">  </span><span class="kw">filter</span>(title <span class="op">%in%</span><span class="st"> </span>titles) <span class="op">%&gt;%</span><span class="st"> </span></a>
-<a class="sourceLine" id="cb133-11" title="11"><span class="st">  </span><span class="kw">gutenberg_download</span>(<span class="dt">meta_fields =</span> <span class="st">&quot;title&quot;</span>) <span class="op">%&gt;%</span><span class="st"> </span></a>
-<a class="sourceLine" id="cb133-12" title="12"><span class="st">  </span><span class="kw">mutate</span>(<span class="dt">document =</span> <span class="kw">row_number</span>())</a></code></pre></div>
-<div class="sourceCode" id="cb134"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb134-1" title="1">tidy_books &lt;-<span class="st"> </span>books <span class="op">%&gt;%</span></a>
-<a class="sourceLine" id="cb134-2" title="2"><span class="st">  </span><span class="kw">unnest_tokens</span>(word, text) <span class="op">%&gt;%</span></a>
-<a class="sourceLine" id="cb134-3" title="3"><span class="st">  </span><span class="kw">anti_join</span>(stop_words) <span class="op">%&gt;%</span><span class="st"> </span></a>
-<a class="sourceLine" id="cb134-4" title="4"><span class="st">  </span><span class="kw">group_by</span>(word) <span class="op">%&gt;%</span></a>
-<a class="sourceLine" id="cb134-5" title="5"><span class="st">  </span><span class="kw">filter</span>(<span class="kw">n</span>() <span class="op">&gt;</span><span class="st"> </span><span class="dv">10</span>) <span class="op">%&gt;%</span></a>
-<a class="sourceLine" id="cb134-6" title="6"><span class="st">  </span><span class="kw">ungroup</span>()</a></code></pre></div>
-<div class="sourceCode" id="cb135"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb135-1" title="1">tidy_books <span class="op">%&gt;%</span></a>
-<a class="sourceLine" id="cb135-2" title="2"><span class="st">  </span><span class="kw">count</span>(title, word, <span class="dt">sort =</span> <span class="ot">TRUE</span>) <span class="op">%&gt;%</span><span class="st"> </span></a>
-<a class="sourceLine" id="cb135-3" title="3"><span class="st">  </span><span class="kw">group_by</span>(title) <span class="op">%&gt;%</span><span class="st"> </span></a>
-<a class="sourceLine" id="cb135-4" title="4"><span class="st">  </span><span class="kw">top_n</span>(<span class="dv">20</span>) <span class="op">%&gt;%</span></a>
-<a class="sourceLine" id="cb135-5" title="5"><span class="st">  </span><span class="kw">facet_bar</span>(<span class="dt">y =</span> word, <span class="dt">x =</span> n, <span class="dt">by =</span> title) <span class="op">+</span><span class="st"> </span></a>
-<a class="sourceLine" id="cb135-6" title="6"><span class="st">  </span><span class="kw">labs</span>(</a>
-<a class="sourceLine" id="cb135-7" title="7">    <span class="dt">x =</span> <span class="ot">NULL</span>, <span class="dt">y =</span> <span class="st">&quot;Word count&quot;</span>,</a>
-<a class="sourceLine" id="cb135-8" title="8">    <span class="dt">title =</span> <span class="st">&quot;Most frequent words after removing stop words&quot;</span>,</a>
-<a class="sourceLine" id="cb135-9" title="9">    <span class="dt">subtitle =</span> <span class="st">&quot;Words like &#39;said&#39; occupy similar ranks but other words are quite different&quot;</span></a>
-<a class="sourceLine" id="cb135-10" title="10">  )</a></code></pre></div>
+<div class="sourceCode" id="cb133"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb133-1"><a href="text-classification.html#cb133-1"></a><span class="kw">library</span>(tidymodels)</span>
+<span id="cb133-2"><a href="text-classification.html#cb133-2"></a><span class="kw">library</span>(gutenbergr)</span>
+<span id="cb133-3"><a href="text-classification.html#cb133-3"></a></span>
+<span id="cb133-4"><a href="text-classification.html#cb133-4"></a>titles &lt;-<span class="st"> </span><span class="kw">c</span>(</span>
+<span id="cb133-5"><a href="text-classification.html#cb133-5"></a>  <span class="st">&quot;The War of the Worlds&quot;</span>,</span>
+<span id="cb133-6"><a href="text-classification.html#cb133-6"></a>  <span class="st">&quot;Pride and Prejudice&quot;</span></span>
+<span id="cb133-7"><a href="text-classification.html#cb133-7"></a>)</span>
+<span id="cb133-8"><a href="text-classification.html#cb133-8"></a></span>
+<span id="cb133-9"><a href="text-classification.html#cb133-9"></a>books &lt;-<span class="st"> </span><span class="kw">gutenberg_works</span>() <span class="op">%&gt;%</span><span class="st"> </span></span>
+<span id="cb133-10"><a href="text-classification.html#cb133-10"></a><span class="st">  </span><span class="kw">filter</span>(title <span class="op">%in%</span><span class="st"> </span>titles) <span class="op">%&gt;%</span><span class="st"> </span></span>
+<span id="cb133-11"><a href="text-classification.html#cb133-11"></a><span class="st">  </span><span class="kw">gutenberg_download</span>(<span class="dt">meta_fields =</span> <span class="st">&quot;title&quot;</span>) <span class="op">%&gt;%</span><span class="st"> </span></span>
+<span id="cb133-12"><a href="text-classification.html#cb133-12"></a><span class="st">  </span><span class="kw">mutate</span>(<span class="dt">document =</span> <span class="kw">row_number</span>())</span></code></pre></div>
+<div class="sourceCode" id="cb134"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb134-1"><a href="text-classification.html#cb134-1"></a>tidy_books &lt;-<span class="st"> </span>books <span class="op">%&gt;%</span></span>
+<span id="cb134-2"><a href="text-classification.html#cb134-2"></a><span class="st">  </span><span class="kw">unnest_tokens</span>(word, text) <span class="op">%&gt;%</span></span>
+<span id="cb134-3"><a href="text-classification.html#cb134-3"></a><span class="st">  </span><span class="kw">anti_join</span>(stop_words) <span class="op">%&gt;%</span><span class="st"> </span></span>
+<span id="cb134-4"><a href="text-classification.html#cb134-4"></a><span class="st">  </span><span class="kw">group_by</span>(word) <span class="op">%&gt;%</span></span>
+<span id="cb134-5"><a href="text-classification.html#cb134-5"></a><span class="st">  </span><span class="kw">filter</span>(<span class="kw">n</span>() <span class="op">&gt;</span><span class="st"> </span><span class="dv">10</span>) <span class="op">%&gt;%</span></span>
+<span id="cb134-6"><a href="text-classification.html#cb134-6"></a><span class="st">  </span><span class="kw">ungroup</span>()</span></code></pre></div>
+<div class="sourceCode" id="cb135"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb135-1"><a href="text-classification.html#cb135-1"></a>tidy_books <span class="op">%&gt;%</span></span>
+<span id="cb135-2"><a href="text-classification.html#cb135-2"></a><span class="st">  </span><span class="kw">count</span>(title, word, <span class="dt">sort =</span> <span class="ot">TRUE</span>) <span class="op">%&gt;%</span><span class="st"> </span></span>
+<span id="cb135-3"><a href="text-classification.html#cb135-3"></a><span class="st">  </span><span class="kw">group_by</span>(title) <span class="op">%&gt;%</span><span class="st"> </span></span>
+<span id="cb135-4"><a href="text-classification.html#cb135-4"></a><span class="st">  </span><span class="kw">top_n</span>(<span class="dv">20</span>) <span class="op">%&gt;%</span></span>
+<span id="cb135-5"><a href="text-classification.html#cb135-5"></a><span class="st">  </span><span class="kw">facet_bar</span>(<span class="dt">y =</span> word, <span class="dt">x =</span> n, <span class="dt">by =</span> title) <span class="op">+</span><span class="st"> </span></span>
+<span id="cb135-6"><a href="text-classification.html#cb135-6"></a><span class="st">  </span><span class="kw">labs</span>(</span>
+<span id="cb135-7"><a href="text-classification.html#cb135-7"></a>    <span class="dt">x =</span> <span class="ot">NULL</span>, <span class="dt">y =</span> <span class="st">&quot;Word count&quot;</span>,</span>
+<span id="cb135-8"><a href="text-classification.html#cb135-8"></a>    <span class="dt">title =</span> <span class="st">&quot;Most frequent words after removing stop words&quot;</span>,</span>
+<span id="cb135-9"><a href="text-classification.html#cb135-9"></a>    <span class="dt">subtitle =</span> <span class="st">&quot;Words like &#39;said&#39; occupy similar ranks but other words are quite different&quot;</span></span>
+<span id="cb135-10"><a href="text-classification.html#cb135-10"></a>  )</span></code></pre></div>
 <p><img src="text-classification_files/figure-html/unnamed-chunk-3-1.png" width="672" style="display: block; margin: auto;" /></p>
 
 </div>

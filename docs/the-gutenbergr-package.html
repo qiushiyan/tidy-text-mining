@@ -6,7 +6,7 @@
   <meta http-equiv="X-UA-Compatible" content="IE=edge" />
   <title>1.2 The gutenbergr package | Notes for “Text Mining with R: A Tidy Approach”</title>
   <meta name="description" content="1.2 The gutenbergr package | Notes for “Text Mining with R: A Tidy Approach”" />
-  <meta name="generator" content="bookdown 0.18 and GitBook 2.6.7" />
+  <meta name="generator" content="bookdown 0.20 and GitBook 2.6.7" />
 
   <meta property="og:title" content="1.2 The gutenbergr package | Notes for “Text Mining with R: A Tidy Approach”" />
   <meta property="og:type" content="book" />
@@ -24,7 +24,7 @@
 <meta name="author" content="Qiushi Yan" />
 
 
-<meta name="date" content="2020-05-11" />
+<meta name="date" content="2020-06-27" />
 
   <meta name="viewport" content="width=device-width, initial-scale=1" />
   <meta name="apple-mobile-web-app-capable" content="yes" />
@@ -50,15 +50,16 @@
 
 
 
+<script src="libs/accessible-code-block-0.0.1/empty-anchor.js"></script>
 <script src="libs/htmlwidgets-1.5.1/htmlwidgets.js"></script>
 <link href="libs/str_view-0.1.0/str_view.css" rel="stylesheet" />
 <script src="libs/str_view-binding-1.4.0/str_view.js"></script>
 
 
 <style type="text/css">
-a.sourceLine { display: inline-block; line-height: 1.25; }
-a.sourceLine { pointer-events: none; color: inherit; text-decoration: inherit; }
-a.sourceLine:empty { height: 1.2em; }
+code.sourceCode > span { display: inline-block; line-height: 1.25; }
+code.sourceCode > span { color: inherit; text-decoration: inherit; }
+code.sourceCode > span:empty { height: 1.2em; }
 .sourceCode { overflow: visible; }
 code.sourceCode { white-space: pre; position: relative; }
 pre.sourceCode { margin: 0; }
@@ -67,14 +68,16 @@ div.sourceCode { overflow: auto; }
 }
 @media print {
 code.sourceCode { white-space: pre-wrap; }
-a.sourceLine { text-indent: -1em; padding-left: 1em; }
+code.sourceCode > span { text-indent: -5em; padding-left: 5em; }
 }
-pre.numberSource a.sourceLine
-  { position: relative; left: -4em; }
-pre.numberSource a.sourceLine::before
-  { content: attr(title);
+pre.numberSource code
+  { counter-reset: source-line 0; }
+pre.numberSource code > span
+  { position: relative; left: -4em; counter-increment: source-line; }
+pre.numberSource code > span > a:first-child::before
+  { content: counter(source-line);
     position: relative; left: -1em; text-align: right; vertical-align: baseline;
-    border: none; pointer-events: all; display: inline-block;
+    border: none; display: inline-block;
     -webkit-touch-callout: none; -webkit-user-select: none;
     -khtml-user-select: none; -moz-user-select: none;
     -ms-user-select: none; user-select: none;
@@ -83,9 +86,9 @@ pre.numberSource a.sourceLine::before
   }
 pre.numberSource { margin-left: 3em; border-left: 1px solid #aaaaaa;  padding-left: 4px; }
 div.sourceCode
-  {  }
+  {   }
 @media screen {
-a.sourceLine::before { text-decoration: underline; }
+code.sourceCode > span > a:first-child::before { text-decoration: underline; }
 }
 code span.al { color: #ff0000; font-weight: bold; } /* Alert */
 code span.an { color: #60a0b0; font-weight: bold; font-style: italic; } /* Annotation */
@@ -233,52 +236,52 @@ code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } /* Warni
             <section class="normal" id="section-">
 <div id="the-gutenbergr-package" class="section level2">
 <h2><span class="header-section-number">1.2</span> The <code>gutenbergr</code> package</h2>
-<div class="sourceCode" id="cb10"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb10-1" title="1"><span class="kw">library</span>(gutenbergr)</a></code></pre></div>
+<div class="sourceCode" id="cb10"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb10-1"><a href="the-gutenbergr-package.html#cb10-1"></a><span class="kw">library</span>(gutenbergr)</span></code></pre></div>
 <p>The gutenbergr package provides access to the public domain works from the Project Gutenberg collection. The package includes tools both for downloading books (stripping out the unhelpful header/footer information), and a complete dataset of Project Gutenberg metadata that can be used to find works of interest. In this book, we will mostly use the function <code>gutenberg_download()</code> that downloads one or more works from Project Gutenberg by ID.</p>
 <p>The dataset gutenberg_metadata contains information about each work, pairing Gutenberg ID with title, author, language, etc:</p>
-<div class="sourceCode" id="cb11"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb11-1" title="1">gutenberg_metadata</a>
-<a class="sourceLine" id="cb11-2" title="2"><span class="co">#&gt; # A tibble: 51,997 x 8</span></a>
-<a class="sourceLine" id="cb11-3" title="3"><span class="co">#&gt;   gutenberg_id title author gutenberg_autho~ language gutenberg_books~ rights</span></a>
-<a class="sourceLine" id="cb11-4" title="4"><span class="co">#&gt;          &lt;int&gt; &lt;chr&gt; &lt;chr&gt;             &lt;int&gt; &lt;chr&gt;    &lt;chr&gt;            &lt;chr&gt; </span></a>
-<a class="sourceLine" id="cb11-5" title="5"><span class="co">#&gt; 1            0  &lt;NA&gt; &lt;NA&gt;                 NA en       &lt;NA&gt;             Publi~</span></a>
-<a class="sourceLine" id="cb11-6" title="6"><span class="co">#&gt; 2            1 &quot;The~ Jeffe~             1638 en       United States L~ Publi~</span></a>
-<a class="sourceLine" id="cb11-7" title="7"><span class="co">#&gt; 3            2 &quot;The~ Unite~                1 en       American Revolu~ Publi~</span></a>
-<a class="sourceLine" id="cb11-8" title="8"><span class="co">#&gt; 4            3 &quot;Joh~ Kenne~             1666 en       &lt;NA&gt;             Publi~</span></a>
-<a class="sourceLine" id="cb11-9" title="9"><span class="co">#&gt; 5            4 &quot;Lin~ Linco~                3 en       US Civil War     Publi~</span></a>
-<a class="sourceLine" id="cb11-10" title="10"><span class="co">#&gt; 6            5 &quot;The~ Unite~                1 en       American Revolu~ Publi~</span></a>
-<a class="sourceLine" id="cb11-11" title="11"><span class="co">#&gt; # ... with 5.199e+04 more rows, and 1 more variable: has_text &lt;lgl&gt;</span></a></code></pre></div>
+<div class="sourceCode" id="cb11"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb11-1"><a href="the-gutenbergr-package.html#cb11-1"></a>gutenberg_metadata</span>
+<span id="cb11-2"><a href="the-gutenbergr-package.html#cb11-2"></a><span class="co">#&gt; # A tibble: 51,997 x 8</span></span>
+<span id="cb11-3"><a href="the-gutenbergr-package.html#cb11-3"></a><span class="co">#&gt;   gutenberg_id title author gutenberg_autho~ language gutenberg_books~ rights</span></span>
+<span id="cb11-4"><a href="the-gutenbergr-package.html#cb11-4"></a><span class="co">#&gt;          &lt;int&gt; &lt;chr&gt; &lt;chr&gt;             &lt;int&gt; &lt;chr&gt;    &lt;chr&gt;            &lt;chr&gt; </span></span>
+<span id="cb11-5"><a href="the-gutenbergr-package.html#cb11-5"></a><span class="co">#&gt; 1            0  &lt;NA&gt; &lt;NA&gt;                 NA en       &lt;NA&gt;             Publi~</span></span>
+<span id="cb11-6"><a href="the-gutenbergr-package.html#cb11-6"></a><span class="co">#&gt; 2            1 &quot;The~ Jeffe~             1638 en       United States L~ Publi~</span></span>
+<span id="cb11-7"><a href="the-gutenbergr-package.html#cb11-7"></a><span class="co">#&gt; 3            2 &quot;The~ Unite~                1 en       American Revolu~ Publi~</span></span>
+<span id="cb11-8"><a href="the-gutenbergr-package.html#cb11-8"></a><span class="co">#&gt; 4            3 &quot;Joh~ Kenne~             1666 en       &lt;NA&gt;             Publi~</span></span>
+<span id="cb11-9"><a href="the-gutenbergr-package.html#cb11-9"></a><span class="co">#&gt; 5            4 &quot;Lin~ Linco~                3 en       US Civil War     Publi~</span></span>
+<span id="cb11-10"><a href="the-gutenbergr-package.html#cb11-10"></a><span class="co">#&gt; 6            5 &quot;The~ Unite~                1 en       American Revolu~ Publi~</span></span>
+<span id="cb11-11"><a href="the-gutenbergr-package.html#cb11-11"></a><span class="co">#&gt; # ... with 5.199e+04 more rows, and 1 more variable: has_text &lt;lgl&gt;</span></span></code></pre></div>
 <p>For example, you could find the Gutenberg ID of Wuthering Heights by doing:</p>
-<div class="sourceCode" id="cb12"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb12-1" title="1">gutenberg_metadata <span class="op">%&gt;%</span></a>
-<a class="sourceLine" id="cb12-2" title="2"><span class="st">  </span><span class="kw">filter</span>(title <span class="op">==</span><span class="st"> &quot;Wuthering Heights&quot;</span>)</a>
-<a class="sourceLine" id="cb12-3" title="3"><span class="co">#&gt; # A tibble: 1 x 8</span></a>
-<a class="sourceLine" id="cb12-4" title="4"><span class="co">#&gt;   gutenberg_id title author gutenberg_autho~ language gutenberg_books~ rights</span></a>
-<a class="sourceLine" id="cb12-5" title="5"><span class="co">#&gt;          &lt;int&gt; &lt;chr&gt; &lt;chr&gt;             &lt;int&gt; &lt;chr&gt;    &lt;chr&gt;            &lt;chr&gt; </span></a>
-<a class="sourceLine" id="cb12-6" title="6"><span class="co">#&gt; 1          768 Wuth~ Bront~              405 en       Gothic Fiction/~ Publi~</span></a>
-<a class="sourceLine" id="cb12-7" title="7"><span class="co">#&gt; # ... with 1 more variable: has_text &lt;lgl&gt;</span></a>
-<a class="sourceLine" id="cb12-8" title="8"></a>
-<a class="sourceLine" id="cb12-9" title="9"><span class="kw">gutenberg_download</span>(<span class="dv">768</span>)</a>
-<a class="sourceLine" id="cb12-10" title="10"><span class="co">#&gt; # A tibble: 12,085 x 2</span></a>
-<a class="sourceLine" id="cb12-11" title="11"><span class="co">#&gt;   gutenberg_id text               </span></a>
-<a class="sourceLine" id="cb12-12" title="12"><span class="co">#&gt;          &lt;int&gt; &lt;chr&gt;              </span></a>
-<a class="sourceLine" id="cb12-13" title="13"><span class="co">#&gt; 1          768 &quot;WUTHERING HEIGHTS&quot;</span></a>
-<a class="sourceLine" id="cb12-14" title="14"><span class="co">#&gt; 2          768 &quot;&quot;                 </span></a>
-<a class="sourceLine" id="cb12-15" title="15"><span class="co">#&gt; 3          768 &quot;&quot;                 </span></a>
-<a class="sourceLine" id="cb12-16" title="16"><span class="co">#&gt; 4          768 &quot;CHAPTER I&quot;        </span></a>
-<a class="sourceLine" id="cb12-17" title="17"><span class="co">#&gt; 5          768 &quot;&quot;                 </span></a>
-<a class="sourceLine" id="cb12-18" title="18"><span class="co">#&gt; 6          768 &quot;&quot;                 </span></a>
-<a class="sourceLine" id="cb12-19" title="19"><span class="co">#&gt; # ... with 1.208e+04 more rows</span></a></code></pre></div>
+<div class="sourceCode" id="cb12"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb12-1"><a href="the-gutenbergr-package.html#cb12-1"></a>gutenberg_metadata <span class="op">%&gt;%</span></span>
+<span id="cb12-2"><a href="the-gutenbergr-package.html#cb12-2"></a><span class="st">  </span><span class="kw">filter</span>(title <span class="op">==</span><span class="st"> &quot;Wuthering Heights&quot;</span>)</span>
+<span id="cb12-3"><a href="the-gutenbergr-package.html#cb12-3"></a><span class="co">#&gt; # A tibble: 1 x 8</span></span>
+<span id="cb12-4"><a href="the-gutenbergr-package.html#cb12-4"></a><span class="co">#&gt;   gutenberg_id title author gutenberg_autho~ language gutenberg_books~ rights</span></span>
+<span id="cb12-5"><a href="the-gutenbergr-package.html#cb12-5"></a><span class="co">#&gt;          &lt;int&gt; &lt;chr&gt; &lt;chr&gt;             &lt;int&gt; &lt;chr&gt;    &lt;chr&gt;            &lt;chr&gt; </span></span>
+<span id="cb12-6"><a href="the-gutenbergr-package.html#cb12-6"></a><span class="co">#&gt; 1          768 Wuth~ Bront~              405 en       Gothic Fiction/~ Publi~</span></span>
+<span id="cb12-7"><a href="the-gutenbergr-package.html#cb12-7"></a><span class="co">#&gt; # ... with 1 more variable: has_text &lt;lgl&gt;</span></span>
+<span id="cb12-8"><a href="the-gutenbergr-package.html#cb12-8"></a></span>
+<span id="cb12-9"><a href="the-gutenbergr-package.html#cb12-9"></a><span class="kw">gutenberg_download</span>(<span class="dv">768</span>)</span>
+<span id="cb12-10"><a href="the-gutenbergr-package.html#cb12-10"></a><span class="co">#&gt; # A tibble: 12,085 x 2</span></span>
+<span id="cb12-11"><a href="the-gutenbergr-package.html#cb12-11"></a><span class="co">#&gt;   gutenberg_id text               </span></span>
+<span id="cb12-12"><a href="the-gutenbergr-package.html#cb12-12"></a><span class="co">#&gt;          &lt;int&gt; &lt;chr&gt;              </span></span>
+<span id="cb12-13"><a href="the-gutenbergr-package.html#cb12-13"></a><span class="co">#&gt; 1          768 &quot;WUTHERING HEIGHTS&quot;</span></span>
+<span id="cb12-14"><a href="the-gutenbergr-package.html#cb12-14"></a><span class="co">#&gt; 2          768 &quot;&quot;                 </span></span>
+<span id="cb12-15"><a href="the-gutenbergr-package.html#cb12-15"></a><span class="co">#&gt; 3          768 &quot;&quot;                 </span></span>
+<span id="cb12-16"><a href="the-gutenbergr-package.html#cb12-16"></a><span class="co">#&gt; 4          768 &quot;CHAPTER I&quot;        </span></span>
+<span id="cb12-17"><a href="the-gutenbergr-package.html#cb12-17"></a><span class="co">#&gt; 5          768 &quot;&quot;                 </span></span>
+<span id="cb12-18"><a href="the-gutenbergr-package.html#cb12-18"></a><span class="co">#&gt; 6          768 &quot;&quot;                 </span></span>
+<span id="cb12-19"><a href="the-gutenbergr-package.html#cb12-19"></a><span class="co">#&gt; # ... with 1.208e+04 more rows</span></span></code></pre></div>
 <p>In many analyses, you may want to filter just for English works, avoid duplicates, and include only books that have text that can be downloaded. The <code>gutenberg_works()</code> function does this pre-filtering. It also allows you to perform filtering as an argument:</p>
-<div class="sourceCode" id="cb13"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb13-1" title="1"><span class="kw">gutenberg_works</span>(author <span class="op">==</span><span class="st"> &quot;Austen, Jane&quot;</span>)</a>
-<a class="sourceLine" id="cb13-2" title="2"><span class="co">#&gt; # A tibble: 10 x 8</span></a>
-<a class="sourceLine" id="cb13-3" title="3"><span class="co">#&gt;   gutenberg_id title author gutenberg_autho~ language gutenberg_books~ rights</span></a>
-<a class="sourceLine" id="cb13-4" title="4"><span class="co">#&gt;          &lt;int&gt; &lt;chr&gt; &lt;chr&gt;             &lt;int&gt; &lt;chr&gt;    &lt;chr&gt;            &lt;chr&gt; </span></a>
-<a class="sourceLine" id="cb13-5" title="5"><span class="co">#&gt; 1          105 Pers~ Auste~               68 en       &lt;NA&gt;             Publi~</span></a>
-<a class="sourceLine" id="cb13-6" title="6"><span class="co">#&gt; 2          121 Nort~ Auste~               68 en       Gothic Fiction   Publi~</span></a>
-<a class="sourceLine" id="cb13-7" title="7"><span class="co">#&gt; 3          141 Mans~ Auste~               68 en       &lt;NA&gt;             Publi~</span></a>
-<a class="sourceLine" id="cb13-8" title="8"><span class="co">#&gt; 4          158 Emma  Auste~               68 en       &lt;NA&gt;             Publi~</span></a>
-<a class="sourceLine" id="cb13-9" title="9"><span class="co">#&gt; 5          161 Sens~ Auste~               68 en       &lt;NA&gt;             Publi~</span></a>
-<a class="sourceLine" id="cb13-10" title="10"><span class="co">#&gt; 6          946 Lady~ Auste~               68 en       &lt;NA&gt;             Publi~</span></a>
-<a class="sourceLine" id="cb13-11" title="11"><span class="co">#&gt; # ... with 4 more rows, and 1 more variable: has_text &lt;lgl&gt;</span></a></code></pre></div>
+<div class="sourceCode" id="cb13"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb13-1"><a href="the-gutenbergr-package.html#cb13-1"></a><span class="kw">gutenberg_works</span>(author <span class="op">==</span><span class="st"> &quot;Austen, Jane&quot;</span>)</span>
+<span id="cb13-2"><a href="the-gutenbergr-package.html#cb13-2"></a><span class="co">#&gt; # A tibble: 10 x 8</span></span>
+<span id="cb13-3"><a href="the-gutenbergr-package.html#cb13-3"></a><span class="co">#&gt;   gutenberg_id title author gutenberg_autho~ language gutenberg_books~ rights</span></span>
+<span id="cb13-4"><a href="the-gutenbergr-package.html#cb13-4"></a><span class="co">#&gt;          &lt;int&gt; &lt;chr&gt; &lt;chr&gt;             &lt;int&gt; &lt;chr&gt;    &lt;chr&gt;            &lt;chr&gt; </span></span>
+<span id="cb13-5"><a href="the-gutenbergr-package.html#cb13-5"></a><span class="co">#&gt; 1          105 Pers~ Auste~               68 en       &lt;NA&gt;             Publi~</span></span>
+<span id="cb13-6"><a href="the-gutenbergr-package.html#cb13-6"></a><span class="co">#&gt; 2          121 Nort~ Auste~               68 en       Gothic Fiction   Publi~</span></span>
+<span id="cb13-7"><a href="the-gutenbergr-package.html#cb13-7"></a><span class="co">#&gt; 3          141 Mans~ Auste~               68 en       &lt;NA&gt;             Publi~</span></span>
+<span id="cb13-8"><a href="the-gutenbergr-package.html#cb13-8"></a><span class="co">#&gt; 4          158 Emma  Auste~               68 en       &lt;NA&gt;             Publi~</span></span>
+<span id="cb13-9"><a href="the-gutenbergr-package.html#cb13-9"></a><span class="co">#&gt; 5          161 Sens~ Auste~               68 en       &lt;NA&gt;             Publi~</span></span>
+<span id="cb13-10"><a href="the-gutenbergr-package.html#cb13-10"></a><span class="co">#&gt; 6          946 Lady~ Auste~               68 en       &lt;NA&gt;             Publi~</span></span>
+<span id="cb13-11"><a href="the-gutenbergr-package.html#cb13-11"></a><span class="co">#&gt; # ... with 4 more rows, and 1 more variable: has_text &lt;lgl&gt;</span></span></code></pre></div>
 </div>
             </section>
 

@@ -6,7 +6,7 @@
   <meta http-equiv="X-UA-Compatible" content="IE=edge" />
   <title>2.1 The sentiments dataset | Notes for “Text Mining with R: A Tidy Approach”</title>
   <meta name="description" content="2.1 The sentiments dataset | Notes for “Text Mining with R: A Tidy Approach”" />
-  <meta name="generator" content="bookdown 0.18 and GitBook 2.6.7" />
+  <meta name="generator" content="bookdown 0.20 and GitBook 2.6.7" />
 
   <meta property="og:title" content="2.1 The sentiments dataset | Notes for “Text Mining with R: A Tidy Approach”" />
   <meta property="og:type" content="book" />
@@ -24,7 +24,7 @@
 <meta name="author" content="Qiushi Yan" />
 
 
-<meta name="date" content="2020-05-11" />
+<meta name="date" content="2020-06-27" />
 
   <meta name="viewport" content="width=device-width, initial-scale=1" />
   <meta name="apple-mobile-web-app-capable" content="yes" />
@@ -50,15 +50,16 @@
 
 
 
+<script src="libs/accessible-code-block-0.0.1/empty-anchor.js"></script>
 <script src="libs/htmlwidgets-1.5.1/htmlwidgets.js"></script>
 <link href="libs/str_view-0.1.0/str_view.css" rel="stylesheet" />
 <script src="libs/str_view-binding-1.4.0/str_view.js"></script>
 
 
 <style type="text/css">
-a.sourceLine { display: inline-block; line-height: 1.25; }
-a.sourceLine { pointer-events: none; color: inherit; text-decoration: inherit; }
-a.sourceLine:empty { height: 1.2em; }
+code.sourceCode > span { display: inline-block; line-height: 1.25; }
+code.sourceCode > span { color: inherit; text-decoration: inherit; }
+code.sourceCode > span:empty { height: 1.2em; }
 .sourceCode { overflow: visible; }
 code.sourceCode { white-space: pre; position: relative; }
 pre.sourceCode { margin: 0; }
@@ -67,14 +68,16 @@ div.sourceCode { overflow: auto; }
 }
 @media print {
 code.sourceCode { white-space: pre-wrap; }
-a.sourceLine { text-indent: -1em; padding-left: 1em; }
+code.sourceCode > span { text-indent: -5em; padding-left: 5em; }
 }
-pre.numberSource a.sourceLine
-  { position: relative; left: -4em; }
-pre.numberSource a.sourceLine::before
-  { content: attr(title);
+pre.numberSource code
+  { counter-reset: source-line 0; }
+pre.numberSource code > span
+  { position: relative; left: -4em; counter-increment: source-line; }
+pre.numberSource code > span > a:first-child::before
+  { content: counter(source-line);
     position: relative; left: -1em; text-align: right; vertical-align: baseline;
-    border: none; pointer-events: all; display: inline-block;
+    border: none; display: inline-block;
     -webkit-touch-callout: none; -webkit-user-select: none;
     -khtml-user-select: none; -moz-user-select: none;
     -ms-user-select: none; user-select: none;
@@ -83,9 +86,9 @@ pre.numberSource a.sourceLine::before
   }
 pre.numberSource { margin-left: 3em; border-left: 1px solid #aaaaaa;  padding-left: 4px; }
 div.sourceCode
-  {  }
+  {   }
 @media screen {
-a.sourceLine::before { text-decoration: underline; }
+code.sourceCode > span > a:first-child::before { text-decoration: underline; }
 }
 code span.al { color: #ff0000; font-weight: bold; } /* Alert */
 code span.an { color: #60a0b0; font-weight: bold; font-style: italic; } /* Annotation */
@@ -241,55 +244,55 @@ code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } /* Warni
 <li><p><code>loughran</code>: he Loughran and McDonald dictionary of financial sentiment terms. This dictionary was developed based on analyses of financial reports, and intentionally avoids words like “share” and “fool”, as well as subtler terms like “liability” and “risk” that may not have a negative meaning in a financial context.</p></li>
 </ul>
 <p>All three of these lexicons are based on unigrams. These lexicons contain many English words and the words are assigned scores for positive / negative sentiment, and also possibly emotions like joy, anger, sadness, and so forth. The <code>nrc</code> lexicon categorizes words into classes of positive, negative, anger, anticipation, disgust, fear, joy, sadness, surprise, and trust. The <code>bing</code> lexicon categorizes words in a binary fashion into positive and negative categories. The <code>AFINN</code> lexicon assigns words with a score that runs between -5 and 5, with negative scores indicating negative sentiment and positive scores indicating positive sentiment. The <code>loughran</code> lexicon divided words into constraining, litigious, negative, positive, superfluous and uncertainty</p>
-<div class="sourceCode" id="cb24"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb24-1" title="1"><span class="kw">get_sentiments</span>(<span class="st">&quot;nrc&quot;</span>)</a>
-<a class="sourceLine" id="cb24-2" title="2"><span class="co">#&gt; # A tibble: 13,901 x 2</span></a>
-<a class="sourceLine" id="cb24-3" title="3"><span class="co">#&gt;   word      sentiment</span></a>
-<a class="sourceLine" id="cb24-4" title="4"><span class="co">#&gt;   &lt;chr&gt;     &lt;chr&gt;    </span></a>
-<a class="sourceLine" id="cb24-5" title="5"><span class="co">#&gt; 1 abacus    trust    </span></a>
-<a class="sourceLine" id="cb24-6" title="6"><span class="co">#&gt; 2 abandon   fear     </span></a>
-<a class="sourceLine" id="cb24-7" title="7"><span class="co">#&gt; 3 abandon   negative </span></a>
-<a class="sourceLine" id="cb24-8" title="8"><span class="co">#&gt; 4 abandon   sadness  </span></a>
-<a class="sourceLine" id="cb24-9" title="9"><span class="co">#&gt; 5 abandoned anger    </span></a>
-<a class="sourceLine" id="cb24-10" title="10"><span class="co">#&gt; 6 abandoned fear     </span></a>
-<a class="sourceLine" id="cb24-11" title="11"><span class="co">#&gt; # ... with 1.39e+04 more rows</span></a>
-<a class="sourceLine" id="cb24-12" title="12"></a>
-<a class="sourceLine" id="cb24-13" title="13"><span class="co"># install.packages(&quot;textdata&quot;)</span></a>
-<a class="sourceLine" id="cb24-14" title="14"><span class="kw">get_sentiments</span>(<span class="st">&quot;bing&quot;</span>)</a>
-<a class="sourceLine" id="cb24-15" title="15"><span class="co">#&gt; # A tibble: 6,786 x 2</span></a>
-<a class="sourceLine" id="cb24-16" title="16"><span class="co">#&gt;   word       sentiment</span></a>
-<a class="sourceLine" id="cb24-17" title="17"><span class="co">#&gt;   &lt;chr&gt;      &lt;chr&gt;    </span></a>
-<a class="sourceLine" id="cb24-18" title="18"><span class="co">#&gt; 1 2-faces    negative </span></a>
-<a class="sourceLine" id="cb24-19" title="19"><span class="co">#&gt; 2 abnormal   negative </span></a>
-<a class="sourceLine" id="cb24-20" title="20"><span class="co">#&gt; 3 abolish    negative </span></a>
-<a class="sourceLine" id="cb24-21" title="21"><span class="co">#&gt; 4 abominable negative </span></a>
-<a class="sourceLine" id="cb24-22" title="22"><span class="co">#&gt; 5 abominably negative </span></a>
-<a class="sourceLine" id="cb24-23" title="23"><span class="co">#&gt; 6 abominate  negative </span></a>
-<a class="sourceLine" id="cb24-24" title="24"><span class="co">#&gt; # ... with 6,780 more rows</span></a>
-<a class="sourceLine" id="cb24-25" title="25"></a>
-<a class="sourceLine" id="cb24-26" title="26"><span class="kw">get_sentiments</span>(<span class="st">&quot;afinn&quot;</span>)</a>
-<a class="sourceLine" id="cb24-27" title="27"><span class="co">#&gt; # A tibble: 2,477 x 2</span></a>
-<a class="sourceLine" id="cb24-28" title="28"><span class="co">#&gt;   word       value</span></a>
-<a class="sourceLine" id="cb24-29" title="29"><span class="co">#&gt;   &lt;chr&gt;      &lt;dbl&gt;</span></a>
-<a class="sourceLine" id="cb24-30" title="30"><span class="co">#&gt; 1 abandon       -2</span></a>
-<a class="sourceLine" id="cb24-31" title="31"><span class="co">#&gt; 2 abandoned     -2</span></a>
-<a class="sourceLine" id="cb24-32" title="32"><span class="co">#&gt; 3 abandons      -2</span></a>
-<a class="sourceLine" id="cb24-33" title="33"><span class="co">#&gt; 4 abducted      -2</span></a>
-<a class="sourceLine" id="cb24-34" title="34"><span class="co">#&gt; 5 abduction     -2</span></a>
-<a class="sourceLine" id="cb24-35" title="35"><span class="co">#&gt; 6 abductions    -2</span></a>
-<a class="sourceLine" id="cb24-36" title="36"><span class="co">#&gt; # ... with 2,471 more rows</span></a>
-<a class="sourceLine" id="cb24-37" title="37"></a>
-<a class="sourceLine" id="cb24-38" title="38"><span class="kw">get_sentiments</span>(<span class="st">&quot;loughran&quot;</span>) <span class="op">%&gt;%</span><span class="st"> </span></a>
-<a class="sourceLine" id="cb24-39" title="39"><span class="st">  </span><span class="kw">filter</span>(sentiment <span class="op">==</span><span class="st"> &quot;superfluous&quot;</span>)</a>
-<a class="sourceLine" id="cb24-40" title="40"><span class="co">#&gt; # A tibble: 21 x 2</span></a>
-<a class="sourceLine" id="cb24-41" title="41"><span class="co">#&gt;   word         sentiment  </span></a>
-<a class="sourceLine" id="cb24-42" title="42"><span class="co">#&gt;   &lt;chr&gt;        &lt;chr&gt;      </span></a>
-<a class="sourceLine" id="cb24-43" title="43"><span class="co">#&gt; 1 aegis        superfluous</span></a>
-<a class="sourceLine" id="cb24-44" title="44"><span class="co">#&gt; 2 amorphous    superfluous</span></a>
-<a class="sourceLine" id="cb24-45" title="45"><span class="co">#&gt; 3 anticipatory superfluous</span></a>
-<a class="sourceLine" id="cb24-46" title="46"><span class="co">#&gt; 4 appertaining superfluous</span></a>
-<a class="sourceLine" id="cb24-47" title="47"><span class="co">#&gt; 5 assimilate   superfluous</span></a>
-<a class="sourceLine" id="cb24-48" title="48"><span class="co">#&gt; 6 assimilating superfluous</span></a>
-<a class="sourceLine" id="cb24-49" title="49"><span class="co">#&gt; # ... with 15 more rows</span></a></code></pre></div>
+<div class="sourceCode" id="cb24"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb24-1"><a href="the-sentiments-dataset.html#cb24-1"></a><span class="kw">get_sentiments</span>(<span class="st">&quot;nrc&quot;</span>)</span>
+<span id="cb24-2"><a href="the-sentiments-dataset.html#cb24-2"></a><span class="co">#&gt; # A tibble: 13,901 x 2</span></span>
+<span id="cb24-3"><a href="the-sentiments-dataset.html#cb24-3"></a><span class="co">#&gt;   word      sentiment</span></span>
+<span id="cb24-4"><a href="the-sentiments-dataset.html#cb24-4"></a><span class="co">#&gt;   &lt;chr&gt;     &lt;chr&gt;    </span></span>
+<span id="cb24-5"><a href="the-sentiments-dataset.html#cb24-5"></a><span class="co">#&gt; 1 abacus    trust    </span></span>
+<span id="cb24-6"><a href="the-sentiments-dataset.html#cb24-6"></a><span class="co">#&gt; 2 abandon   fear     </span></span>
+<span id="cb24-7"><a href="the-sentiments-dataset.html#cb24-7"></a><span class="co">#&gt; 3 abandon   negative </span></span>
+<span id="cb24-8"><a href="the-sentiments-dataset.html#cb24-8"></a><span class="co">#&gt; 4 abandon   sadness  </span></span>
+<span id="cb24-9"><a href="the-sentiments-dataset.html#cb24-9"></a><span class="co">#&gt; 5 abandoned anger    </span></span>
+<span id="cb24-10"><a href="the-sentiments-dataset.html#cb24-10"></a><span class="co">#&gt; 6 abandoned fear     </span></span>
+<span id="cb24-11"><a href="the-sentiments-dataset.html#cb24-11"></a><span class="co">#&gt; # ... with 1.39e+04 more rows</span></span>
+<span id="cb24-12"><a href="the-sentiments-dataset.html#cb24-12"></a></span>
+<span id="cb24-13"><a href="the-sentiments-dataset.html#cb24-13"></a><span class="co"># install.packages(&quot;textdata&quot;)</span></span>
+<span id="cb24-14"><a href="the-sentiments-dataset.html#cb24-14"></a><span class="kw">get_sentiments</span>(<span class="st">&quot;bing&quot;</span>)</span>
+<span id="cb24-15"><a href="the-sentiments-dataset.html#cb24-15"></a><span class="co">#&gt; # A tibble: 6,786 x 2</span></span>
+<span id="cb24-16"><a href="the-sentiments-dataset.html#cb24-16"></a><span class="co">#&gt;   word       sentiment</span></span>
+<span id="cb24-17"><a href="the-sentiments-dataset.html#cb24-17"></a><span class="co">#&gt;   &lt;chr&gt;      &lt;chr&gt;    </span></span>
+<span id="cb24-18"><a href="the-sentiments-dataset.html#cb24-18"></a><span class="co">#&gt; 1 2-faces    negative </span></span>
+<span id="cb24-19"><a href="the-sentiments-dataset.html#cb24-19"></a><span class="co">#&gt; 2 abnormal   negative </span></span>
+<span id="cb24-20"><a href="the-sentiments-dataset.html#cb24-20"></a><span class="co">#&gt; 3 abolish    negative </span></span>
+<span id="cb24-21"><a href="the-sentiments-dataset.html#cb24-21"></a><span class="co">#&gt; 4 abominable negative </span></span>
+<span id="cb24-22"><a href="the-sentiments-dataset.html#cb24-22"></a><span class="co">#&gt; 5 abominably negative </span></span>
+<span id="cb24-23"><a href="the-sentiments-dataset.html#cb24-23"></a><span class="co">#&gt; 6 abominate  negative </span></span>
+<span id="cb24-24"><a href="the-sentiments-dataset.html#cb24-24"></a><span class="co">#&gt; # ... with 6,780 more rows</span></span>
+<span id="cb24-25"><a href="the-sentiments-dataset.html#cb24-25"></a></span>
+<span id="cb24-26"><a href="the-sentiments-dataset.html#cb24-26"></a><span class="kw">get_sentiments</span>(<span class="st">&quot;afinn&quot;</span>)</span>
+<span id="cb24-27"><a href="the-sentiments-dataset.html#cb24-27"></a><span class="co">#&gt; # A tibble: 2,477 x 2</span></span>
+<span id="cb24-28"><a href="the-sentiments-dataset.html#cb24-28"></a><span class="co">#&gt;   word       value</span></span>
+<span id="cb24-29"><a href="the-sentiments-dataset.html#cb24-29"></a><span class="co">#&gt;   &lt;chr&gt;      &lt;dbl&gt;</span></span>
+<span id="cb24-30"><a href="the-sentiments-dataset.html#cb24-30"></a><span class="co">#&gt; 1 abandon       -2</span></span>
+<span id="cb24-31"><a href="the-sentiments-dataset.html#cb24-31"></a><span class="co">#&gt; 2 abandoned     -2</span></span>
+<span id="cb24-32"><a href="the-sentiments-dataset.html#cb24-32"></a><span class="co">#&gt; 3 abandons      -2</span></span>
+<span id="cb24-33"><a href="the-sentiments-dataset.html#cb24-33"></a><span class="co">#&gt; 4 abducted      -2</span></span>
+<span id="cb24-34"><a href="the-sentiments-dataset.html#cb24-34"></a><span class="co">#&gt; 5 abduction     -2</span></span>
+<span id="cb24-35"><a href="the-sentiments-dataset.html#cb24-35"></a><span class="co">#&gt; 6 abductions    -2</span></span>
+<span id="cb24-36"><a href="the-sentiments-dataset.html#cb24-36"></a><span class="co">#&gt; # ... with 2,471 more rows</span></span>
+<span id="cb24-37"><a href="the-sentiments-dataset.html#cb24-37"></a></span>
+<span id="cb24-38"><a href="the-sentiments-dataset.html#cb24-38"></a><span class="kw">get_sentiments</span>(<span class="st">&quot;loughran&quot;</span>) <span class="op">%&gt;%</span><span class="st"> </span></span>
+<span id="cb24-39"><a href="the-sentiments-dataset.html#cb24-39"></a><span class="st">  </span><span class="kw">filter</span>(sentiment <span class="op">==</span><span class="st"> &quot;superfluous&quot;</span>)</span>
+<span id="cb24-40"><a href="the-sentiments-dataset.html#cb24-40"></a><span class="co">#&gt; # A tibble: 21 x 2</span></span>
+<span id="cb24-41"><a href="the-sentiments-dataset.html#cb24-41"></a><span class="co">#&gt;   word         sentiment  </span></span>
+<span id="cb24-42"><a href="the-sentiments-dataset.html#cb24-42"></a><span class="co">#&gt;   &lt;chr&gt;        &lt;chr&gt;      </span></span>
+<span id="cb24-43"><a href="the-sentiments-dataset.html#cb24-43"></a><span class="co">#&gt; 1 aegis        superfluous</span></span>
+<span id="cb24-44"><a href="the-sentiments-dataset.html#cb24-44"></a><span class="co">#&gt; 2 amorphous    superfluous</span></span>
+<span id="cb24-45"><a href="the-sentiments-dataset.html#cb24-45"></a><span class="co">#&gt; 3 anticipatory superfluous</span></span>
+<span id="cb24-46"><a href="the-sentiments-dataset.html#cb24-46"></a><span class="co">#&gt; 4 appertaining superfluous</span></span>
+<span id="cb24-47"><a href="the-sentiments-dataset.html#cb24-47"></a><span class="co">#&gt; 5 assimilate   superfluous</span></span>
+<span id="cb24-48"><a href="the-sentiments-dataset.html#cb24-48"></a><span class="co">#&gt; 6 assimilating superfluous</span></span>
+<span id="cb24-49"><a href="the-sentiments-dataset.html#cb24-49"></a><span class="co">#&gt; # ... with 15 more rows</span></span></code></pre></div>
 <p>Dictionary-based methods like the ones we are discussing find the total sentiment of a piece of text by adding up the individual sentiment scores for each word in the text.</p>
 <p>One caveat is that the size of the chunk of text that we use to add up unigram sentiment scores can have an effect on an analysis. A text the size of many paragraphs can often have positive and negative sentiment averaged out to about zero, while sentence-sized or paragraph-sized text often works better</p>
 </div>

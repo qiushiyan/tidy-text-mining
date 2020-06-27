@@ -6,7 +6,7 @@
   <meta http-equiv="X-UA-Compatible" content="IE=edge" />
   <title>3.3 A corpus of physics texts | Notes for “Text Mining with R: A Tidy Approach”</title>
   <meta name="description" content="3.3 A corpus of physics texts | Notes for “Text Mining with R: A Tidy Approach”" />
-  <meta name="generator" content="bookdown 0.18 and GitBook 2.6.7" />
+  <meta name="generator" content="bookdown 0.20 and GitBook 2.6.7" />
 
   <meta property="og:title" content="3.3 A corpus of physics texts | Notes for “Text Mining with R: A Tidy Approach”" />
   <meta property="og:type" content="book" />
@@ -24,7 +24,7 @@
 <meta name="author" content="Qiushi Yan" />
 
 
-<meta name="date" content="2020-05-11" />
+<meta name="date" content="2020-06-27" />
 
   <meta name="viewport" content="width=device-width, initial-scale=1" />
   <meta name="apple-mobile-web-app-capable" content="yes" />
@@ -50,15 +50,16 @@
 
 
 
+<script src="libs/accessible-code-block-0.0.1/empty-anchor.js"></script>
 <script src="libs/htmlwidgets-1.5.1/htmlwidgets.js"></script>
 <link href="libs/str_view-0.1.0/str_view.css" rel="stylesheet" />
 <script src="libs/str_view-binding-1.4.0/str_view.js"></script>
 
 
 <style type="text/css">
-a.sourceLine { display: inline-block; line-height: 1.25; }
-a.sourceLine { pointer-events: none; color: inherit; text-decoration: inherit; }
-a.sourceLine:empty { height: 1.2em; }
+code.sourceCode > span { display: inline-block; line-height: 1.25; }
+code.sourceCode > span { color: inherit; text-decoration: inherit; }
+code.sourceCode > span:empty { height: 1.2em; }
 .sourceCode { overflow: visible; }
 code.sourceCode { white-space: pre; position: relative; }
 pre.sourceCode { margin: 0; }
@@ -67,14 +68,16 @@ div.sourceCode { overflow: auto; }
 }
 @media print {
 code.sourceCode { white-space: pre-wrap; }
-a.sourceLine { text-indent: -1em; padding-left: 1em; }
+code.sourceCode > span { text-indent: -5em; padding-left: 5em; }
 }
-pre.numberSource a.sourceLine
-  { position: relative; left: -4em; }
-pre.numberSource a.sourceLine::before
-  { content: attr(title);
+pre.numberSource code
+  { counter-reset: source-line 0; }
+pre.numberSource code > span
+  { position: relative; left: -4em; counter-increment: source-line; }
+pre.numberSource code > span > a:first-child::before
+  { content: counter(source-line);
     position: relative; left: -1em; text-align: right; vertical-align: baseline;
-    border: none; pointer-events: all; display: inline-block;
+    border: none; display: inline-block;
     -webkit-touch-callout: none; -webkit-user-select: none;
     -khtml-user-select: none; -moz-user-select: none;
     -ms-user-select: none; user-select: none;
@@ -83,9 +86,9 @@ pre.numberSource a.sourceLine::before
   }
 pre.numberSource { margin-left: 3em; border-left: 1px solid #aaaaaa;  padding-left: 4px; }
 div.sourceCode
-  {  }
+  {   }
 @media screen {
-a.sourceLine::before { text-decoration: underline; }
+code.sourceCode > span > a:first-child::before { text-decoration: underline; }
 }
 code span.al { color: #ff0000; font-weight: bold; } /* Alert */
 code span.an { color: #60a0b0; font-weight: bold; font-style: italic; } /* Annotation */
@@ -234,108 +237,108 @@ code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } /* Warni
 <div id="a-corpus-of-physics-texts" class="section level2">
 <h2><span class="header-section-number">3.3</span> A corpus of physics texts</h2>
 <p>Let’s work with another corpus of documents, to see what terms are important in a different set of works.</p>
-<div class="sourceCode" id="cb60"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb60-1" title="1"><span class="kw">library</span>(gutenbergr)</a>
-<a class="sourceLine" id="cb60-2" title="2">physics &lt;-<span class="st"> </span><span class="kw">gutenberg_download</span>(<span class="kw">c</span>(<span class="dv">37729</span>, <span class="dv">14725</span>, <span class="dv">13476</span>, <span class="dv">30155</span>), </a>
-<a class="sourceLine" id="cb60-3" title="3">                              <span class="dt">meta_fields =</span> <span class="st">&quot;author&quot;</span>)</a>
-<a class="sourceLine" id="cb60-4" title="4"></a>
-<a class="sourceLine" id="cb60-5" title="5">physics</a>
-<a class="sourceLine" id="cb60-6" title="6"><span class="co">#&gt; # A tibble: 15,410 x 3</span></a>
-<a class="sourceLine" id="cb60-7" title="7"><span class="co">#&gt;   gutenberg_id text                                                   author    </span></a>
-<a class="sourceLine" id="cb60-8" title="8"><span class="co">#&gt;          &lt;int&gt; &lt;chr&gt;                                                  &lt;chr&gt;     </span></a>
-<a class="sourceLine" id="cb60-9" title="9"><span class="co">#&gt; 1        13476 &quot;EXPERIMENTS WITH ALTERNATE CURRENTS OF HIGH POTENTIA~ Tesla, Ni~</span></a>
-<a class="sourceLine" id="cb60-10" title="10"><span class="co">#&gt; 2        13476 &quot;&quot;                                                     Tesla, Ni~</span></a>
-<a class="sourceLine" id="cb60-11" title="11"><span class="co">#&gt; 3        13476 &quot;A Lecture Delivered before the Institution of Electr~ Tesla, Ni~</span></a>
-<a class="sourceLine" id="cb60-12" title="12"><span class="co">#&gt; 4        13476 &quot;&quot;                                                     Tesla, Ni~</span></a>
-<a class="sourceLine" id="cb60-13" title="13"><span class="co">#&gt; 5        13476 &quot;by&quot;                                                   Tesla, Ni~</span></a>
-<a class="sourceLine" id="cb60-14" title="14"><span class="co">#&gt; 6        13476 &quot;&quot;                                                     Tesla, Ni~</span></a>
-<a class="sourceLine" id="cb60-15" title="15"><span class="co">#&gt; # ... with 15,404 more rows</span></a></code></pre></div>
+<div class="sourceCode" id="cb60"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb60-1"><a href="a-corpus-of-physics-texts.html#cb60-1"></a><span class="kw">library</span>(gutenbergr)</span>
+<span id="cb60-2"><a href="a-corpus-of-physics-texts.html#cb60-2"></a>physics &lt;-<span class="st"> </span><span class="kw">gutenberg_download</span>(<span class="kw">c</span>(<span class="dv">37729</span>, <span class="dv">14725</span>, <span class="dv">13476</span>, <span class="dv">30155</span>), </span>
+<span id="cb60-3"><a href="a-corpus-of-physics-texts.html#cb60-3"></a>                              <span class="dt">meta_fields =</span> <span class="st">&quot;author&quot;</span>)</span>
+<span id="cb60-4"><a href="a-corpus-of-physics-texts.html#cb60-4"></a></span>
+<span id="cb60-5"><a href="a-corpus-of-physics-texts.html#cb60-5"></a>physics</span>
+<span id="cb60-6"><a href="a-corpus-of-physics-texts.html#cb60-6"></a><span class="co">#&gt; # A tibble: 15,410 x 3</span></span>
+<span id="cb60-7"><a href="a-corpus-of-physics-texts.html#cb60-7"></a><span class="co">#&gt;   gutenberg_id text                                                   author    </span></span>
+<span id="cb60-8"><a href="a-corpus-of-physics-texts.html#cb60-8"></a><span class="co">#&gt;          &lt;int&gt; &lt;chr&gt;                                                  &lt;chr&gt;     </span></span>
+<span id="cb60-9"><a href="a-corpus-of-physics-texts.html#cb60-9"></a><span class="co">#&gt; 1        13476 &quot;EXPERIMENTS WITH ALTERNATE CURRENTS OF HIGH POTENTIA~ Tesla, Ni~</span></span>
+<span id="cb60-10"><a href="a-corpus-of-physics-texts.html#cb60-10"></a><span class="co">#&gt; 2        13476 &quot;&quot;                                                     Tesla, Ni~</span></span>
+<span id="cb60-11"><a href="a-corpus-of-physics-texts.html#cb60-11"></a><span class="co">#&gt; 3        13476 &quot;A Lecture Delivered before the Institution of Electr~ Tesla, Ni~</span></span>
+<span id="cb60-12"><a href="a-corpus-of-physics-texts.html#cb60-12"></a><span class="co">#&gt; 4        13476 &quot;&quot;                                                     Tesla, Ni~</span></span>
+<span id="cb60-13"><a href="a-corpus-of-physics-texts.html#cb60-13"></a><span class="co">#&gt; 5        13476 &quot;by&quot;                                                   Tesla, Ni~</span></span>
+<span id="cb60-14"><a href="a-corpus-of-physics-texts.html#cb60-14"></a><span class="co">#&gt; 6        13476 &quot;&quot;                                                     Tesla, Ni~</span></span>
+<span id="cb60-15"><a href="a-corpus-of-physics-texts.html#cb60-15"></a><span class="co">#&gt; # ... with 15,404 more rows</span></span></code></pre></div>
 <p>Count words as usual</p>
-<div class="sourceCode" id="cb61"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb61-1" title="1">physics_words &lt;-<span class="st"> </span>physics <span class="op">%&gt;%</span><span class="st"> </span></a>
-<a class="sourceLine" id="cb61-2" title="2"><span class="st">  </span><span class="kw">unnest_tokens</span>(word, text) <span class="op">%&gt;%</span><span class="st"> </span></a>
-<a class="sourceLine" id="cb61-3" title="3"><span class="st">  </span><span class="kw">anti_join</span>(stop_words) <span class="op">%&gt;%</span><span class="st"> </span></a>
-<a class="sourceLine" id="cb61-4" title="4"><span class="st">  </span><span class="kw">count</span>(author, word, <span class="dt">sort =</span> <span class="ot">TRUE</span>)</a>
-<a class="sourceLine" id="cb61-5" title="5"></a>
-<a class="sourceLine" id="cb61-6" title="6">physics_words</a>
-<a class="sourceLine" id="cb61-7" title="7"><span class="co">#&gt; # A tibble: 10,913 x 3</span></a>
-<a class="sourceLine" id="cb61-8" title="8"><span class="co">#&gt;   author              word           n</span></a>
-<a class="sourceLine" id="cb61-9" title="9"><span class="co">#&gt;   &lt;chr&gt;               &lt;chr&gt;      &lt;int&gt;</span></a>
-<a class="sourceLine" id="cb61-10" title="10"><span class="co">#&gt; 1 Galilei, Galileo    water        828</span></a>
-<a class="sourceLine" id="cb61-11" title="11"><span class="co">#&gt; 2 Galilei, Galileo    gravity      240</span></a>
-<a class="sourceLine" id="cb61-12" title="12"><span class="co">#&gt; 3 Huygens, Christiaan refraction   218</span></a>
-<a class="sourceLine" id="cb61-13" title="13"><span class="co">#&gt; 4 Galilei, Galileo    air          211</span></a>
-<a class="sourceLine" id="cb61-14" title="14"><span class="co">#&gt; 5 Galilei, Galileo    mass         208</span></a>
-<a class="sourceLine" id="cb61-15" title="15"><span class="co">#&gt; 6 Huygens, Christiaan light        201</span></a>
-<a class="sourceLine" id="cb61-16" title="16"><span class="co">#&gt; # ... with 10,907 more rows</span></a></code></pre></div>
+<div class="sourceCode" id="cb61"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb61-1"><a href="a-corpus-of-physics-texts.html#cb61-1"></a>physics_words &lt;-<span class="st"> </span>physics <span class="op">%&gt;%</span><span class="st"> </span></span>
+<span id="cb61-2"><a href="a-corpus-of-physics-texts.html#cb61-2"></a><span class="st">  </span><span class="kw">unnest_tokens</span>(word, text) <span class="op">%&gt;%</span><span class="st"> </span></span>
+<span id="cb61-3"><a href="a-corpus-of-physics-texts.html#cb61-3"></a><span class="st">  </span><span class="kw">anti_join</span>(stop_words) <span class="op">%&gt;%</span><span class="st"> </span></span>
+<span id="cb61-4"><a href="a-corpus-of-physics-texts.html#cb61-4"></a><span class="st">  </span><span class="kw">count</span>(author, word, <span class="dt">sort =</span> <span class="ot">TRUE</span>)</span>
+<span id="cb61-5"><a href="a-corpus-of-physics-texts.html#cb61-5"></a></span>
+<span id="cb61-6"><a href="a-corpus-of-physics-texts.html#cb61-6"></a>physics_words</span>
+<span id="cb61-7"><a href="a-corpus-of-physics-texts.html#cb61-7"></a><span class="co">#&gt; # A tibble: 10,913 x 3</span></span>
+<span id="cb61-8"><a href="a-corpus-of-physics-texts.html#cb61-8"></a><span class="co">#&gt;   author              word           n</span></span>
+<span id="cb61-9"><a href="a-corpus-of-physics-texts.html#cb61-9"></a><span class="co">#&gt;   &lt;chr&gt;               &lt;chr&gt;      &lt;int&gt;</span></span>
+<span id="cb61-10"><a href="a-corpus-of-physics-texts.html#cb61-10"></a><span class="co">#&gt; 1 Galilei, Galileo    water        828</span></span>
+<span id="cb61-11"><a href="a-corpus-of-physics-texts.html#cb61-11"></a><span class="co">#&gt; 2 Galilei, Galileo    gravity      240</span></span>
+<span id="cb61-12"><a href="a-corpus-of-physics-texts.html#cb61-12"></a><span class="co">#&gt; 3 Huygens, Christiaan refraction   218</span></span>
+<span id="cb61-13"><a href="a-corpus-of-physics-texts.html#cb61-13"></a><span class="co">#&gt; 4 Galilei, Galileo    air          211</span></span>
+<span id="cb61-14"><a href="a-corpus-of-physics-texts.html#cb61-14"></a><span class="co">#&gt; 5 Galilei, Galileo    mass         208</span></span>
+<span id="cb61-15"><a href="a-corpus-of-physics-texts.html#cb61-15"></a><span class="co">#&gt; 6 Huygens, Christiaan light        201</span></span>
+<span id="cb61-16"><a href="a-corpus-of-physics-texts.html#cb61-16"></a><span class="co">#&gt; # ... with 10,907 more rows</span></span></code></pre></div>
 <p>Visualize the highest log odds words (log odds is particularly useful in comparing wrting styles)</p>
-<div class="sourceCode" id="cb62"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb62-1" title="1">plot_physics &lt;-<span class="st"> </span>physics_words <span class="op">%&gt;%</span></a>
-<a class="sourceLine" id="cb62-2" title="2"><span class="st">  </span><span class="kw">bind_log_odds</span>(word, author, n) <span class="op">%&gt;%</span></a>
-<a class="sourceLine" id="cb62-3" title="3"><span class="st">  </span><span class="kw">mutate</span>(<span class="dt">word =</span> <span class="kw">fct_reorder</span>(word, log_odds)) <span class="op">%&gt;%</span></a>
-<a class="sourceLine" id="cb62-4" title="4"><span class="st">  </span><span class="kw">mutate</span>(<span class="dt">author =</span> <span class="kw">factor</span>(author, <span class="dt">levels =</span> <span class="kw">c</span>(<span class="st">&quot;Galilei, Galileo&quot;</span>,</a>
-<a class="sourceLine" id="cb62-5" title="5">                                            <span class="st">&quot;Huygens, Christiaan&quot;</span>, </a>
-<a class="sourceLine" id="cb62-6" title="6">                                            <span class="st">&quot;Tesla, Nikola&quot;</span>,</a>
-<a class="sourceLine" id="cb62-7" title="7">                                            <span class="st">&quot;Einstein, Albert&quot;</span>)))</a>
-<a class="sourceLine" id="cb62-8" title="8"></a>
-<a class="sourceLine" id="cb62-9" title="9">plot_physics <span class="op">%&gt;%</span><span class="st"> </span></a>
-<a class="sourceLine" id="cb62-10" title="10"><span class="st">  </span><span class="kw">group_by</span>(author) <span class="op">%&gt;%</span><span class="st"> </span></a>
-<a class="sourceLine" id="cb62-11" title="11"><span class="st">  </span><span class="kw">top_n</span>(<span class="dv">15</span>, log_odds) <span class="op">%&gt;%</span><span class="st"> </span></a>
-<a class="sourceLine" id="cb62-12" title="12"><span class="st">  </span><span class="kw">ungroup</span>() <span class="op">%&gt;%</span><span class="st"> </span></a>
-<a class="sourceLine" id="cb62-13" title="13"><span class="st">  </span><span class="kw">facet_bar</span>(<span class="dt">y =</span> word, <span class="dt">x =</span> log_odds, <span class="dt">by =</span> author)</a></code></pre></div>
+<div class="sourceCode" id="cb62"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb62-1"><a href="a-corpus-of-physics-texts.html#cb62-1"></a>plot_physics &lt;-<span class="st"> </span>physics_words <span class="op">%&gt;%</span></span>
+<span id="cb62-2"><a href="a-corpus-of-physics-texts.html#cb62-2"></a><span class="st">  </span><span class="kw">bind_log_odds</span>(word, author, n) <span class="op">%&gt;%</span></span>
+<span id="cb62-3"><a href="a-corpus-of-physics-texts.html#cb62-3"></a><span class="st">  </span><span class="kw">mutate</span>(<span class="dt">word =</span> <span class="kw">fct_reorder</span>(word, log_odds)) <span class="op">%&gt;%</span></span>
+<span id="cb62-4"><a href="a-corpus-of-physics-texts.html#cb62-4"></a><span class="st">  </span><span class="kw">mutate</span>(<span class="dt">author =</span> <span class="kw">factor</span>(author, <span class="dt">levels =</span> <span class="kw">c</span>(<span class="st">&quot;Galilei, Galileo&quot;</span>,</span>
+<span id="cb62-5"><a href="a-corpus-of-physics-texts.html#cb62-5"></a>                                            <span class="st">&quot;Huygens, Christiaan&quot;</span>, </span>
+<span id="cb62-6"><a href="a-corpus-of-physics-texts.html#cb62-6"></a>                                            <span class="st">&quot;Tesla, Nikola&quot;</span>,</span>
+<span id="cb62-7"><a href="a-corpus-of-physics-texts.html#cb62-7"></a>                                            <span class="st">&quot;Einstein, Albert&quot;</span>)))</span>
+<span id="cb62-8"><a href="a-corpus-of-physics-texts.html#cb62-8"></a></span>
+<span id="cb62-9"><a href="a-corpus-of-physics-texts.html#cb62-9"></a>plot_physics <span class="op">%&gt;%</span><span class="st"> </span></span>
+<span id="cb62-10"><a href="a-corpus-of-physics-texts.html#cb62-10"></a><span class="st">  </span><span class="kw">group_by</span>(author) <span class="op">%&gt;%</span><span class="st"> </span></span>
+<span id="cb62-11"><a href="a-corpus-of-physics-texts.html#cb62-11"></a><span class="st">  </span><span class="kw">top_n</span>(<span class="dv">15</span>, log_odds) <span class="op">%&gt;%</span><span class="st"> </span></span>
+<span id="cb62-12"><a href="a-corpus-of-physics-texts.html#cb62-12"></a><span class="st">  </span><span class="kw">ungroup</span>() <span class="op">%&gt;%</span><span class="st"> </span></span>
+<span id="cb62-13"><a href="a-corpus-of-physics-texts.html#cb62-13"></a><span class="st">  </span><span class="kw">facet_bar</span>(<span class="dt">y =</span> word, <span class="dt">x =</span> log_odds, <span class="dt">by =</span> author)</span></code></pre></div>
 <p><img src="analyzing-word-and-document-frequency_files/figure-html/unnamed-chunk-20-1.png" width="864" style="display: block; margin: auto;" /></p>
 <p>Why there is <code>_k</code> and <code>_x</code> in Einstein’s text ?</p>
-<div class="sourceCode" id="cb63"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb63-1" title="1">physics <span class="op">%&gt;%</span><span class="st"> </span></a>
-<a class="sourceLine" id="cb63-2" title="2"><span class="st">  </span><span class="kw">filter</span>(author <span class="op">==</span><span class="st"> &quot;Einstein, Albert&quot;</span>,</a>
-<a class="sourceLine" id="cb63-3" title="3">         <span class="kw">str_detect</span>(text, <span class="st">&quot;_[kx]_?&quot;</span>)) <span class="op">%&gt;%</span><span class="st"> </span></a>
-<a class="sourceLine" id="cb63-4" title="4"><span class="st">  </span><span class="kw">select</span>(text)</a>
-<a class="sourceLine" id="cb63-5" title="5"><span class="co">#&gt; # A tibble: 97 x 1</span></a>
-<a class="sourceLine" id="cb63-6" title="6"><span class="co">#&gt;   text                                                                  </span></a>
-<a class="sourceLine" id="cb63-7" title="7"><span class="co">#&gt;   &lt;chr&gt;                                                                 </span></a>
-<a class="sourceLine" id="cb63-8" title="8"><span class="co">#&gt; 1 co-ordinates (_x, y, z_) which can be dropped from the scene of the   </span></a>
-<a class="sourceLine" id="cb63-9" title="9"><span class="co">#&gt; 2 space with respect to _K_ by the three perpendiculars _x, y, z_ on the</span></a>
-<a class="sourceLine" id="cb63-10" title="10"><span class="co">#&gt; 3 time by corresponding values _x&#39;, y&#39;, z&#39;, t&#39;_, which of course are not</span></a>
-<a class="sourceLine" id="cb63-11" title="11"><span class="co">#&gt; 4 identical with _x, y, z, t_. It has already been set forth in detail  </span></a>
-<a class="sourceLine" id="cb63-12" title="12"><span class="co">#&gt; 5 manner. What are the values _x&#39;, y&#39;, z&#39;, t&#39;_, of an event with respect</span></a>
-<a class="sourceLine" id="cb63-13" title="13"><span class="co">#&gt; 6 to _K&#39;_, when the magnitudes _x, y, z, t_, of the same event with     </span></a>
-<a class="sourceLine" id="cb63-14" title="14"><span class="co">#&gt; # ... with 91 more rows</span></a></code></pre></div>
+<div class="sourceCode" id="cb63"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb63-1"><a href="a-corpus-of-physics-texts.html#cb63-1"></a>physics <span class="op">%&gt;%</span><span class="st"> </span></span>
+<span id="cb63-2"><a href="a-corpus-of-physics-texts.html#cb63-2"></a><span class="st">  </span><span class="kw">filter</span>(author <span class="op">==</span><span class="st"> &quot;Einstein, Albert&quot;</span>,</span>
+<span id="cb63-3"><a href="a-corpus-of-physics-texts.html#cb63-3"></a>         <span class="kw">str_detect</span>(text, <span class="st">&quot;_[kx]_?&quot;</span>)) <span class="op">%&gt;%</span><span class="st"> </span></span>
+<span id="cb63-4"><a href="a-corpus-of-physics-texts.html#cb63-4"></a><span class="st">  </span><span class="kw">select</span>(text)</span>
+<span id="cb63-5"><a href="a-corpus-of-physics-texts.html#cb63-5"></a><span class="co">#&gt; # A tibble: 97 x 1</span></span>
+<span id="cb63-6"><a href="a-corpus-of-physics-texts.html#cb63-6"></a><span class="co">#&gt;   text                                                                  </span></span>
+<span id="cb63-7"><a href="a-corpus-of-physics-texts.html#cb63-7"></a><span class="co">#&gt;   &lt;chr&gt;                                                                 </span></span>
+<span id="cb63-8"><a href="a-corpus-of-physics-texts.html#cb63-8"></a><span class="co">#&gt; 1 co-ordinates (_x, y, z_) which can be dropped from the scene of the   </span></span>
+<span id="cb63-9"><a href="a-corpus-of-physics-texts.html#cb63-9"></a><span class="co">#&gt; 2 space with respect to _K_ by the three perpendiculars _x, y, z_ on the</span></span>
+<span id="cb63-10"><a href="a-corpus-of-physics-texts.html#cb63-10"></a><span class="co">#&gt; 3 time by corresponding values _x&#39;, y&#39;, z&#39;, t&#39;_, which of course are not</span></span>
+<span id="cb63-11"><a href="a-corpus-of-physics-texts.html#cb63-11"></a><span class="co">#&gt; 4 identical with _x, y, z, t_. It has already been set forth in detail  </span></span>
+<span id="cb63-12"><a href="a-corpus-of-physics-texts.html#cb63-12"></a><span class="co">#&gt; 5 manner. What are the values _x&#39;, y&#39;, z&#39;, t&#39;_, of an event with respect</span></span>
+<span id="cb63-13"><a href="a-corpus-of-physics-texts.html#cb63-13"></a><span class="co">#&gt; 6 to _K&#39;_, when the magnitudes _x, y, z, t_, of the same event with     </span></span>
+<span id="cb63-14"><a href="a-corpus-of-physics-texts.html#cb63-14"></a><span class="co">#&gt; # ... with 91 more rows</span></span></code></pre></div>
 <p>Some cleaning up of the text may be in demand. Also notice that there are separate “co” and “ordinate” items in the high tf-idf words for the Einstein text; the <code>unnest_tokens()</code> function separates around punctuation like hyphens by default. Notice that the tf-idf scores for “co” and “ordinate” are close to same!</p>
 <p>“AB”, “RC”, and so forth are names of rays, circles, angles, and so forth for Huygens.</p>
-<div class="sourceCode" id="cb64"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb64-1" title="1">physics <span class="op">%&gt;%</span><span class="st"> </span></a>
-<a class="sourceLine" id="cb64-2" title="2"><span class="st">  </span><span class="kw">filter</span>(<span class="kw">str_detect</span>(text, <span class="st">&quot;RC&quot;</span>)) <span class="op">%&gt;%</span><span class="st"> </span></a>
-<a class="sourceLine" id="cb64-3" title="3"><span class="st">  </span><span class="kw">select</span>(text)</a>
-<a class="sourceLine" id="cb64-4" title="4"><span class="co">#&gt; # A tibble: 44 x 1</span></a>
-<a class="sourceLine" id="cb64-5" title="5"><span class="co">#&gt;   text                                                                  </span></a>
-<a class="sourceLine" id="cb64-6" title="6"><span class="co">#&gt;   &lt;chr&gt;                                                                 </span></a>
-<a class="sourceLine" id="cb64-7" title="7"><span class="co">#&gt; 1 line RC, parallel and equal to AB, to be a portion of a wave of light,</span></a>
-<a class="sourceLine" id="cb64-8" title="8"><span class="co">#&gt; 2 represents the partial wave coming from the point A, after the wave RC</span></a>
-<a class="sourceLine" id="cb64-9" title="9"><span class="co">#&gt; 3 be the propagation of the wave RC which fell on AB, and would be the  </span></a>
-<a class="sourceLine" id="cb64-10" title="10"><span class="co">#&gt; 4 transparent body; seeing that the wave RC, having come to the aperture</span></a>
-<a class="sourceLine" id="cb64-11" title="11"><span class="co">#&gt; 5 incident rays. Let there be such a ray RC falling upon the surface    </span></a>
-<a class="sourceLine" id="cb64-12" title="12"><span class="co">#&gt; 6 CK. Make CO perpendicular to RC, and across the angle KCO adjust OK,  </span></a>
-<a class="sourceLine" id="cb64-13" title="13"><span class="co">#&gt; # ... with 38 more rows</span></a></code></pre></div>
-<div class="sourceCode" id="cb65"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb65-1" title="1">my_stop_words &lt;-<span class="st"> </span><span class="kw">tibble</span>(<span class="dt">word =</span> <span class="kw">c</span>(<span class="st">&quot;eq&quot;</span>, <span class="st">&quot;co&quot;</span>, <span class="st">&quot;rc&quot;</span>, <span class="st">&quot;ac&quot;</span>, <span class="st">&quot;ak&quot;</span>, <span class="st">&quot;bn&quot;</span>, </a>
-<a class="sourceLine" id="cb65-2" title="2">                                   <span class="st">&quot;fig&quot;</span>, <span class="st">&quot;file&quot;</span>, <span class="st">&quot;cg&quot;</span>, <span class="st">&quot;cb&quot;</span>, <span class="st">&quot;cm&quot;</span>,</a>
-<a class="sourceLine" id="cb65-3" title="3">                               <span class="st">&quot;ab&quot;</span>, <span class="st">&quot;_k&quot;</span>, <span class="st">&quot;_k_&quot;</span>, <span class="st">&quot;k&quot;</span>, <span class="st">&quot;_x&quot;</span>))</a>
-<a class="sourceLine" id="cb65-4" title="4"></a>
-<a class="sourceLine" id="cb65-5" title="5">physics_words &lt;-<span class="st"> </span><span class="kw">anti_join</span>(physics_words, </a>
-<a class="sourceLine" id="cb65-6" title="6">                           my_stop_words, </a>
-<a class="sourceLine" id="cb65-7" title="7">                           <span class="dt">by =</span> <span class="st">&quot;word&quot;</span>)</a>
-<a class="sourceLine" id="cb65-8" title="8"></a>
-<a class="sourceLine" id="cb65-9" title="9">plot_physics &lt;-<span class="st"> </span>physics_words <span class="op">%&gt;%</span></a>
-<a class="sourceLine" id="cb65-10" title="10"><span class="st">  </span><span class="kw">bind_log_odds</span>(word, author, n) <span class="op">%&gt;%</span></a>
-<a class="sourceLine" id="cb65-11" title="11"><span class="st">  </span><span class="kw">mutate</span>(<span class="dt">word =</span> <span class="kw">str_remove_all</span>(word, <span class="st">&quot;_&quot;</span>)) <span class="op">%&gt;%</span></a>
-<a class="sourceLine" id="cb65-12" title="12"><span class="st">  </span><span class="kw">group_by</span>(author) <span class="op">%&gt;%</span><span class="st"> </span></a>
-<a class="sourceLine" id="cb65-13" title="13"><span class="st">  </span><span class="kw">top_n</span>(<span class="dv">15</span>, log_odds) <span class="op">%&gt;%</span></a>
-<a class="sourceLine" id="cb65-14" title="14"><span class="st">  </span><span class="kw">ungroup</span>() <span class="op">%&gt;%</span></a>
-<a class="sourceLine" id="cb65-15" title="15"><span class="st">  </span><span class="kw">mutate</span>(<span class="dt">author =</span> <span class="kw">factor</span>(author, <span class="dt">levels =</span> <span class="kw">c</span>(<span class="st">&quot;Galilei, Galileo&quot;</span>,</a>
-<a class="sourceLine" id="cb65-16" title="16">                                            <span class="st">&quot;Huygens, Christiaan&quot;</span>,</a>
-<a class="sourceLine" id="cb65-17" title="17">                                            <span class="st">&quot;Tesla, Nikola&quot;</span>,</a>
-<a class="sourceLine" id="cb65-18" title="18">                                            <span class="st">&quot;Einstein, Albert&quot;</span>)))</a>
-<a class="sourceLine" id="cb65-19" title="19"></a>
-<a class="sourceLine" id="cb65-20" title="20"></a>
-<a class="sourceLine" id="cb65-21" title="21"><span class="kw">facet_bar</span>(plot_physics,</a>
-<a class="sourceLine" id="cb65-22" title="22">          <span class="dt">y =</span> word,</a>
-<a class="sourceLine" id="cb65-23" title="23">          <span class="dt">x =</span> log_odds,</a>
-<a class="sourceLine" id="cb65-24" title="24">          <span class="dt">by =</span> author,</a>
-<a class="sourceLine" id="cb65-25" title="25">          <span class="dt">nrow =</span> <span class="dv">2</span>)</a></code></pre></div>
+<div class="sourceCode" id="cb64"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb64-1"><a href="a-corpus-of-physics-texts.html#cb64-1"></a>physics <span class="op">%&gt;%</span><span class="st"> </span></span>
+<span id="cb64-2"><a href="a-corpus-of-physics-texts.html#cb64-2"></a><span class="st">  </span><span class="kw">filter</span>(<span class="kw">str_detect</span>(text, <span class="st">&quot;RC&quot;</span>)) <span class="op">%&gt;%</span><span class="st"> </span></span>
+<span id="cb64-3"><a href="a-corpus-of-physics-texts.html#cb64-3"></a><span class="st">  </span><span class="kw">select</span>(text)</span>
+<span id="cb64-4"><a href="a-corpus-of-physics-texts.html#cb64-4"></a><span class="co">#&gt; # A tibble: 44 x 1</span></span>
+<span id="cb64-5"><a href="a-corpus-of-physics-texts.html#cb64-5"></a><span class="co">#&gt;   text                                                                  </span></span>
+<span id="cb64-6"><a href="a-corpus-of-physics-texts.html#cb64-6"></a><span class="co">#&gt;   &lt;chr&gt;                                                                 </span></span>
+<span id="cb64-7"><a href="a-corpus-of-physics-texts.html#cb64-7"></a><span class="co">#&gt; 1 line RC, parallel and equal to AB, to be a portion of a wave of light,</span></span>
+<span id="cb64-8"><a href="a-corpus-of-physics-texts.html#cb64-8"></a><span class="co">#&gt; 2 represents the partial wave coming from the point A, after the wave RC</span></span>
+<span id="cb64-9"><a href="a-corpus-of-physics-texts.html#cb64-9"></a><span class="co">#&gt; 3 be the propagation of the wave RC which fell on AB, and would be the  </span></span>
+<span id="cb64-10"><a href="a-corpus-of-physics-texts.html#cb64-10"></a><span class="co">#&gt; 4 transparent body; seeing that the wave RC, having come to the aperture</span></span>
+<span id="cb64-11"><a href="a-corpus-of-physics-texts.html#cb64-11"></a><span class="co">#&gt; 5 incident rays. Let there be such a ray RC falling upon the surface    </span></span>
+<span id="cb64-12"><a href="a-corpus-of-physics-texts.html#cb64-12"></a><span class="co">#&gt; 6 CK. Make CO perpendicular to RC, and across the angle KCO adjust OK,  </span></span>
+<span id="cb64-13"><a href="a-corpus-of-physics-texts.html#cb64-13"></a><span class="co">#&gt; # ... with 38 more rows</span></span></code></pre></div>
+<div class="sourceCode" id="cb65"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb65-1"><a href="a-corpus-of-physics-texts.html#cb65-1"></a>my_stop_words &lt;-<span class="st"> </span><span class="kw">tibble</span>(<span class="dt">word =</span> <span class="kw">c</span>(<span class="st">&quot;eq&quot;</span>, <span class="st">&quot;co&quot;</span>, <span class="st">&quot;rc&quot;</span>, <span class="st">&quot;ac&quot;</span>, <span class="st">&quot;ak&quot;</span>, <span class="st">&quot;bn&quot;</span>, </span>
+<span id="cb65-2"><a href="a-corpus-of-physics-texts.html#cb65-2"></a>                                   <span class="st">&quot;fig&quot;</span>, <span class="st">&quot;file&quot;</span>, <span class="st">&quot;cg&quot;</span>, <span class="st">&quot;cb&quot;</span>, <span class="st">&quot;cm&quot;</span>,</span>
+<span id="cb65-3"><a href="a-corpus-of-physics-texts.html#cb65-3"></a>                               <span class="st">&quot;ab&quot;</span>, <span class="st">&quot;_k&quot;</span>, <span class="st">&quot;_k_&quot;</span>, <span class="st">&quot;k&quot;</span>, <span class="st">&quot;_x&quot;</span>))</span>
+<span id="cb65-4"><a href="a-corpus-of-physics-texts.html#cb65-4"></a></span>
+<span id="cb65-5"><a href="a-corpus-of-physics-texts.html#cb65-5"></a>physics_words &lt;-<span class="st"> </span><span class="kw">anti_join</span>(physics_words, </span>
+<span id="cb65-6"><a href="a-corpus-of-physics-texts.html#cb65-6"></a>                           my_stop_words, </span>
+<span id="cb65-7"><a href="a-corpus-of-physics-texts.html#cb65-7"></a>                           <span class="dt">by =</span> <span class="st">&quot;word&quot;</span>)</span>
+<span id="cb65-8"><a href="a-corpus-of-physics-texts.html#cb65-8"></a></span>
+<span id="cb65-9"><a href="a-corpus-of-physics-texts.html#cb65-9"></a>plot_physics &lt;-<span class="st"> </span>physics_words <span class="op">%&gt;%</span></span>
+<span id="cb65-10"><a href="a-corpus-of-physics-texts.html#cb65-10"></a><span class="st">  </span><span class="kw">bind_log_odds</span>(word, author, n) <span class="op">%&gt;%</span></span>
+<span id="cb65-11"><a href="a-corpus-of-physics-texts.html#cb65-11"></a><span class="st">  </span><span class="kw">mutate</span>(<span class="dt">word =</span> <span class="kw">str_remove_all</span>(word, <span class="st">&quot;_&quot;</span>)) <span class="op">%&gt;%</span></span>
+<span id="cb65-12"><a href="a-corpus-of-physics-texts.html#cb65-12"></a><span class="st">  </span><span class="kw">group_by</span>(author) <span class="op">%&gt;%</span><span class="st"> </span></span>
+<span id="cb65-13"><a href="a-corpus-of-physics-texts.html#cb65-13"></a><span class="st">  </span><span class="kw">top_n</span>(<span class="dv">15</span>, log_odds) <span class="op">%&gt;%</span></span>
+<span id="cb65-14"><a href="a-corpus-of-physics-texts.html#cb65-14"></a><span class="st">  </span><span class="kw">ungroup</span>() <span class="op">%&gt;%</span></span>
+<span id="cb65-15"><a href="a-corpus-of-physics-texts.html#cb65-15"></a><span class="st">  </span><span class="kw">mutate</span>(<span class="dt">author =</span> <span class="kw">factor</span>(author, <span class="dt">levels =</span> <span class="kw">c</span>(<span class="st">&quot;Galilei, Galileo&quot;</span>,</span>
+<span id="cb65-16"><a href="a-corpus-of-physics-texts.html#cb65-16"></a>                                            <span class="st">&quot;Huygens, Christiaan&quot;</span>,</span>
+<span id="cb65-17"><a href="a-corpus-of-physics-texts.html#cb65-17"></a>                                            <span class="st">&quot;Tesla, Nikola&quot;</span>,</span>
+<span id="cb65-18"><a href="a-corpus-of-physics-texts.html#cb65-18"></a>                                            <span class="st">&quot;Einstein, Albert&quot;</span>)))</span>
+<span id="cb65-19"><a href="a-corpus-of-physics-texts.html#cb65-19"></a></span>
+<span id="cb65-20"><a href="a-corpus-of-physics-texts.html#cb65-20"></a></span>
+<span id="cb65-21"><a href="a-corpus-of-physics-texts.html#cb65-21"></a><span class="kw">facet_bar</span>(plot_physics,</span>
+<span id="cb65-22"><a href="a-corpus-of-physics-texts.html#cb65-22"></a>          <span class="dt">y =</span> word,</span>
+<span id="cb65-23"><a href="a-corpus-of-physics-texts.html#cb65-23"></a>          <span class="dt">x =</span> log_odds,</span>
+<span id="cb65-24"><a href="a-corpus-of-physics-texts.html#cb65-24"></a>          <span class="dt">by =</span> author,</span>
+<span id="cb65-25"><a href="a-corpus-of-physics-texts.html#cb65-25"></a>          <span class="dt">nrow =</span> <span class="dv">2</span>)</span></code></pre></div>
 <p><img src="analyzing-word-and-document-frequency_files/figure-html/unnamed-chunk-23-1.png" width="960" style="display: block; margin: auto;" /></p>
 
 </div>

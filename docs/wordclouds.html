@@ -6,7 +6,7 @@
   <meta http-equiv="X-UA-Compatible" content="IE=edge" />
   <title>2.5 Wordclouds | Notes for “Text Mining with R: A Tidy Approach”</title>
   <meta name="description" content="2.5 Wordclouds | Notes for “Text Mining with R: A Tidy Approach”" />
-  <meta name="generator" content="bookdown 0.18 and GitBook 2.6.7" />
+  <meta name="generator" content="bookdown 0.20 and GitBook 2.6.7" />
 
   <meta property="og:title" content="2.5 Wordclouds | Notes for “Text Mining with R: A Tidy Approach”" />
   <meta property="og:type" content="book" />
@@ -24,7 +24,7 @@
 <meta name="author" content="Qiushi Yan" />
 
 
-<meta name="date" content="2020-05-11" />
+<meta name="date" content="2020-06-27" />
 
   <meta name="viewport" content="width=device-width, initial-scale=1" />
   <meta name="apple-mobile-web-app-capable" content="yes" />
@@ -50,15 +50,16 @@
 
 
 
+<script src="libs/accessible-code-block-0.0.1/empty-anchor.js"></script>
 <script src="libs/htmlwidgets-1.5.1/htmlwidgets.js"></script>
 <link href="libs/str_view-0.1.0/str_view.css" rel="stylesheet" />
 <script src="libs/str_view-binding-1.4.0/str_view.js"></script>
 
 
 <style type="text/css">
-a.sourceLine { display: inline-block; line-height: 1.25; }
-a.sourceLine { pointer-events: none; color: inherit; text-decoration: inherit; }
-a.sourceLine:empty { height: 1.2em; }
+code.sourceCode > span { display: inline-block; line-height: 1.25; }
+code.sourceCode > span { color: inherit; text-decoration: inherit; }
+code.sourceCode > span:empty { height: 1.2em; }
 .sourceCode { overflow: visible; }
 code.sourceCode { white-space: pre; position: relative; }
 pre.sourceCode { margin: 0; }
@@ -67,14 +68,16 @@ div.sourceCode { overflow: auto; }
 }
 @media print {
 code.sourceCode { white-space: pre-wrap; }
-a.sourceLine { text-indent: -1em; padding-left: 1em; }
+code.sourceCode > span { text-indent: -5em; padding-left: 5em; }
 }
-pre.numberSource a.sourceLine
-  { position: relative; left: -4em; }
-pre.numberSource a.sourceLine::before
-  { content: attr(title);
+pre.numberSource code
+  { counter-reset: source-line 0; }
+pre.numberSource code > span
+  { position: relative; left: -4em; counter-increment: source-line; }
+pre.numberSource code > span > a:first-child::before
+  { content: counter(source-line);
     position: relative; left: -1em; text-align: right; vertical-align: baseline;
-    border: none; pointer-events: all; display: inline-block;
+    border: none; display: inline-block;
     -webkit-touch-callout: none; -webkit-user-select: none;
     -khtml-user-select: none; -moz-user-select: none;
     -ms-user-select: none; user-select: none;
@@ -83,9 +86,9 @@ pre.numberSource a.sourceLine::before
   }
 pre.numberSource { margin-left: 3em; border-left: 1px solid #aaaaaa;  padding-left: 4px; }
 div.sourceCode
-  {  }
+  {   }
 @media screen {
-a.sourceLine::before { text-decoration: underline; }
+code.sourceCode > span > a:first-child::before { text-decoration: underline; }
 }
 code span.al { color: #ff0000; font-weight: bold; } /* Alert */
 code span.an { color: #60a0b0; font-weight: bold; font-style: italic; } /* Annotation */
@@ -234,36 +237,36 @@ code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } /* Warni
 <div id="wordclouds" class="section level2">
 <h2><span class="header-section-number">2.5</span> Wordclouds</h2>
 <p>The <code>ggwordcloud</code> package adds wordcloud extension into the ggplot2 ecosystem. The geometry <code>geom_text_wordcloud()</code> has a similar sytax comparing to <code>geom_text_repel</code>: <code>label</code> for the word and <code>size</code> for the count.</p>
-<div class="sourceCode" id="cb36"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb36-1" title="1"><span class="kw">library</span>(ggwordcloud)</a>
-<a class="sourceLine" id="cb36-2" title="2"></a>
-<a class="sourceLine" id="cb36-3" title="3"></a>
-<a class="sourceLine" id="cb36-4" title="4"></a>
-<a class="sourceLine" id="cb36-5" title="5">wordcloud_df &lt;-tidy_books <span class="op">%&gt;%</span><span class="st"> </span></a>
-<a class="sourceLine" id="cb36-6" title="6"><span class="st">  </span><span class="kw">anti_join</span>(custom_stop_words) <span class="op">%&gt;%</span><span class="st"> </span></a>
-<a class="sourceLine" id="cb36-7" title="7"><span class="st">  </span><span class="kw">inner_join</span>(<span class="kw">get_sentiments</span>(<span class="st">&quot;bing&quot;</span>)) <span class="op">%&gt;%</span><span class="st"> </span></a>
-<a class="sourceLine" id="cb36-8" title="8"><span class="st">  </span><span class="kw">count</span>(sentiment, word, <span class="dt">sort =</span> T) <span class="op">%&gt;%</span><span class="st"> </span></a>
-<a class="sourceLine" id="cb36-9" title="9"><span class="st">  </span><span class="kw">top_n</span>(<span class="dv">200</span>)</a>
-<a class="sourceLine" id="cb36-10" title="10"></a>
-<a class="sourceLine" id="cb36-11" title="11">wordcloud_df <span class="op">%&gt;%</span></a>
-<a class="sourceLine" id="cb36-12" title="12"><span class="st">  </span><span class="kw">ggplot</span>() <span class="op">+</span><span class="st"> </span></a>
-<a class="sourceLine" id="cb36-13" title="13"><span class="st">  </span><span class="kw">geom_text_wordcloud_area</span>(<span class="kw">aes</span>(<span class="dt">label =</span> word, <span class="dt">size =</span> n)) <span class="op">+</span></a>
-<a class="sourceLine" id="cb36-14" title="14"><span class="st">  </span><span class="kw">scale_size_area</span>(<span class="dt">max_size =</span> <span class="dv">15</span>)</a></code></pre></div>
+<div class="sourceCode" id="cb36"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb36-1"><a href="wordclouds.html#cb36-1"></a><span class="kw">library</span>(ggwordcloud)</span>
+<span id="cb36-2"><a href="wordclouds.html#cb36-2"></a></span>
+<span id="cb36-3"><a href="wordclouds.html#cb36-3"></a></span>
+<span id="cb36-4"><a href="wordclouds.html#cb36-4"></a></span>
+<span id="cb36-5"><a href="wordclouds.html#cb36-5"></a>wordcloud_df &lt;-tidy_books <span class="op">%&gt;%</span><span class="st"> </span></span>
+<span id="cb36-6"><a href="wordclouds.html#cb36-6"></a><span class="st">  </span><span class="kw">anti_join</span>(custom_stop_words) <span class="op">%&gt;%</span><span class="st"> </span></span>
+<span id="cb36-7"><a href="wordclouds.html#cb36-7"></a><span class="st">  </span><span class="kw">inner_join</span>(<span class="kw">get_sentiments</span>(<span class="st">&quot;bing&quot;</span>)) <span class="op">%&gt;%</span><span class="st"> </span></span>
+<span id="cb36-8"><a href="wordclouds.html#cb36-8"></a><span class="st">  </span><span class="kw">count</span>(sentiment, word, <span class="dt">sort =</span> T) <span class="op">%&gt;%</span><span class="st"> </span></span>
+<span id="cb36-9"><a href="wordclouds.html#cb36-9"></a><span class="st">  </span><span class="kw">top_n</span>(<span class="dv">200</span>)</span>
+<span id="cb36-10"><a href="wordclouds.html#cb36-10"></a></span>
+<span id="cb36-11"><a href="wordclouds.html#cb36-11"></a>wordcloud_df <span class="op">%&gt;%</span></span>
+<span id="cb36-12"><a href="wordclouds.html#cb36-12"></a><span class="st">  </span><span class="kw">ggplot</span>() <span class="op">+</span><span class="st"> </span></span>
+<span id="cb36-13"><a href="wordclouds.html#cb36-13"></a><span class="st">  </span><span class="kw">geom_text_wordcloud_area</span>(<span class="kw">aes</span>(<span class="dt">label =</span> word, <span class="dt">size =</span> n)) <span class="op">+</span></span>
+<span id="cb36-14"><a href="wordclouds.html#cb36-14"></a><span class="st">  </span><span class="kw">scale_size_area</span>(<span class="dt">max_size =</span> <span class="dv">15</span>)</span></code></pre></div>
 <p><img src="sentiment-analysis_files/figure-html/unnamed-chunk-15-1.png" width="768" style="display: block; margin: auto;" /></p>
 <p>One particular issue with wordcloud plot is that they use font size porportional to the corresponding frequency, so that long words with smaller frequency can sometimes misleadingly encompass much ink area than short words with larger frequency. One solution is to use <code>geom_texg_wordcloud</code>, which aims to set the ink area, rather than font size, proportional to the frequency, so that our perception are not biased by number of letters.</p>
-<div class="sourceCode" id="cb37"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb37-1" title="1">wordcloud_df <span class="op">%&gt;%</span></a>
-<a class="sourceLine" id="cb37-2" title="2"><span class="st">  </span><span class="kw">ggplot</span>() <span class="op">+</span><span class="st"> </span></a>
-<a class="sourceLine" id="cb37-3" title="3"><span class="st">  </span><span class="kw">geom_text_wordcloud_area</span>(<span class="kw">aes</span>(<span class="dt">label =</span> word, <span class="dt">size =</span> n), <span class="dt">shape =</span> <span class="st">&quot;star&quot;</span>) <span class="op">+</span><span class="st"> </span></a>
-<a class="sourceLine" id="cb37-4" title="4"><span class="st">  </span><span class="kw">scale_size_area</span>(<span class="dt">max_size =</span> <span class="dv">15</span>)</a></code></pre></div>
+<div class="sourceCode" id="cb37"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb37-1"><a href="wordclouds.html#cb37-1"></a>wordcloud_df <span class="op">%&gt;%</span></span>
+<span id="cb37-2"><a href="wordclouds.html#cb37-2"></a><span class="st">  </span><span class="kw">ggplot</span>() <span class="op">+</span><span class="st"> </span></span>
+<span id="cb37-3"><a href="wordclouds.html#cb37-3"></a><span class="st">  </span><span class="kw">geom_text_wordcloud_area</span>(<span class="kw">aes</span>(<span class="dt">label =</span> word, <span class="dt">size =</span> n), <span class="dt">shape =</span> <span class="st">&quot;star&quot;</span>) <span class="op">+</span><span class="st"> </span></span>
+<span id="cb37-4"><a href="wordclouds.html#cb37-4"></a><span class="st">  </span><span class="kw">scale_size_area</span>(<span class="dt">max_size =</span> <span class="dv">15</span>)</span></code></pre></div>
 <p><img src="sentiment-analysis_files/figure-html/unnamed-chunk-16-1.png" width="672" style="display: block; margin: auto;" /></p>
 <p>In other functions, such as <code>wordcloud::comparison.cloud()</code>, you may need to turn the data frame into a matrix with reshape2’s <code>acast()</code>. Let’s do the sentiment analysis to tag positive and negative words using an inner join, then find the most common positive and negative words. Until the step where we need to send the data to <code>comparison.cloud()</code></p>
-<div class="sourceCode" id="cb38"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb38-1" title="1"><span class="kw">library</span>(wordcloud)</a>
-<a class="sourceLine" id="cb38-2" title="2"></a>
-<a class="sourceLine" id="cb38-3" title="3">tidy_books <span class="op">%&gt;%</span></a>
-<a class="sourceLine" id="cb38-4" title="4"><span class="st">  </span><span class="kw">inner_join</span>(<span class="kw">get_sentiments</span>(<span class="st">&quot;bing&quot;</span>)) <span class="op">%&gt;%</span></a>
-<a class="sourceLine" id="cb38-5" title="5"><span class="st">  </span><span class="kw">count</span>(word, sentiment, <span class="dt">sort =</span> <span class="ot">TRUE</span>) <span class="op">%&gt;%</span></a>
-<a class="sourceLine" id="cb38-6" title="6"><span class="st">  </span>reshape2<span class="op">::</span><span class="kw">acast</span>(word <span class="op">~</span><span class="st"> </span>sentiment, <span class="dt">value.var =</span> <span class="st">&quot;n&quot;</span>, <span class="dt">fill =</span> <span class="dv">0</span>) <span class="op">%&gt;%</span></a>
-<a class="sourceLine" id="cb38-7" title="7"><span class="st">  </span><span class="kw">comparison.cloud</span>(<span class="dt">colors =</span> <span class="kw">c</span>(<span class="st">&quot;gray20&quot;</span>, <span class="st">&quot;gray80&quot;</span>),</a>
-<a class="sourceLine" id="cb38-8" title="8">                   <span class="dt">max.words =</span> <span class="dv">100</span>)</a></code></pre></div>
+<div class="sourceCode" id="cb38"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb38-1"><a href="wordclouds.html#cb38-1"></a><span class="kw">library</span>(wordcloud)</span>
+<span id="cb38-2"><a href="wordclouds.html#cb38-2"></a></span>
+<span id="cb38-3"><a href="wordclouds.html#cb38-3"></a>tidy_books <span class="op">%&gt;%</span></span>
+<span id="cb38-4"><a href="wordclouds.html#cb38-4"></a><span class="st">  </span><span class="kw">inner_join</span>(<span class="kw">get_sentiments</span>(<span class="st">&quot;bing&quot;</span>)) <span class="op">%&gt;%</span></span>
+<span id="cb38-5"><a href="wordclouds.html#cb38-5"></a><span class="st">  </span><span class="kw">count</span>(word, sentiment, <span class="dt">sort =</span> <span class="ot">TRUE</span>) <span class="op">%&gt;%</span></span>
+<span id="cb38-6"><a href="wordclouds.html#cb38-6"></a><span class="st">  </span>reshape2<span class="op">::</span><span class="kw">acast</span>(word <span class="op">~</span><span class="st"> </span>sentiment, <span class="dt">value.var =</span> <span class="st">&quot;n&quot;</span>, <span class="dt">fill =</span> <span class="dv">0</span>) <span class="op">%&gt;%</span></span>
+<span id="cb38-7"><a href="wordclouds.html#cb38-7"></a><span class="st">  </span><span class="kw">comparison.cloud</span>(<span class="dt">colors =</span> <span class="kw">c</span>(<span class="st">&quot;gray20&quot;</span>, <span class="st">&quot;gray80&quot;</span>),</span>
+<span id="cb38-8"><a href="wordclouds.html#cb38-8"></a>                   <span class="dt">max.words =</span> <span class="dv">100</span>)</span></code></pre></div>
 <p><img src="sentiment-analysis_files/figure-html/unnamed-chunk-17-1.png" width="672" style="display: block; margin: auto;" /></p>
 </div>
             </section>

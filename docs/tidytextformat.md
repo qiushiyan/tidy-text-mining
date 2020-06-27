@@ -216,7 +216,7 @@ books
 #>   <chr>          <chr>  <int>
 #> 1 Jane Austen    miss    1860
 #> 2 Jane Austen    time    1339
-#> 3 Brontë Sisters time    1065
+#> 3 Bront<eb> Sisters time    1065
 #> 4 Jane Austen    fanny    977
 #> 5 Jane Austen    emma     866
 #> 6 Jane Austen    sister   865
@@ -239,11 +239,11 @@ comparison_df
 #> # A tibble: 56,002 x 4
 #>   word  `Jane Austen` other          proportion
 #>   <chr>         <dbl> <chr>               <dbl>
-#> 1 miss        0.00855 Brontë Sisters  0.00342  
+#> 1 miss        0.00855 Bront<eb> Sisters  0.00342  
 #> 2 miss        0.00855 H.G. Wells      0.000120 
-#> 3 time        0.00615 Brontë Sisters  0.00424  
+#> 3 time        0.00615 Bront<eb> Sisters  0.00424  
 #> 4 time        0.00615 H.G. Wells      0.00682  
-#> 5 fanny       0.00449 Brontë Sisters  0.0000438
+#> 5 fanny       0.00449 Bront<eb> Sisters  0.0000438
 #> 6 fanny       0.00449 H.G. Wells      0        
 #> # ... with 5.6e+04 more rows
 ```

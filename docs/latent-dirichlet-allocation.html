@@ -6,7 +6,7 @@
   <meta http-equiv="X-UA-Compatible" content="IE=edge" />
   <title>6.1 Latent Dirichlet Allocation | Notes for “Text Mining with R: A Tidy Approach”</title>
   <meta name="description" content="6.1 Latent Dirichlet Allocation | Notes for “Text Mining with R: A Tidy Approach”" />
-  <meta name="generator" content="bookdown 0.18 and GitBook 2.6.7" />
+  <meta name="generator" content="bookdown 0.20 and GitBook 2.6.7" />
 
   <meta property="og:title" content="6.1 Latent Dirichlet Allocation | Notes for “Text Mining with R: A Tidy Approach”" />
   <meta property="og:type" content="book" />
@@ -24,7 +24,7 @@
 <meta name="author" content="Qiushi Yan" />
 
 
-<meta name="date" content="2020-05-11" />
+<meta name="date" content="2020-06-27" />
 
   <meta name="viewport" content="width=device-width, initial-scale=1" />
   <meta name="apple-mobile-web-app-capable" content="yes" />
@@ -50,15 +50,16 @@
 
 
 
+<script src="libs/accessible-code-block-0.0.1/empty-anchor.js"></script>
 <script src="libs/htmlwidgets-1.5.1/htmlwidgets.js"></script>
 <link href="libs/str_view-0.1.0/str_view.css" rel="stylesheet" />
 <script src="libs/str_view-binding-1.4.0/str_view.js"></script>
 
 
 <style type="text/css">
-a.sourceLine { display: inline-block; line-height: 1.25; }
-a.sourceLine { pointer-events: none; color: inherit; text-decoration: inherit; }
-a.sourceLine:empty { height: 1.2em; }
+code.sourceCode > span { display: inline-block; line-height: 1.25; }
+code.sourceCode > span { color: inherit; text-decoration: inherit; }
+code.sourceCode > span:empty { height: 1.2em; }
 .sourceCode { overflow: visible; }
 code.sourceCode { white-space: pre; position: relative; }
 pre.sourceCode { margin: 0; }
@@ -67,14 +68,16 @@ div.sourceCode { overflow: auto; }
 }
 @media print {
 code.sourceCode { white-space: pre-wrap; }
-a.sourceLine { text-indent: -1em; padding-left: 1em; }
+code.sourceCode > span { text-indent: -5em; padding-left: 5em; }
 }
-pre.numberSource a.sourceLine
-  { position: relative; left: -4em; }
-pre.numberSource a.sourceLine::before
-  { content: attr(title);
+pre.numberSource code
+  { counter-reset: source-line 0; }
+pre.numberSource code > span
+  { position: relative; left: -4em; counter-increment: source-line; }
+pre.numberSource code > span > a:first-child::before
+  { content: counter(source-line);
     position: relative; left: -1em; text-align: right; vertical-align: baseline;
-    border: none; pointer-events: all; display: inline-block;
+    border: none; display: inline-block;
     -webkit-touch-callout: none; -webkit-user-select: none;
     -khtml-user-select: none; -moz-user-select: none;
     -ms-user-select: none; user-select: none;
@@ -83,9 +86,9 @@ pre.numberSource a.sourceLine::before
   }
 pre.numberSource { margin-left: 3em; border-left: 1px solid #aaaaaa;  padding-left: 4px; }
 div.sourceCode
-  {  }
+  {   }
 @media screen {
-a.sourceLine::before { text-decoration: underline; }
+code.sourceCode > span > a:first-child::before { text-decoration: underline; }
 }
 code span.al { color: #ff0000; font-weight: bold; } /* Alert */
 code span.an { color: #60a0b0; font-weight: bold; font-style: italic; } /* Annotation */
@@ -283,86 +286,86 @@ Figure 6.1: Source: <span class="citation">Lee et al. (<a href="references.html#
 <div id="example-associated-press" class="section level3">
 <h3><span class="header-section-number">6.1.1</span> Example: Associated Press</h3>
 <p>We come to the <code>AssociatedPress</code> document term matrix (the required data strcture for the modeling function) and fit a two topic LDA model with <code>stm::stm</code> (stm stands for structural equation modeling). The <code>stm</code> takes as its input a document-term matrix, either as a sparse matrix (using <code>cast_sparse</code>) or a <code>dfm</code> from <code>quanteda</code> (using <code>cast_dfm</code>). Here we specify a two topic model by setting <span class="math inline">\(K = 2\)</span> for demonstration purposes, in <a href="tuning-number-of-topics.html#tuning-number-of-topics">6.3</a> we will see how to choose <span class="math inline">\(K\)</span> with metrics such as semantic coherence.</p>
-<div class="sourceCode" id="cb103"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb103-1" title="1"><span class="kw">library</span>(stm)</a>
-<a class="sourceLine" id="cb103-2" title="2"><span class="kw">data</span>(<span class="st">&quot;AssociatedPress&quot;</span>, <span class="dt">package =</span> <span class="st">&quot;topicmodels&quot;</span>)</a>
-<a class="sourceLine" id="cb103-3" title="3"></a>
-<a class="sourceLine" id="cb103-4" title="4">ap_dfm &lt;-<span class="st"> </span><span class="kw">tidy</span>(AssociatedPress) <span class="op">%&gt;%</span><span class="st"> </span></a>
-<a class="sourceLine" id="cb103-5" title="5"><span class="st">  </span><span class="kw">cast_dfm</span>(<span class="dt">document =</span> document, <span class="dt">term =</span> term, <span class="dt">value =</span> count)</a>
-<a class="sourceLine" id="cb103-6" title="6"></a>
-<a class="sourceLine" id="cb103-7" title="7">ap_lda &lt;-<span class="st"> </span><span class="kw">stm</span>(ap_dfm, </a>
-<a class="sourceLine" id="cb103-8" title="8">              <span class="dt">K =</span> <span class="dv">2</span>, </a>
-<a class="sourceLine" id="cb103-9" title="9">              <span class="dt">verbose =</span> <span class="ot">FALSE</span>, </a>
-<a class="sourceLine" id="cb103-10" title="10">              <span class="dt">init.type =</span> <span class="st">&quot;LDA&quot;</span>)</a>
-<a class="sourceLine" id="cb103-11" title="11"><span class="kw">summary</span>(ap_lda)</a>
-<a class="sourceLine" id="cb103-12" title="12"><span class="co">#&gt; A topic model with 2 topics, 2246 documents and a 10473 word dictionary.</span></a>
-<a class="sourceLine" id="cb103-13" title="13"><span class="co">#&gt; Topic 1 Top Words:</span></a>
-<a class="sourceLine" id="cb103-14" title="14"><span class="co">#&gt;       Highest Prob: i, people, two, police, years, officials, government </span></a>
-<a class="sourceLine" id="cb103-15" title="15"><span class="co">#&gt;       FREX: police, killed, miles, attorney, death, army, died </span></a>
-<a class="sourceLine" id="cb103-16" title="16"><span class="co">#&gt;       Lift: accident, accusations, ackerman, adams, affidavit, algotson, alice </span></a>
-<a class="sourceLine" id="cb103-17" title="17"><span class="co">#&gt;       Score: police, killed, trial, prison, died, army, hospital </span></a>
-<a class="sourceLine" id="cb103-18" title="18"><span class="co">#&gt; Topic 2 Top Words:</span></a>
-<a class="sourceLine" id="cb103-19" title="19"><span class="co">#&gt;       Highest Prob: percent, new, million, year, president, bush, billion </span></a>
-<a class="sourceLine" id="cb103-20" title="20"><span class="co">#&gt;       FREX: percent, bush, billion, market, trade, prices, economic </span></a>
-<a class="sourceLine" id="cb103-21" title="21"><span class="co">#&gt;       Lift: corporate, growth, lawmakers, percentage, republicans, abboud, abm </span></a>
-<a class="sourceLine" id="cb103-22" title="22"><span class="co">#&gt;       Score: percent, billion, dollar, prices, yen, stock, market</span></a></code></pre></div>
+<div class="sourceCode" id="cb103"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb103-1"><a href="latent-dirichlet-allocation.html#cb103-1"></a><span class="kw">library</span>(stm)</span>
+<span id="cb103-2"><a href="latent-dirichlet-allocation.html#cb103-2"></a><span class="kw">data</span>(<span class="st">&quot;AssociatedPress&quot;</span>, <span class="dt">package =</span> <span class="st">&quot;topicmodels&quot;</span>)</span>
+<span id="cb103-3"><a href="latent-dirichlet-allocation.html#cb103-3"></a></span>
+<span id="cb103-4"><a href="latent-dirichlet-allocation.html#cb103-4"></a>ap_dfm &lt;-<span class="st"> </span><span class="kw">tidy</span>(AssociatedPress) <span class="op">%&gt;%</span><span class="st"> </span></span>
+<span id="cb103-5"><a href="latent-dirichlet-allocation.html#cb103-5"></a><span class="st">  </span><span class="kw">cast_dfm</span>(<span class="dt">document =</span> document, <span class="dt">term =</span> term, <span class="dt">value =</span> count)</span>
+<span id="cb103-6"><a href="latent-dirichlet-allocation.html#cb103-6"></a></span>
+<span id="cb103-7"><a href="latent-dirichlet-allocation.html#cb103-7"></a>ap_lda &lt;-<span class="st"> </span><span class="kw">stm</span>(ap_dfm, </span>
+<span id="cb103-8"><a href="latent-dirichlet-allocation.html#cb103-8"></a>              <span class="dt">K =</span> <span class="dv">2</span>, </span>
+<span id="cb103-9"><a href="latent-dirichlet-allocation.html#cb103-9"></a>              <span class="dt">verbose =</span> <span class="ot">FALSE</span>, </span>
+<span id="cb103-10"><a href="latent-dirichlet-allocation.html#cb103-10"></a>              <span class="dt">init.type =</span> <span class="st">&quot;LDA&quot;</span>)</span>
+<span id="cb103-11"><a href="latent-dirichlet-allocation.html#cb103-11"></a><span class="kw">summary</span>(ap_lda)</span>
+<span id="cb103-12"><a href="latent-dirichlet-allocation.html#cb103-12"></a><span class="co">#&gt; A topic model with 2 topics, 2246 documents and a 10473 word dictionary.</span></span>
+<span id="cb103-13"><a href="latent-dirichlet-allocation.html#cb103-13"></a><span class="co">#&gt; Topic 1 Top Words:</span></span>
+<span id="cb103-14"><a href="latent-dirichlet-allocation.html#cb103-14"></a><span class="co">#&gt;  	 Highest Prob: i, people, two, police, years, officials, government </span></span>
+<span id="cb103-15"><a href="latent-dirichlet-allocation.html#cb103-15"></a><span class="co">#&gt;  	 FREX: police, killed, miles, attorney, death, army, died </span></span>
+<span id="cb103-16"><a href="latent-dirichlet-allocation.html#cb103-16"></a><span class="co">#&gt;  	 Lift: accident, accusations, ackerman, adams, affidavit, algotson, alice </span></span>
+<span id="cb103-17"><a href="latent-dirichlet-allocation.html#cb103-17"></a><span class="co">#&gt;  	 Score: police, killed, trial, prison, died, army, hospital </span></span>
+<span id="cb103-18"><a href="latent-dirichlet-allocation.html#cb103-18"></a><span class="co">#&gt; Topic 2 Top Words:</span></span>
+<span id="cb103-19"><a href="latent-dirichlet-allocation.html#cb103-19"></a><span class="co">#&gt;  	 Highest Prob: percent, new, million, year, president, bush, billion </span></span>
+<span id="cb103-20"><a href="latent-dirichlet-allocation.html#cb103-20"></a><span class="co">#&gt;  	 FREX: percent, bush, billion, market, trade, prices, economic </span></span>
+<span id="cb103-21"><a href="latent-dirichlet-allocation.html#cb103-21"></a><span class="co">#&gt;  	 Lift: corporate, growth, lawmakers, percentage, republicans, abboud, abm </span></span>
+<span id="cb103-22"><a href="latent-dirichlet-allocation.html#cb103-22"></a><span class="co">#&gt;  	 Score: percent, billion, dollar, prices, yen, stock, market</span></span></code></pre></div>
 <p><code>stm</code> objects have a <code>summary()</code> method for displaying words with highest probability in each topic. But we want to go back to data frames to take advantage of <code>dplyr</code> and <code>ggplot2</code>. For tidying model objects, <code>tidy(model_object, matrix = "beta")</code> (the default) access the topic-word probability vector (we denotes with <span class="math inline">\(\vec{\phi_k}\)</span>)</p>
-<div class="sourceCode" id="cb104"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb104-1" title="1"><span class="kw">tidy</span>(ap_lda)</a>
-<a class="sourceLine" id="cb104-2" title="2"><span class="co">#&gt; # A tibble: 20,946 x 3</span></a>
-<a class="sourceLine" id="cb104-3" title="3"><span class="co">#&gt;   topic term            beta</span></a>
-<a class="sourceLine" id="cb104-4" title="4"><span class="co">#&gt;   &lt;int&gt; &lt;chr&gt;          &lt;dbl&gt;</span></a>
-<a class="sourceLine" id="cb104-5" title="5"><span class="co">#&gt; 1     1 aaron     0.0000324 </span></a>
-<a class="sourceLine" id="cb104-6" title="6"><span class="co">#&gt; 2     2 aaron     0.0000117 </span></a>
-<a class="sourceLine" id="cb104-7" title="7"><span class="co">#&gt; 3     1 abandon   0.00000654</span></a>
-<a class="sourceLine" id="cb104-8" title="8"><span class="co">#&gt; 4     2 abandon   0.0000676 </span></a>
-<a class="sourceLine" id="cb104-9" title="9"><span class="co">#&gt; 5     1 abandoned 0.000140  </span></a>
-<a class="sourceLine" id="cb104-10" title="10"><span class="co">#&gt; 6     2 abandoned 0.0000341 </span></a>
-<a class="sourceLine" id="cb104-11" title="11"><span class="co">#&gt; # ... with 20,940 more rows</span></a></code></pre></div>
+<div class="sourceCode" id="cb104"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb104-1"><a href="latent-dirichlet-allocation.html#cb104-1"></a><span class="kw">tidy</span>(ap_lda)</span>
+<span id="cb104-2"><a href="latent-dirichlet-allocation.html#cb104-2"></a><span class="co">#&gt; # A tibble: 20,946 x 3</span></span>
+<span id="cb104-3"><a href="latent-dirichlet-allocation.html#cb104-3"></a><span class="co">#&gt;   topic term            beta</span></span>
+<span id="cb104-4"><a href="latent-dirichlet-allocation.html#cb104-4"></a><span class="co">#&gt;   &lt;int&gt; &lt;chr&gt;          &lt;dbl&gt;</span></span>
+<span id="cb104-5"><a href="latent-dirichlet-allocation.html#cb104-5"></a><span class="co">#&gt; 1     1 aaron     0.0000324 </span></span>
+<span id="cb104-6"><a href="latent-dirichlet-allocation.html#cb104-6"></a><span class="co">#&gt; 2     2 aaron     0.0000117 </span></span>
+<span id="cb104-7"><a href="latent-dirichlet-allocation.html#cb104-7"></a><span class="co">#&gt; 3     1 abandon   0.00000654</span></span>
+<span id="cb104-8"><a href="latent-dirichlet-allocation.html#cb104-8"></a><span class="co">#&gt; 4     2 abandon   0.0000676 </span></span>
+<span id="cb104-9"><a href="latent-dirichlet-allocation.html#cb104-9"></a><span class="co">#&gt; 5     1 abandoned 0.000140  </span></span>
+<span id="cb104-10"><a href="latent-dirichlet-allocation.html#cb104-10"></a><span class="co">#&gt; 6     2 abandoned 0.0000341 </span></span>
+<span id="cb104-11"><a href="latent-dirichlet-allocation.html#cb104-11"></a><span class="co">#&gt; # ... with 20,940 more rows</span></span></code></pre></div>
 <p>Which words have a relateve higher probabiltity to appear in each topic?</p>
-<div class="sourceCode" id="cb105"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb105-1" title="1"><span class="kw">tidy</span>(ap_lda) <span class="op">%&gt;%</span><span class="st"> </span></a>
-<a class="sourceLine" id="cb105-2" title="2"><span class="st">  </span><span class="kw">group_by</span>(topic) <span class="op">%&gt;%</span></a>
-<a class="sourceLine" id="cb105-3" title="3"><span class="st">  </span><span class="kw">top_n</span>(<span class="dv">10</span>) <span class="op">%&gt;%</span><span class="st"> </span></a>
-<a class="sourceLine" id="cb105-4" title="4"><span class="st">  </span><span class="kw">ungroup</span>() <span class="op">%&gt;%</span><span class="st"> </span></a>
-<a class="sourceLine" id="cb105-5" title="5"><span class="st">  </span><span class="kw">mutate</span>(<span class="dt">topic =</span> <span class="kw">str_c</span>(<span class="st">&quot;topic&quot;</span>, topic)) <span class="op">%&gt;%</span></a>
-<a class="sourceLine" id="cb105-6" title="6"><span class="st">  </span><span class="kw">facet_bar</span>(<span class="dt">y =</span> term, <span class="dt">x =</span> beta, <span class="dt">by =</span> topic) <span class="op">+</span></a>
-<a class="sourceLine" id="cb105-7" title="7"><span class="st">  </span><span class="kw">labs</span>(<span class="dt">title =</span> <span class="st">&quot;Words with highest probability in each topic&quot;</span>)</a></code></pre></div>
+<div class="sourceCode" id="cb105"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb105-1"><a href="latent-dirichlet-allocation.html#cb105-1"></a><span class="kw">tidy</span>(ap_lda) <span class="op">%&gt;%</span><span class="st"> </span></span>
+<span id="cb105-2"><a href="latent-dirichlet-allocation.html#cb105-2"></a><span class="st">  </span><span class="kw">group_by</span>(topic) <span class="op">%&gt;%</span></span>
+<span id="cb105-3"><a href="latent-dirichlet-allocation.html#cb105-3"></a><span class="st">  </span><span class="kw">top_n</span>(<span class="dv">10</span>) <span class="op">%&gt;%</span><span class="st"> </span></span>
+<span id="cb105-4"><a href="latent-dirichlet-allocation.html#cb105-4"></a><span class="st">  </span><span class="kw">ungroup</span>() <span class="op">%&gt;%</span><span class="st"> </span></span>
+<span id="cb105-5"><a href="latent-dirichlet-allocation.html#cb105-5"></a><span class="st">  </span><span class="kw">mutate</span>(<span class="dt">topic =</span> <span class="kw">str_c</span>(<span class="st">&quot;topic&quot;</span>, topic)) <span class="op">%&gt;%</span></span>
+<span id="cb105-6"><a href="latent-dirichlet-allocation.html#cb105-6"></a><span class="st">  </span><span class="kw">facet_bar</span>(<span class="dt">y =</span> term, <span class="dt">x =</span> beta, <span class="dt">by =</span> topic) <span class="op">+</span></span>
+<span id="cb105-7"><a href="latent-dirichlet-allocation.html#cb105-7"></a><span class="st">  </span><span class="kw">labs</span>(<span class="dt">title =</span> <span class="st">&quot;Words with highest probability in each topic&quot;</span>)</span></code></pre></div>
 <p><img src="topic-modeling_files/figure-html/unnamed-chunk-6-1.png" width="672" style="display: block; margin: auto;" /></p>
 <p>As an alternative, we could consider the terms that had the <strong>greatest difference</strong> in <span class="math inline">\(\vec{\phi_k}\)</span> between topic 1 and topic 2. This can be estimated based on the log ratio of the two: <span class="math inline">\(\log_2(\frac{\phi_{1n}}{\phi_{2n}})\)</span>, <span class="math inline">\(\phi_{1n} / \phi_{2n}\)</span> being the probability ratio of the sam e word <span class="math inline">\(n\)</span> in two topics (a log ratio is useful because it makes the difference symmetrical)</p>
-<div class="sourceCode" id="cb106"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb106-1" title="1">phi_ratio &lt;-<span class="st"> </span><span class="kw">tidy</span>(ap_lda) <span class="op">%&gt;%</span></a>
-<a class="sourceLine" id="cb106-2" title="2"><span class="st">  </span><span class="kw">mutate</span>(<span class="dt">topic =</span> <span class="kw">str_c</span>(<span class="st">&quot;topic&quot;</span>, topic)) <span class="op">%&gt;%</span><span class="st"> </span></a>
-<a class="sourceLine" id="cb106-3" title="3"><span class="st">  </span><span class="kw">pivot_wider</span>(<span class="dt">names_from =</span> topic, <span class="dt">values_from =</span> beta) <span class="op">%&gt;%</span><span class="st"> </span></a>
-<a class="sourceLine" id="cb106-4" title="4"><span class="st">  </span><span class="kw">filter</span>(topic1 <span class="op">&gt;</span><span class="st"> </span><span class="fl">.001</span> <span class="op">|</span><span class="st"> </span>topic2 <span class="op">&gt;</span><span class="st"> </span><span class="fl">.001</span>) <span class="op">%&gt;%</span></a>
-<a class="sourceLine" id="cb106-5" title="5"><span class="st">  </span><span class="kw">mutate</span>(<span class="dt">log_ratio =</span> <span class="kw">log2</span>(topic2 <span class="op">/</span><span class="st"> </span>topic1))</a></code></pre></div>
+<div class="sourceCode" id="cb106"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb106-1"><a href="latent-dirichlet-allocation.html#cb106-1"></a>phi_ratio &lt;-<span class="st"> </span><span class="kw">tidy</span>(ap_lda) <span class="op">%&gt;%</span></span>
+<span id="cb106-2"><a href="latent-dirichlet-allocation.html#cb106-2"></a><span class="st">  </span><span class="kw">mutate</span>(<span class="dt">topic =</span> <span class="kw">str_c</span>(<span class="st">&quot;topic&quot;</span>, topic)) <span class="op">%&gt;%</span><span class="st"> </span></span>
+<span id="cb106-3"><a href="latent-dirichlet-allocation.html#cb106-3"></a><span class="st">  </span><span class="kw">pivot_wider</span>(<span class="dt">names_from =</span> topic, <span class="dt">values_from =</span> beta) <span class="op">%&gt;%</span><span class="st"> </span></span>
+<span id="cb106-4"><a href="latent-dirichlet-allocation.html#cb106-4"></a><span class="st">  </span><span class="kw">filter</span>(topic1 <span class="op">&gt;</span><span class="st"> </span><span class="fl">.001</span> <span class="op">|</span><span class="st"> </span>topic2 <span class="op">&gt;</span><span class="st"> </span><span class="fl">.001</span>) <span class="op">%&gt;%</span></span>
+<span id="cb106-5"><a href="latent-dirichlet-allocation.html#cb106-5"></a><span class="st">  </span><span class="kw">mutate</span>(<span class="dt">log_ratio =</span> <span class="kw">log2</span>(topic2 <span class="op">/</span><span class="st"> </span>topic1))</span></code></pre></div>
 <p>This can answer a question like: which word is most representative of a topic?</p>
-<div class="sourceCode" id="cb107"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb107-1" title="1">phi_ratio <span class="op">%&gt;%</span><span class="st"> </span></a>
-<a class="sourceLine" id="cb107-2" title="2"><span class="st">  </span><span class="kw">top_n</span>(<span class="dv">20</span>, <span class="kw">abs</span>(log_ratio)) <span class="op">%&gt;%</span><span class="st"> </span></a>
-<a class="sourceLine" id="cb107-3" title="3"><span class="st">  </span><span class="kw">ggplot</span>(<span class="kw">aes</span>(<span class="dt">y =</span> <span class="kw">fct_reorder</span>(term, log_ratio),</a>
-<a class="sourceLine" id="cb107-4" title="4">             <span class="dt">x =</span> log_ratio)) <span class="op">+</span><span class="st"> </span></a>
-<a class="sourceLine" id="cb107-5" title="5"><span class="st">  </span><span class="kw">geom_col</span>() <span class="op">+</span><span class="st"> </span></a>
-<a class="sourceLine" id="cb107-6" title="6"><span class="st">  </span><span class="kw">labs</span>(<span class="dt">y =</span> <span class="st">&quot;&quot;</span>,</a>
-<a class="sourceLine" id="cb107-7" title="7">       <span class="dt">x =</span> <span class="st">&quot;log ratio of phi between topic 2 and topic 1 (base 2)&quot;</span>)</a></code></pre></div>
+<div class="sourceCode" id="cb107"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb107-1"><a href="latent-dirichlet-allocation.html#cb107-1"></a>phi_ratio <span class="op">%&gt;%</span><span class="st"> </span></span>
+<span id="cb107-2"><a href="latent-dirichlet-allocation.html#cb107-2"></a><span class="st">  </span><span class="kw">top_n</span>(<span class="dv">20</span>, <span class="kw">abs</span>(log_ratio)) <span class="op">%&gt;%</span><span class="st"> </span></span>
+<span id="cb107-3"><a href="latent-dirichlet-allocation.html#cb107-3"></a><span class="st">  </span><span class="kw">ggplot</span>(<span class="kw">aes</span>(<span class="dt">y =</span> <span class="kw">fct_reorder</span>(term, log_ratio),</span>
+<span id="cb107-4"><a href="latent-dirichlet-allocation.html#cb107-4"></a>             <span class="dt">x =</span> log_ratio)) <span class="op">+</span><span class="st"> </span></span>
+<span id="cb107-5"><a href="latent-dirichlet-allocation.html#cb107-5"></a><span class="st">  </span><span class="kw">geom_col</span>() <span class="op">+</span><span class="st"> </span></span>
+<span id="cb107-6"><a href="latent-dirichlet-allocation.html#cb107-6"></a><span class="st">  </span><span class="kw">labs</span>(<span class="dt">y =</span> <span class="st">&quot;&quot;</span>,</span>
+<span id="cb107-7"><a href="latent-dirichlet-allocation.html#cb107-7"></a>       <span class="dt">x =</span> <span class="st">&quot;log ratio of phi between topic 2 and topic 1 (base 2)&quot;</span>)</span></code></pre></div>
 <p><img src="topic-modeling_files/figure-html/unnamed-chunk-8-1.png" width="672" style="display: block; margin: auto;" /></p>
 <p>To extrac the word proportion vector <span class="math inline">\(\vec{\theta_m}\)</span> for document <span class="math inline">\(m\)</span>, use <code>matrix = "gamma"</code> in <code>tidy()</code></p>
-<div class="sourceCode" id="cb108"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb108-1" title="1"><span class="kw">tidy</span>(ap_lda, <span class="dt">matrix =</span> <span class="st">&quot;gamma&quot;</span>)</a>
-<a class="sourceLine" id="cb108-2" title="2"><span class="co">#&gt; # A tibble: 4,492 x 3</span></a>
-<a class="sourceLine" id="cb108-3" title="3"><span class="co">#&gt;   document topic gamma</span></a>
-<a class="sourceLine" id="cb108-4" title="4"><span class="co">#&gt;      &lt;int&gt; &lt;int&gt; &lt;dbl&gt;</span></a>
-<a class="sourceLine" id="cb108-5" title="5"><span class="co">#&gt; 1        1     1 0.990</span></a>
-<a class="sourceLine" id="cb108-6" title="6"><span class="co">#&gt; 2        2     1 0.610</span></a>
-<a class="sourceLine" id="cb108-7" title="7"><span class="co">#&gt; 3        3     1 0.983</span></a>
-<a class="sourceLine" id="cb108-8" title="8"><span class="co">#&gt; 4        4     1 0.698</span></a>
-<a class="sourceLine" id="cb108-9" title="9"><span class="co">#&gt; 5        5     1 0.891</span></a>
-<a class="sourceLine" id="cb108-10" title="10"><span class="co">#&gt; 6        6     1 0.519</span></a>
-<a class="sourceLine" id="cb108-11" title="11"><span class="co">#&gt; # ... with 4,486 more rows</span></a></code></pre></div>
+<div class="sourceCode" id="cb108"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb108-1"><a href="latent-dirichlet-allocation.html#cb108-1"></a><span class="kw">tidy</span>(ap_lda, <span class="dt">matrix =</span> <span class="st">&quot;gamma&quot;</span>)</span>
+<span id="cb108-2"><a href="latent-dirichlet-allocation.html#cb108-2"></a><span class="co">#&gt; # A tibble: 4,492 x 3</span></span>
+<span id="cb108-3"><a href="latent-dirichlet-allocation.html#cb108-3"></a><span class="co">#&gt;   document topic gamma</span></span>
+<span id="cb108-4"><a href="latent-dirichlet-allocation.html#cb108-4"></a><span class="co">#&gt;      &lt;int&gt; &lt;int&gt; &lt;dbl&gt;</span></span>
+<span id="cb108-5"><a href="latent-dirichlet-allocation.html#cb108-5"></a><span class="co">#&gt; 1        1     1 0.990</span></span>
+<span id="cb108-6"><a href="latent-dirichlet-allocation.html#cb108-6"></a><span class="co">#&gt; 2        2     1 0.610</span></span>
+<span id="cb108-7"><a href="latent-dirichlet-allocation.html#cb108-7"></a><span class="co">#&gt; 3        3     1 0.983</span></span>
+<span id="cb108-8"><a href="latent-dirichlet-allocation.html#cb108-8"></a><span class="co">#&gt; 4        4     1 0.698</span></span>
+<span id="cb108-9"><a href="latent-dirichlet-allocation.html#cb108-9"></a><span class="co">#&gt; 5        5     1 0.891</span></span>
+<span id="cb108-10"><a href="latent-dirichlet-allocation.html#cb108-10"></a><span class="co">#&gt; 6        6     1 0.519</span></span>
+<span id="cb108-11"><a href="latent-dirichlet-allocation.html#cb108-11"></a><span class="co">#&gt; # ... with 4,486 more rows</span></span></code></pre></div>
 <p>With this data frame, we want to knwo which document is most charateristic of each topic?</p>
-<div class="sourceCode" id="cb109"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb109-1" title="1"><span class="kw">library</span>(reshape2)</a>
-<a class="sourceLine" id="cb109-2" title="2"><span class="kw">library</span>(wordcloud)</a>
-<a class="sourceLine" id="cb109-3" title="3"></a>
-<a class="sourceLine" id="cb109-4" title="4"><span class="kw">tidy</span>(ap_lda, <span class="dt">matrix =</span> <span class="st">&quot;gamma&quot;</span>) <span class="op">%&gt;%</span><span class="st"> </span></a>
-<a class="sourceLine" id="cb109-5" title="5"><span class="st">  </span><span class="kw">group_by</span>(topic) <span class="op">%&gt;%</span></a>
-<a class="sourceLine" id="cb109-6" title="6"><span class="st">  </span><span class="kw">top_n</span>(<span class="dv">15</span>) <span class="op">%&gt;%</span><span class="st"> </span></a>
-<a class="sourceLine" id="cb109-7" title="7"><span class="st">  </span><span class="kw">mutate</span>(<span class="dt">document =</span> <span class="kw">as.character</span>(document)) <span class="op">%&gt;%</span><span class="st"> </span></a>
-<a class="sourceLine" id="cb109-8" title="8"><span class="st">  </span><span class="kw">acast</span>(document <span class="op">~</span><span class="st"> </span>topic, <span class="dt">value.var =</span> <span class="st">&quot;gamma&quot;</span>, <span class="dt">fill =</span> <span class="dv">0</span>) <span class="op">%&gt;%</span><span class="st"> </span></a>
-<a class="sourceLine" id="cb109-9" title="9"><span class="st">  </span><span class="kw">comparison.cloud</span>(<span class="dt">colors =</span> <span class="kw">c</span>(<span class="st">&quot;gray20&quot;</span>, <span class="st">&quot;gray80&quot;</span>), <span class="dt">scale =</span> <span class="kw">c</span>(<span class="dv">2</span>, <span class="dv">8</span>))</a></code></pre></div>
+<div class="sourceCode" id="cb109"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb109-1"><a href="latent-dirichlet-allocation.html#cb109-1"></a><span class="kw">library</span>(reshape2)</span>
+<span id="cb109-2"><a href="latent-dirichlet-allocation.html#cb109-2"></a><span class="kw">library</span>(wordcloud)</span>
+<span id="cb109-3"><a href="latent-dirichlet-allocation.html#cb109-3"></a></span>
+<span id="cb109-4"><a href="latent-dirichlet-allocation.html#cb109-4"></a><span class="kw">tidy</span>(ap_lda, <span class="dt">matrix =</span> <span class="st">&quot;gamma&quot;</span>) <span class="op">%&gt;%</span><span class="st"> </span></span>
+<span id="cb109-5"><a href="latent-dirichlet-allocation.html#cb109-5"></a><span class="st">  </span><span class="kw">group_by</span>(topic) <span class="op">%&gt;%</span></span>
+<span id="cb109-6"><a href="latent-dirichlet-allocation.html#cb109-6"></a><span class="st">  </span><span class="kw">top_n</span>(<span class="dv">15</span>) <span class="op">%&gt;%</span><span class="st"> </span></span>
+<span id="cb109-7"><a href="latent-dirichlet-allocation.html#cb109-7"></a><span class="st">  </span><span class="kw">mutate</span>(<span class="dt">document =</span> <span class="kw">as.character</span>(document)) <span class="op">%&gt;%</span><span class="st"> </span></span>
+<span id="cb109-8"><a href="latent-dirichlet-allocation.html#cb109-8"></a><span class="st">  </span><span class="kw">acast</span>(document <span class="op">~</span><span class="st"> </span>topic, <span class="dt">value.var =</span> <span class="st">&quot;gamma&quot;</span>, <span class="dt">fill =</span> <span class="dv">0</span>) <span class="op">%&gt;%</span><span class="st"> </span></span>
+<span id="cb109-9"><a href="latent-dirichlet-allocation.html#cb109-9"></a><span class="st">  </span><span class="kw">comparison.cloud</span>(<span class="dt">colors =</span> <span class="kw">c</span>(<span class="st">&quot;gray20&quot;</span>, <span class="st">&quot;gray80&quot;</span>), <span class="dt">scale =</span> <span class="kw">c</span>(<span class="dv">2</span>, <span class="dv">8</span>))</span></code></pre></div>
 <p><img src="topic-modeling_files/figure-html/unnamed-chunk-10-1.png" width="672" style="display: block; margin: auto;" /></p>
 <p>This plot would definitely be more insightful if we have document titles rather than an ID.</p>
 

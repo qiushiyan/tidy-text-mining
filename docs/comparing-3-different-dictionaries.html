@@ -6,7 +6,7 @@
   <meta http-equiv="X-UA-Compatible" content="IE=edge" />
   <title>2.3 Comparing 3 different dictionaries | Notes for “Text Mining with R: A Tidy Approach”</title>
   <meta name="description" content="2.3 Comparing 3 different dictionaries | Notes for “Text Mining with R: A Tidy Approach”" />
-  <meta name="generator" content="bookdown 0.18 and GitBook 2.6.7" />
+  <meta name="generator" content="bookdown 0.20 and GitBook 2.6.7" />
 
   <meta property="og:title" content="2.3 Comparing 3 different dictionaries | Notes for “Text Mining with R: A Tidy Approach”" />
   <meta property="og:type" content="book" />
@@ -24,7 +24,7 @@
 <meta name="author" content="Qiushi Yan" />
 
 
-<meta name="date" content="2020-05-11" />
+<meta name="date" content="2020-06-27" />
 
   <meta name="viewport" content="width=device-width, initial-scale=1" />
   <meta name="apple-mobile-web-app-capable" content="yes" />
@@ -50,15 +50,16 @@
 
 
 
+<script src="libs/accessible-code-block-0.0.1/empty-anchor.js"></script>
 <script src="libs/htmlwidgets-1.5.1/htmlwidgets.js"></script>
 <link href="libs/str_view-0.1.0/str_view.css" rel="stylesheet" />
 <script src="libs/str_view-binding-1.4.0/str_view.js"></script>
 
 
 <style type="text/css">
-a.sourceLine { display: inline-block; line-height: 1.25; }
-a.sourceLine { pointer-events: none; color: inherit; text-decoration: inherit; }
-a.sourceLine:empty { height: 1.2em; }
+code.sourceCode > span { display: inline-block; line-height: 1.25; }
+code.sourceCode > span { color: inherit; text-decoration: inherit; }
+code.sourceCode > span:empty { height: 1.2em; }
 .sourceCode { overflow: visible; }
 code.sourceCode { white-space: pre; position: relative; }
 pre.sourceCode { margin: 0; }
@@ -67,14 +68,16 @@ div.sourceCode { overflow: auto; }
 }
 @media print {
 code.sourceCode { white-space: pre-wrap; }
-a.sourceLine { text-indent: -1em; padding-left: 1em; }
+code.sourceCode > span { text-indent: -5em; padding-left: 5em; }
 }
-pre.numberSource a.sourceLine
-  { position: relative; left: -4em; }
-pre.numberSource a.sourceLine::before
-  { content: attr(title);
+pre.numberSource code
+  { counter-reset: source-line 0; }
+pre.numberSource code > span
+  { position: relative; left: -4em; counter-increment: source-line; }
+pre.numberSource code > span > a:first-child::before
+  { content: counter(source-line);
     position: relative; left: -1em; text-align: right; vertical-align: baseline;
-    border: none; pointer-events: all; display: inline-block;
+    border: none; display: inline-block;
     -webkit-touch-callout: none; -webkit-user-select: none;
     -khtml-user-select: none; -moz-user-select: none;
     -ms-user-select: none; user-select: none;
@@ -83,9 +86,9 @@ pre.numberSource a.sourceLine::before
   }
 pre.numberSource { margin-left: 3em; border-left: 1px solid #aaaaaa;  padding-left: 4px; }
 div.sourceCode
-  {  }
+  {   }
 @media screen {
-a.sourceLine::before { text-decoration: underline; }
+code.sourceCode > span > a:first-child::before { text-decoration: underline; }
 }
 code span.al { color: #ff0000; font-weight: bold; } /* Alert */
 code span.an { color: #60a0b0; font-weight: bold; font-style: italic; } /* Annotation */
@@ -233,68 +236,68 @@ code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } /* Warni
             <section class="normal" id="section-">
 <div id="comparing-3-different-dictionaries" class="section level2">
 <h2><span class="header-section-number">2.3</span> Comparing 3 different dictionaries</h2>
-<div class="sourceCode" id="cb29"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb29-1" title="1">pride_prejudice &lt;-<span class="st"> </span>tidy_books <span class="op">%&gt;%</span><span class="st"> </span></a>
-<a class="sourceLine" id="cb29-2" title="2"><span class="st">  </span><span class="kw">filter</span>(book <span class="op">==</span><span class="st"> &quot;Pride &amp; Prejudice&quot;</span>)</a>
-<a class="sourceLine" id="cb29-3" title="3"></a>
-<a class="sourceLine" id="cb29-4" title="4">pride_prejudice</a>
-<a class="sourceLine" id="cb29-5" title="5"><span class="co">#&gt; # A tibble: 122,204 x 4</span></a>
-<a class="sourceLine" id="cb29-6" title="6"><span class="co">#&gt;   book              linenumber chapter word     </span></a>
-<a class="sourceLine" id="cb29-7" title="7"><span class="co">#&gt;   &lt;fct&gt;                  &lt;int&gt;   &lt;int&gt; &lt;chr&gt;    </span></a>
-<a class="sourceLine" id="cb29-8" title="8"><span class="co">#&gt; 1 Pride &amp; Prejudice          1       0 pride    </span></a>
-<a class="sourceLine" id="cb29-9" title="9"><span class="co">#&gt; 2 Pride &amp; Prejudice          1       0 and      </span></a>
-<a class="sourceLine" id="cb29-10" title="10"><span class="co">#&gt; 3 Pride &amp; Prejudice          1       0 prejudice</span></a>
-<a class="sourceLine" id="cb29-11" title="11"><span class="co">#&gt; 4 Pride &amp; Prejudice          3       0 by       </span></a>
-<a class="sourceLine" id="cb29-12" title="12"><span class="co">#&gt; 5 Pride &amp; Prejudice          3       0 jane     </span></a>
-<a class="sourceLine" id="cb29-13" title="13"><span class="co">#&gt; 6 Pride &amp; Prejudice          3       0 austen   </span></a>
-<a class="sourceLine" id="cb29-14" title="14"><span class="co">#&gt; # ... with 1.222e+05 more rows</span></a></code></pre></div>
-<div class="sourceCode" id="cb30"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb30-1" title="1">afinn &lt;-<span class="st"> </span>pride_prejudice <span class="op">%&gt;%</span><span class="st"> </span></a>
-<a class="sourceLine" id="cb30-2" title="2"><span class="st">  </span><span class="kw">inner_join</span>(<span class="kw">get_sentiments</span>(<span class="st">&quot;afinn&quot;</span>)) <span class="op">%&gt;%</span><span class="st"> </span></a>
-<a class="sourceLine" id="cb30-3" title="3"><span class="st">  </span><span class="kw">mutate</span>(<span class="dt">index =</span> linenumber <span class="op">%/%</span><span class="st"> </span><span class="dv">80</span>) <span class="op">%&gt;%</span><span class="st"> </span></a>
-<a class="sourceLine" id="cb30-4" title="4"><span class="st">  </span><span class="kw">count</span>(book, index, <span class="dt">wt =</span> value, <span class="dt">name =</span> <span class="st">&quot;value&quot;</span>) <span class="op">%&gt;%</span></a>
-<a class="sourceLine" id="cb30-5" title="5"><span class="st">  </span><span class="kw">mutate</span>(<span class="dt">dict =</span> <span class="st">&quot;afinn&quot;</span>) <span class="op">%&gt;%</span><span class="st"> </span></a>
-<a class="sourceLine" id="cb30-6" title="6"><span class="st">  </span><span class="kw">select</span>(index, value, dict)</a>
-<a class="sourceLine" id="cb30-7" title="7"></a>
-<a class="sourceLine" id="cb30-8" title="8">bing &lt;-<span class="st"> </span>pride_prejudice <span class="op">%&gt;%</span><span class="st"> </span></a>
-<a class="sourceLine" id="cb30-9" title="9"><span class="st">  </span><span class="kw">inner_join</span>(<span class="kw">get_sentiments</span>(<span class="st">&quot;bing&quot;</span>)) <span class="op">%&gt;%</span><span class="st"> </span></a>
-<a class="sourceLine" id="cb30-10" title="10"><span class="st">  </span><span class="kw">mutate</span>(<span class="dt">index =</span> linenumber <span class="op">%/%</span><span class="st"> </span><span class="dv">80</span>) <span class="op">%&gt;%</span><span class="st"> </span></a>
-<a class="sourceLine" id="cb30-11" title="11"><span class="st">  </span><span class="kw">count</span>(index, sentiment) <span class="op">%&gt;%</span><span class="st"> </span></a>
-<a class="sourceLine" id="cb30-12" title="12"><span class="st">  </span><span class="kw">pivot_wider</span>(<span class="dt">names_from =</span> sentiment, <span class="dt">values_from =</span> n, <span class="dt">values_fill =</span> <span class="kw">list</span>(<span class="dt">n =</span> <span class="dv">0</span>)) <span class="op">%&gt;%</span><span class="st"> </span></a>
-<a class="sourceLine" id="cb30-13" title="13"><span class="st">  </span><span class="kw">mutate</span>(<span class="dt">value =</span> positive <span class="op">-</span><span class="st"> </span>negative,</a>
-<a class="sourceLine" id="cb30-14" title="14">         <span class="dt">dict =</span> <span class="st">&quot;bing&quot;</span>) <span class="op">%&gt;%</span><span class="st">  </span></a>
-<a class="sourceLine" id="cb30-15" title="15"><span class="st">  </span><span class="kw">select</span>(index, value, dict)</a>
-<a class="sourceLine" id="cb30-16" title="16"></a>
-<a class="sourceLine" id="cb30-17" title="17">nrc &lt;-<span class="st"> </span>pride_prejudice <span class="op">%&gt;%</span><span class="st"> </span></a>
-<a class="sourceLine" id="cb30-18" title="18"><span class="st">  </span><span class="kw">inner_join</span>(<span class="kw">get_sentiments</span>(<span class="st">&quot;nrc&quot;</span>)) <span class="op">%&gt;%</span></a>
-<a class="sourceLine" id="cb30-19" title="19"><span class="st">  </span><span class="kw">filter</span>(sentiment <span class="op">%in%</span><span class="st"> </span><span class="kw">c</span>(<span class="st">&quot;positive&quot;</span>, <span class="st">&quot;negative&quot;</span>)) <span class="op">%&gt;%</span><span class="st"> </span></a>
-<a class="sourceLine" id="cb30-20" title="20"><span class="st">  </span><span class="kw">mutate</span>(<span class="dt">index =</span> linenumber <span class="op">%/%</span><span class="st"> </span><span class="dv">80</span>) <span class="op">%&gt;%</span><span class="st"> </span></a>
-<a class="sourceLine" id="cb30-21" title="21"><span class="st">  </span><span class="kw">count</span>(index, sentiment) <span class="op">%&gt;%</span><span class="st"> </span></a>
-<a class="sourceLine" id="cb30-22" title="22"><span class="st">  </span><span class="kw">pivot_wider</span>(<span class="dt">names_from =</span> sentiment, <span class="dt">values_from =</span> n, <span class="dt">values_fill =</span> <span class="kw">list</span>(<span class="dt">n =</span> <span class="dv">0</span>)) <span class="op">%&gt;%</span><span class="st"> </span></a>
-<a class="sourceLine" id="cb30-23" title="23"><span class="st">  </span><span class="kw">mutate</span>(<span class="dt">value =</span> positive <span class="op">-</span><span class="st"> </span>negative,</a>
-<a class="sourceLine" id="cb30-24" title="24">         <span class="dt">dict =</span> <span class="st">&quot;nrc&quot;</span>) <span class="op">%&gt;%</span><span class="st"> </span></a>
-<a class="sourceLine" id="cb30-25" title="25"><span class="st">  </span><span class="kw">select</span>(index, value, dict)</a></code></pre></div>
-<div class="sourceCode" id="cb31"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb31-1" title="1"><span class="kw">bind_rows</span>(afinn, bing, nrc) <span class="op">%&gt;%</span><span class="st"> </span></a>
-<a class="sourceLine" id="cb31-2" title="2"><span class="st">  </span><span class="kw">ggplot</span>() <span class="op">+</span><span class="st"> </span></a>
-<a class="sourceLine" id="cb31-3" title="3"><span class="st">  </span><span class="kw">geom_col</span>(<span class="kw">aes</span>(index, value, <span class="dt">fill =</span> dict), <span class="dt">show.legend =</span> <span class="ot">FALSE</span>) <span class="op">+</span><span class="st"> </span></a>
-<a class="sourceLine" id="cb31-4" title="4"><span class="st">  </span><span class="kw">facet_wrap</span>(<span class="op">~</span><span class="st"> </span>dict, <span class="dt">nrow =</span> <span class="dv">3</span>)</a></code></pre></div>
+<div class="sourceCode" id="cb29"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb29-1"><a href="comparing-3-different-dictionaries.html#cb29-1"></a>pride_prejudice &lt;-<span class="st"> </span>tidy_books <span class="op">%&gt;%</span><span class="st"> </span></span>
+<span id="cb29-2"><a href="comparing-3-different-dictionaries.html#cb29-2"></a><span class="st">  </span><span class="kw">filter</span>(book <span class="op">==</span><span class="st"> &quot;Pride &amp; Prejudice&quot;</span>)</span>
+<span id="cb29-3"><a href="comparing-3-different-dictionaries.html#cb29-3"></a></span>
+<span id="cb29-4"><a href="comparing-3-different-dictionaries.html#cb29-4"></a>pride_prejudice</span>
+<span id="cb29-5"><a href="comparing-3-different-dictionaries.html#cb29-5"></a><span class="co">#&gt; # A tibble: 122,204 x 4</span></span>
+<span id="cb29-6"><a href="comparing-3-different-dictionaries.html#cb29-6"></a><span class="co">#&gt;   book              linenumber chapter word     </span></span>
+<span id="cb29-7"><a href="comparing-3-different-dictionaries.html#cb29-7"></a><span class="co">#&gt;   &lt;fct&gt;                  &lt;int&gt;   &lt;int&gt; &lt;chr&gt;    </span></span>
+<span id="cb29-8"><a href="comparing-3-different-dictionaries.html#cb29-8"></a><span class="co">#&gt; 1 Pride &amp; Prejudice          1       0 pride    </span></span>
+<span id="cb29-9"><a href="comparing-3-different-dictionaries.html#cb29-9"></a><span class="co">#&gt; 2 Pride &amp; Prejudice          1       0 and      </span></span>
+<span id="cb29-10"><a href="comparing-3-different-dictionaries.html#cb29-10"></a><span class="co">#&gt; 3 Pride &amp; Prejudice          1       0 prejudice</span></span>
+<span id="cb29-11"><a href="comparing-3-different-dictionaries.html#cb29-11"></a><span class="co">#&gt; 4 Pride &amp; Prejudice          3       0 by       </span></span>
+<span id="cb29-12"><a href="comparing-3-different-dictionaries.html#cb29-12"></a><span class="co">#&gt; 5 Pride &amp; Prejudice          3       0 jane     </span></span>
+<span id="cb29-13"><a href="comparing-3-different-dictionaries.html#cb29-13"></a><span class="co">#&gt; 6 Pride &amp; Prejudice          3       0 austen   </span></span>
+<span id="cb29-14"><a href="comparing-3-different-dictionaries.html#cb29-14"></a><span class="co">#&gt; # ... with 1.222e+05 more rows</span></span></code></pre></div>
+<div class="sourceCode" id="cb30"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb30-1"><a href="comparing-3-different-dictionaries.html#cb30-1"></a>afinn &lt;-<span class="st"> </span>pride_prejudice <span class="op">%&gt;%</span><span class="st"> </span></span>
+<span id="cb30-2"><a href="comparing-3-different-dictionaries.html#cb30-2"></a><span class="st">  </span><span class="kw">inner_join</span>(<span class="kw">get_sentiments</span>(<span class="st">&quot;afinn&quot;</span>)) <span class="op">%&gt;%</span><span class="st"> </span></span>
+<span id="cb30-3"><a href="comparing-3-different-dictionaries.html#cb30-3"></a><span class="st">  </span><span class="kw">mutate</span>(<span class="dt">index =</span> linenumber <span class="op">%/%</span><span class="st"> </span><span class="dv">80</span>) <span class="op">%&gt;%</span><span class="st"> </span></span>
+<span id="cb30-4"><a href="comparing-3-different-dictionaries.html#cb30-4"></a><span class="st">  </span><span class="kw">count</span>(book, index, <span class="dt">wt =</span> value, <span class="dt">name =</span> <span class="st">&quot;value&quot;</span>) <span class="op">%&gt;%</span></span>
+<span id="cb30-5"><a href="comparing-3-different-dictionaries.html#cb30-5"></a><span class="st">  </span><span class="kw">mutate</span>(<span class="dt">dict =</span> <span class="st">&quot;afinn&quot;</span>) <span class="op">%&gt;%</span><span class="st"> </span></span>
+<span id="cb30-6"><a href="comparing-3-different-dictionaries.html#cb30-6"></a><span class="st">  </span><span class="kw">select</span>(index, value, dict)</span>
+<span id="cb30-7"><a href="comparing-3-different-dictionaries.html#cb30-7"></a></span>
+<span id="cb30-8"><a href="comparing-3-different-dictionaries.html#cb30-8"></a>bing &lt;-<span class="st"> </span>pride_prejudice <span class="op">%&gt;%</span><span class="st"> </span></span>
+<span id="cb30-9"><a href="comparing-3-different-dictionaries.html#cb30-9"></a><span class="st">  </span><span class="kw">inner_join</span>(<span class="kw">get_sentiments</span>(<span class="st">&quot;bing&quot;</span>)) <span class="op">%&gt;%</span><span class="st"> </span></span>
+<span id="cb30-10"><a href="comparing-3-different-dictionaries.html#cb30-10"></a><span class="st">  </span><span class="kw">mutate</span>(<span class="dt">index =</span> linenumber <span class="op">%/%</span><span class="st"> </span><span class="dv">80</span>) <span class="op">%&gt;%</span><span class="st"> </span></span>
+<span id="cb30-11"><a href="comparing-3-different-dictionaries.html#cb30-11"></a><span class="st">  </span><span class="kw">count</span>(index, sentiment) <span class="op">%&gt;%</span><span class="st"> </span></span>
+<span id="cb30-12"><a href="comparing-3-different-dictionaries.html#cb30-12"></a><span class="st">  </span><span class="kw">pivot_wider</span>(<span class="dt">names_from =</span> sentiment, <span class="dt">values_from =</span> n, <span class="dt">values_fill =</span> <span class="kw">list</span>(<span class="dt">n =</span> <span class="dv">0</span>)) <span class="op">%&gt;%</span><span class="st"> </span></span>
+<span id="cb30-13"><a href="comparing-3-different-dictionaries.html#cb30-13"></a><span class="st">  </span><span class="kw">mutate</span>(<span class="dt">value =</span> positive <span class="op">-</span><span class="st"> </span>negative,</span>
+<span id="cb30-14"><a href="comparing-3-different-dictionaries.html#cb30-14"></a>         <span class="dt">dict =</span> <span class="st">&quot;bing&quot;</span>) <span class="op">%&gt;%</span><span class="st">  </span></span>
+<span id="cb30-15"><a href="comparing-3-different-dictionaries.html#cb30-15"></a><span class="st">  </span><span class="kw">select</span>(index, value, dict)</span>
+<span id="cb30-16"><a href="comparing-3-different-dictionaries.html#cb30-16"></a></span>
+<span id="cb30-17"><a href="comparing-3-different-dictionaries.html#cb30-17"></a>nrc &lt;-<span class="st"> </span>pride_prejudice <span class="op">%&gt;%</span><span class="st"> </span></span>
+<span id="cb30-18"><a href="comparing-3-different-dictionaries.html#cb30-18"></a><span class="st">  </span><span class="kw">inner_join</span>(<span class="kw">get_sentiments</span>(<span class="st">&quot;nrc&quot;</span>)) <span class="op">%&gt;%</span></span>
+<span id="cb30-19"><a href="comparing-3-different-dictionaries.html#cb30-19"></a><span class="st">  </span><span class="kw">filter</span>(sentiment <span class="op">%in%</span><span class="st"> </span><span class="kw">c</span>(<span class="st">&quot;positive&quot;</span>, <span class="st">&quot;negative&quot;</span>)) <span class="op">%&gt;%</span><span class="st"> </span></span>
+<span id="cb30-20"><a href="comparing-3-different-dictionaries.html#cb30-20"></a><span class="st">  </span><span class="kw">mutate</span>(<span class="dt">index =</span> linenumber <span class="op">%/%</span><span class="st"> </span><span class="dv">80</span>) <span class="op">%&gt;%</span><span class="st"> </span></span>
+<span id="cb30-21"><a href="comparing-3-different-dictionaries.html#cb30-21"></a><span class="st">  </span><span class="kw">count</span>(index, sentiment) <span class="op">%&gt;%</span><span class="st"> </span></span>
+<span id="cb30-22"><a href="comparing-3-different-dictionaries.html#cb30-22"></a><span class="st">  </span><span class="kw">pivot_wider</span>(<span class="dt">names_from =</span> sentiment, <span class="dt">values_from =</span> n, <span class="dt">values_fill =</span> <span class="kw">list</span>(<span class="dt">n =</span> <span class="dv">0</span>)) <span class="op">%&gt;%</span><span class="st"> </span></span>
+<span id="cb30-23"><a href="comparing-3-different-dictionaries.html#cb30-23"></a><span class="st">  </span><span class="kw">mutate</span>(<span class="dt">value =</span> positive <span class="op">-</span><span class="st"> </span>negative,</span>
+<span id="cb30-24"><a href="comparing-3-different-dictionaries.html#cb30-24"></a>         <span class="dt">dict =</span> <span class="st">&quot;nrc&quot;</span>) <span class="op">%&gt;%</span><span class="st"> </span></span>
+<span id="cb30-25"><a href="comparing-3-different-dictionaries.html#cb30-25"></a><span class="st">  </span><span class="kw">select</span>(index, value, dict)</span></code></pre></div>
+<div class="sourceCode" id="cb31"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb31-1"><a href="comparing-3-different-dictionaries.html#cb31-1"></a><span class="kw">bind_rows</span>(afinn, bing, nrc) <span class="op">%&gt;%</span><span class="st"> </span></span>
+<span id="cb31-2"><a href="comparing-3-different-dictionaries.html#cb31-2"></a><span class="st">  </span><span class="kw">ggplot</span>() <span class="op">+</span><span class="st"> </span></span>
+<span id="cb31-3"><a href="comparing-3-different-dictionaries.html#cb31-3"></a><span class="st">  </span><span class="kw">geom_col</span>(<span class="kw">aes</span>(index, value, <span class="dt">fill =</span> dict), <span class="dt">show.legend =</span> <span class="ot">FALSE</span>) <span class="op">+</span><span class="st"> </span></span>
+<span id="cb31-4"><a href="comparing-3-different-dictionaries.html#cb31-4"></a><span class="st">  </span><span class="kw">facet_wrap</span>(<span class="op">~</span><span class="st"> </span>dict, <span class="dt">nrow =</span> <span class="dv">3</span>)</span></code></pre></div>
 <p><img src="sentiment-analysis_files/figure-html/unnamed-chunk-10-1.png" width="768" style="display: block; margin: auto;" /></p>
 <p>It is natural for score based on these 3 different dictionary to differ in some sense, because for the latter two we are just consider as the sentiment score the number of positive words minus that of negative words. But they shoud all have similar relative trajectories through the novel.</p>
 <p>Why is, for example, the result for the NRC lexicon biased so high in sentiment compared to the Bing et al. result? Let’s look briefly at how many positive and negative words are in these lexicons.</p>
-<div class="sourceCode" id="cb32"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb32-1" title="1"><span class="kw">get_sentiments</span>(<span class="st">&quot;nrc&quot;</span>) <span class="op">%&gt;%</span><span class="st"> </span></a>
-<a class="sourceLine" id="cb32-2" title="2"><span class="st">  </span><span class="kw">filter</span>(sentiment <span class="op">%in%</span><span class="st"> </span><span class="kw">c</span>(<span class="st">&quot;positive&quot;</span>, <span class="st">&quot;negative&quot;</span>)) <span class="op">%&gt;%</span><span class="st"> </span></a>
-<a class="sourceLine" id="cb32-3" title="3"><span class="st">  </span><span class="kw">count</span>(sentiment)</a>
-<a class="sourceLine" id="cb32-4" title="4"><span class="co">#&gt; # A tibble: 2 x 2</span></a>
-<a class="sourceLine" id="cb32-5" title="5"><span class="co">#&gt;   sentiment     n</span></a>
-<a class="sourceLine" id="cb32-6" title="6"><span class="co">#&gt;   &lt;chr&gt;     &lt;int&gt;</span></a>
-<a class="sourceLine" id="cb32-7" title="7"><span class="co">#&gt; 1 negative   3324</span></a>
-<a class="sourceLine" id="cb32-8" title="8"><span class="co">#&gt; 2 positive   2312</span></a>
-<a class="sourceLine" id="cb32-9" title="9"></a>
-<a class="sourceLine" id="cb32-10" title="10"><span class="kw">get_sentiments</span>(<span class="st">&quot;bing&quot;</span>) <span class="op">%&gt;%</span><span class="st"> </span></a>
-<a class="sourceLine" id="cb32-11" title="11"><span class="st">  </span><span class="kw">count</span>(sentiment)</a>
-<a class="sourceLine" id="cb32-12" title="12"><span class="co">#&gt; # A tibble: 2 x 2</span></a>
-<a class="sourceLine" id="cb32-13" title="13"><span class="co">#&gt;   sentiment     n</span></a>
-<a class="sourceLine" id="cb32-14" title="14"><span class="co">#&gt;   &lt;chr&gt;     &lt;int&gt;</span></a>
-<a class="sourceLine" id="cb32-15" title="15"><span class="co">#&gt; 1 negative   4781</span></a>
-<a class="sourceLine" id="cb32-16" title="16"><span class="co">#&gt; 2 positive   2005</span></a></code></pre></div>
+<div class="sourceCode" id="cb32"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb32-1"><a href="comparing-3-different-dictionaries.html#cb32-1"></a><span class="kw">get_sentiments</span>(<span class="st">&quot;nrc&quot;</span>) <span class="op">%&gt;%</span><span class="st"> </span></span>
+<span id="cb32-2"><a href="comparing-3-different-dictionaries.html#cb32-2"></a><span class="st">  </span><span class="kw">filter</span>(sentiment <span class="op">%in%</span><span class="st"> </span><span class="kw">c</span>(<span class="st">&quot;positive&quot;</span>, <span class="st">&quot;negative&quot;</span>)) <span class="op">%&gt;%</span><span class="st"> </span></span>
+<span id="cb32-3"><a href="comparing-3-different-dictionaries.html#cb32-3"></a><span class="st">  </span><span class="kw">count</span>(sentiment)</span>
+<span id="cb32-4"><a href="comparing-3-different-dictionaries.html#cb32-4"></a><span class="co">#&gt; # A tibble: 2 x 2</span></span>
+<span id="cb32-5"><a href="comparing-3-different-dictionaries.html#cb32-5"></a><span class="co">#&gt;   sentiment     n</span></span>
+<span id="cb32-6"><a href="comparing-3-different-dictionaries.html#cb32-6"></a><span class="co">#&gt;   &lt;chr&gt;     &lt;int&gt;</span></span>
+<span id="cb32-7"><a href="comparing-3-different-dictionaries.html#cb32-7"></a><span class="co">#&gt; 1 negative   3324</span></span>
+<span id="cb32-8"><a href="comparing-3-different-dictionaries.html#cb32-8"></a><span class="co">#&gt; 2 positive   2312</span></span>
+<span id="cb32-9"><a href="comparing-3-different-dictionaries.html#cb32-9"></a></span>
+<span id="cb32-10"><a href="comparing-3-different-dictionaries.html#cb32-10"></a><span class="kw">get_sentiments</span>(<span class="st">&quot;bing&quot;</span>) <span class="op">%&gt;%</span><span class="st"> </span></span>
+<span id="cb32-11"><a href="comparing-3-different-dictionaries.html#cb32-11"></a><span class="st">  </span><span class="kw">count</span>(sentiment)</span>
+<span id="cb32-12"><a href="comparing-3-different-dictionaries.html#cb32-12"></a><span class="co">#&gt; # A tibble: 2 x 2</span></span>
+<span id="cb32-13"><a href="comparing-3-different-dictionaries.html#cb32-13"></a><span class="co">#&gt;   sentiment     n</span></span>
+<span id="cb32-14"><a href="comparing-3-different-dictionaries.html#cb32-14"></a><span class="co">#&gt;   &lt;chr&gt;     &lt;int&gt;</span></span>
+<span id="cb32-15"><a href="comparing-3-different-dictionaries.html#cb32-15"></a><span class="co">#&gt; 1 negative   4781</span></span>
+<span id="cb32-16"><a href="comparing-3-different-dictionaries.html#cb32-16"></a><span class="co">#&gt; 2 positive   2005</span></span></code></pre></div>
 <p>Both lexicons have more negative than positive words, but the ratio of negative to positive words is higher in the <code>Bing</code> lexicon than the <code>NRC</code> lexicon. This will contribute to the effect we see in the plot above, as will any systematic difference in word matches, e.g. if the negative words in the NRC lexicon do not match the words that Jane Austen uses very well.. Whatever the source of these differences, we see similar relative trajectories across the narrative arc, with similar changes in slope, but marked differences in absolute sentiment from lexicon to lexicon. This is all important context to keep in mind when choosing a sentiment lexicon for analysis.</p>
 </div>
             </section>

@@ -6,7 +6,7 @@
   <meta http-equiv="X-UA-Compatible" content="IE=edge" />
   <title>A.4 Backreferences | Notes for “Text Mining with R: A Tidy Approach”</title>
   <meta name="description" content="A.4 Backreferences | Notes for “Text Mining with R: A Tidy Approach”" />
-  <meta name="generator" content="bookdown 0.18 and GitBook 2.6.7" />
+  <meta name="generator" content="bookdown 0.20 and GitBook 2.6.7" />
 
   <meta property="og:title" content="A.4 Backreferences | Notes for “Text Mining with R: A Tidy Approach”" />
   <meta property="og:type" content="book" />
@@ -24,7 +24,7 @@
 <meta name="author" content="Qiushi Yan" />
 
 
-<meta name="date" content="2020-05-11" />
+<meta name="date" content="2020-06-27" />
 
   <meta name="viewport" content="width=device-width, initial-scale=1" />
   <meta name="apple-mobile-web-app-capable" content="yes" />
@@ -50,15 +50,16 @@
 
 
 
+<script src="libs/accessible-code-block-0.0.1/empty-anchor.js"></script>
 <script src="libs/htmlwidgets-1.5.1/htmlwidgets.js"></script>
 <link href="libs/str_view-0.1.0/str_view.css" rel="stylesheet" />
 <script src="libs/str_view-binding-1.4.0/str_view.js"></script>
 
 
 <style type="text/css">
-a.sourceLine { display: inline-block; line-height: 1.25; }
-a.sourceLine { pointer-events: none; color: inherit; text-decoration: inherit; }
-a.sourceLine:empty { height: 1.2em; }
+code.sourceCode > span { display: inline-block; line-height: 1.25; }
+code.sourceCode > span { color: inherit; text-decoration: inherit; }
+code.sourceCode > span:empty { height: 1.2em; }
 .sourceCode { overflow: visible; }
 code.sourceCode { white-space: pre; position: relative; }
 pre.sourceCode { margin: 0; }
@@ -67,14 +68,16 @@ div.sourceCode { overflow: auto; }
 }
 @media print {
 code.sourceCode { white-space: pre-wrap; }
-a.sourceLine { text-indent: -1em; padding-left: 1em; }
+code.sourceCode > span { text-indent: -5em; padding-left: 5em; }
 }
-pre.numberSource a.sourceLine
-  { position: relative; left: -4em; }
-pre.numberSource a.sourceLine::before
-  { content: attr(title);
+pre.numberSource code
+  { counter-reset: source-line 0; }
+pre.numberSource code > span
+  { position: relative; left: -4em; counter-increment: source-line; }
+pre.numberSource code > span > a:first-child::before
+  { content: counter(source-line);
     position: relative; left: -1em; text-align: right; vertical-align: baseline;
-    border: none; pointer-events: all; display: inline-block;
+    border: none; display: inline-block;
     -webkit-touch-callout: none; -webkit-user-select: none;
     -khtml-user-select: none; -moz-user-select: none;
     -ms-user-select: none; user-select: none;
@@ -83,9 +86,9 @@ pre.numberSource a.sourceLine::before
   }
 pre.numberSource { margin-left: 3em; border-left: 1px solid #aaaaaa;  padding-left: 4px; }
 div.sourceCode
-  {  }
+  {   }
 @media screen {
-a.sourceLine::before { text-decoration: underline; }
+code.sourceCode > span > a:first-child::before { text-decoration: underline; }
 }
 code span.al { color: #ff0000; font-weight: bold; } /* Alert */
 code span.an { color: #60a0b0; font-weight: bold; font-style: italic; } /* Annotation */
@@ -235,29 +238,29 @@ code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } /* Warni
 <h2><span class="header-section-number">A.4</span> Backreferences</h2>
 <p>Backreferences are used to overcome the problem that one match has no knowledge of its previous match, appearing as a pair of a subexpression and a <code>\number</code> referencing to that subexpression.</p>
 <p>Find all repeated words (often typos):</p>
-<div class="sourceCode" id="cb141"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb141-1" title="1">text &lt;-<span class="st"> &quot;This is a block of of text, several words here are are repeated, and and they should not be.&quot;</span></a>
-<a class="sourceLine" id="cb141-2" title="2"><span class="kw">str_view_all</span>(text, <span class="st">&quot;(</span><span class="ch">\\</span><span class="st">w+) </span><span class="ch">\\</span><span class="st">1&quot;</span>)</a></code></pre></div>
+<div class="sourceCode" id="cb141"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb141-1"><a href="backreferences.html#cb141-1"></a>text &lt;-<span class="st"> &quot;This is a block of of text, several words here are are repeated, and and they should not be.&quot;</span></span>
+<span id="cb141-2"><a href="backreferences.html#cb141-2"></a><span class="kw">str_view_all</span>(text, <span class="st">&quot;(</span><span class="ch">\\</span><span class="st">w+) </span><span class="ch">\\</span><span class="st">1&quot;</span>)</span></code></pre></div>
 <div id="htmlwidget-8d217188afc5c82e30eb" style="width:960px;height:100%;" class="str_view html-widget"></div>
 <script type="application/json" data-for="htmlwidget-8d217188afc5c82e30eb">{"x":{"html":"<ul>\n  <li>Th<span class='match'>is is<\/span> a block <span class='match'>of of<\/span> text, several words here <span class='match'>are are<\/span> repeated, <span class='match'>and and<\/span> they should not be.<\/li>\n<\/ul>"},"evals":[],"jsHooks":[]}</script>
 <p>Another example with html data where we want to match all normal header tags, note that the last pair <code>&lt;h2&gt;...&lt;h3&gt;</code> is invalid:</p>
-<div class="sourceCode" id="cb142"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb142-1" title="1">text &lt;-<span class="st"> &quot;&lt;BODY&gt;</span></a>
-<a class="sourceLine" id="cb142-2" title="2"><span class="st">&lt;H1&gt;Welcome to my Homepage&lt;/H1&gt;</span></a>
-<a class="sourceLine" id="cb142-3" title="3"><span class="st">Content is divided into two sections:&lt;BR&gt;</span></a>
-<a class="sourceLine" id="cb142-4" title="4"><span class="st">&lt;H2&gt;ColdFusion&lt;/H2&gt;</span></a>
-<a class="sourceLine" id="cb142-5" title="5"><span class="st">Information about Macromedia ColdFusion.</span></a>
-<a class="sourceLine" id="cb142-6" title="6"><span class="st">&lt;H2&gt;Wireless&lt;/H2&gt;</span></a>
-<a class="sourceLine" id="cb142-7" title="7"><span class="st">Information about Bluetooth, 802.11, and more.</span></a>
-<a class="sourceLine" id="cb142-8" title="8"><span class="st">&lt;H2&gt;This is not valid HTML&lt;/H3&gt;</span></a>
-<a class="sourceLine" id="cb142-9" title="9"><span class="st">&lt;/BODY&gt;&quot;</span></a>
-<a class="sourceLine" id="cb142-10" title="10"></a>
-<a class="sourceLine" id="cb142-11" title="11"><span class="kw">str_extract_all</span>(text, <span class="st">&quot;&lt;[Hh](</span><span class="ch">\\</span><span class="st">d)&gt;.+&lt;/[Hh]</span><span class="ch">\\</span><span class="st">1&gt;&quot;</span>)</a>
-<a class="sourceLine" id="cb142-12" title="12"><span class="co">#&gt; [[1]]</span></a>
-<a class="sourceLine" id="cb142-13" title="13"><span class="co">#&gt; [1] &quot;&lt;H1&gt;Welcome to my Homepage&lt;/H1&gt;&quot; &quot;&lt;H2&gt;ColdFusion&lt;/H2&gt;&quot;            </span></a>
-<a class="sourceLine" id="cb142-14" title="14"><span class="co">#&gt; [3] &quot;&lt;H2&gt;Wireless&lt;/H2&gt;&quot;</span></a></code></pre></div>
+<div class="sourceCode" id="cb142"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb142-1"><a href="backreferences.html#cb142-1"></a>text &lt;-<span class="st"> &quot;&lt;BODY&gt;</span></span>
+<span id="cb142-2"><a href="backreferences.html#cb142-2"></a><span class="st">&lt;H1&gt;Welcome to my Homepage&lt;/H1&gt;</span></span>
+<span id="cb142-3"><a href="backreferences.html#cb142-3"></a><span class="st">Content is divided into two sections:&lt;BR&gt;</span></span>
+<span id="cb142-4"><a href="backreferences.html#cb142-4"></a><span class="st">&lt;H2&gt;ColdFusion&lt;/H2&gt;</span></span>
+<span id="cb142-5"><a href="backreferences.html#cb142-5"></a><span class="st">Information about Macromedia ColdFusion.</span></span>
+<span id="cb142-6"><a href="backreferences.html#cb142-6"></a><span class="st">&lt;H2&gt;Wireless&lt;/H2&gt;</span></span>
+<span id="cb142-7"><a href="backreferences.html#cb142-7"></a><span class="st">Information about Bluetooth, 802.11, and more.</span></span>
+<span id="cb142-8"><a href="backreferences.html#cb142-8"></a><span class="st">&lt;H2&gt;This is not valid HTML&lt;/H3&gt;</span></span>
+<span id="cb142-9"><a href="backreferences.html#cb142-9"></a><span class="st">&lt;/BODY&gt;&quot;</span></span>
+<span id="cb142-10"><a href="backreferences.html#cb142-10"></a></span>
+<span id="cb142-11"><a href="backreferences.html#cb142-11"></a><span class="kw">str_extract_all</span>(text, <span class="st">&quot;&lt;[Hh](</span><span class="ch">\\</span><span class="st">d)&gt;.+&lt;/[Hh]</span><span class="ch">\\</span><span class="st">1&gt;&quot;</span>)</span>
+<span id="cb142-12"><a href="backreferences.html#cb142-12"></a><span class="co">#&gt; [[1]]</span></span>
+<span id="cb142-13"><a href="backreferences.html#cb142-13"></a><span class="co">#&gt; [1] &quot;&lt;H1&gt;Welcome to my Homepage&lt;/H1&gt;&quot; &quot;&lt;H2&gt;ColdFusion&lt;/H2&gt;&quot;            </span></span>
+<span id="cb142-14"><a href="backreferences.html#cb142-14"></a><span class="co">#&gt; [3] &quot;&lt;H2&gt;Wireless&lt;/H2&gt;&quot;</span></span></code></pre></div>
 <p><strong>Backreferences is particularly useful when performing replace operations</strong>.</p>
-<div class="sourceCode" id="cb143"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb143-1" title="1">text &lt;-<span class="st"> &quot;user@gmail.com is my email address&quot;</span></a>
-<a class="sourceLine" id="cb143-2" title="2"><span class="kw">str_replace</span>(text, <span class="st">&quot;(.+@.+</span><span class="ch">\\</span><span class="st">.com)&quot;</span>, <span class="st">&quot;&lt;a href: </span><span class="ch">\\</span><span class="st">1&gt;</span><span class="ch">\\</span><span class="st">1&lt;a&gt;&quot;</span>)</a>
-<a class="sourceLine" id="cb143-3" title="3"><span class="co">#&gt; [1] &quot;&lt;a href: user@gmail.com&gt;user@gmail.com&lt;a&gt; is my email address&quot;</span></a></code></pre></div>
+<div class="sourceCode" id="cb143"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb143-1"><a href="backreferences.html#cb143-1"></a>text &lt;-<span class="st"> &quot;user@gmail.com is my email address&quot;</span></span>
+<span id="cb143-2"><a href="backreferences.html#cb143-2"></a><span class="kw">str_replace</span>(text, <span class="st">&quot;(.+@.+</span><span class="ch">\\</span><span class="st">.com)&quot;</span>, <span class="st">&quot;&lt;a href: </span><span class="ch">\\</span><span class="st">1&gt;</span><span class="ch">\\</span><span class="st">1&lt;a&gt;&quot;</span>)</span>
+<span id="cb143-3"><a href="backreferences.html#cb143-3"></a><span class="co">#&gt; [1] &quot;&lt;a href: user@gmail.com&gt;user@gmail.com&lt;a&gt; is my email address&quot;</span></span></code></pre></div>
 
 </div>
 <!-- </div> -->

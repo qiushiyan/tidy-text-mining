@@ -6,7 +6,7 @@
   <meta http-equiv="X-UA-Compatible" content="IE=edge" />
   <title>4.2 Counting and correlating pairs of words with widyr | Notes for “Text Mining with R: A Tidy Approach”</title>
   <meta name="description" content="4.2 Counting and correlating pairs of words with widyr | Notes for “Text Mining with R: A Tidy Approach”" />
-  <meta name="generator" content="bookdown 0.18 and GitBook 2.6.7" />
+  <meta name="generator" content="bookdown 0.20 and GitBook 2.6.7" />
 
   <meta property="og:title" content="4.2 Counting and correlating pairs of words with widyr | Notes for “Text Mining with R: A Tidy Approach”" />
   <meta property="og:type" content="book" />
@@ -24,7 +24,7 @@
 <meta name="author" content="Qiushi Yan" />
 
 
-<meta name="date" content="2020-05-11" />
+<meta name="date" content="2020-06-27" />
 
   <meta name="viewport" content="width=device-width, initial-scale=1" />
   <meta name="apple-mobile-web-app-capable" content="yes" />
@@ -50,15 +50,16 @@
 
 
 
+<script src="libs/accessible-code-block-0.0.1/empty-anchor.js"></script>
 <script src="libs/htmlwidgets-1.5.1/htmlwidgets.js"></script>
 <link href="libs/str_view-0.1.0/str_view.css" rel="stylesheet" />
 <script src="libs/str_view-binding-1.4.0/str_view.js"></script>
 
 
 <style type="text/css">
-a.sourceLine { display: inline-block; line-height: 1.25; }
-a.sourceLine { pointer-events: none; color: inherit; text-decoration: inherit; }
-a.sourceLine:empty { height: 1.2em; }
+code.sourceCode > span { display: inline-block; line-height: 1.25; }
+code.sourceCode > span { color: inherit; text-decoration: inherit; }
+code.sourceCode > span:empty { height: 1.2em; }
 .sourceCode { overflow: visible; }
 code.sourceCode { white-space: pre; position: relative; }
 pre.sourceCode { margin: 0; }
@@ -67,14 +68,16 @@ div.sourceCode { overflow: auto; }
 }
 @media print {
 code.sourceCode { white-space: pre-wrap; }
-a.sourceLine { text-indent: -1em; padding-left: 1em; }
+code.sourceCode > span { text-indent: -5em; padding-left: 5em; }
 }
-pre.numberSource a.sourceLine
-  { position: relative; left: -4em; }
-pre.numberSource a.sourceLine::before
-  { content: attr(title);
+pre.numberSource code
+  { counter-reset: source-line 0; }
+pre.numberSource code > span
+  { position: relative; left: -4em; counter-increment: source-line; }
+pre.numberSource code > span > a:first-child::before
+  { content: counter(source-line);
     position: relative; left: -1em; text-align: right; vertical-align: baseline;
-    border: none; pointer-events: all; display: inline-block;
+    border: none; display: inline-block;
     -webkit-touch-callout: none; -webkit-user-select: none;
     -khtml-user-select: none; -moz-user-select: none;
     -ms-user-select: none; user-select: none;
@@ -83,9 +86,9 @@ pre.numberSource a.sourceLine::before
   }
 pre.numberSource { margin-left: 3em; border-left: 1px solid #aaaaaa;  padding-left: 4px; }
 div.sourceCode
-  {  }
+  {   }
 @media screen {
-a.sourceLine::before { text-decoration: underline; }
+code.sourceCode > span > a:first-child::before { text-decoration: underline; }
 }
 code span.al { color: #ff0000; font-weight: bold; } /* Alert */
 code span.an { color: #60a0b0; font-weight: bold; font-style: italic; } /* Annotation */
@@ -241,53 +244,53 @@ code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } /* Warni
 <div id="counting-and-correlating-among-sections" class="section level3">
 <h3><span class="header-section-number">4.2.1</span> Counting and correlating among sections</h3>
 <p>We devide the book “Pride and Prejudice” into 10-line sections , as we did for Section <a href="sentiment-analysis-with-inner-join.html#sentiment-analysis-with-inner-join">2.2</a> (80 lines). We may be interested in what words tend to appear within the same section.</p>
-<div class="sourceCode" id="cb83"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb83-1" title="1">austen_section_words &lt;-<span class="st"> </span><span class="kw">austen_books</span>() <span class="op">%&gt;%</span></a>
-<a class="sourceLine" id="cb83-2" title="2"><span class="st">  </span><span class="kw">filter</span>(book <span class="op">==</span><span class="st"> &quot;Pride &amp; Prejudice&quot;</span>) <span class="op">%&gt;%</span></a>
-<a class="sourceLine" id="cb83-3" title="3"><span class="st">  </span><span class="kw">mutate</span>(<span class="dt">section =</span> <span class="kw">row_number</span>() <span class="op">%/%</span><span class="st"> </span><span class="dv">10</span>) <span class="op">%&gt;%</span></a>
-<a class="sourceLine" id="cb83-4" title="4"><span class="st">  </span><span class="kw">filter</span>(section <span class="op">&gt;</span><span class="st"> </span><span class="dv">0</span>) <span class="op">%&gt;%</span></a>
-<a class="sourceLine" id="cb83-5" title="5"><span class="st">  </span><span class="kw">unnest_tokens</span>(word, text) <span class="op">%&gt;%</span></a>
-<a class="sourceLine" id="cb83-6" title="6"><span class="st">  </span><span class="kw">filter</span>(<span class="op">!</span>word <span class="op">%in%</span><span class="st"> </span>stop_words<span class="op">$</span>word)</a>
-<a class="sourceLine" id="cb83-7" title="7"></a>
-<a class="sourceLine" id="cb83-8" title="8">austen_section_words</a>
-<a class="sourceLine" id="cb83-9" title="9"><span class="co">#&gt; # A tibble: 37,240 x 3</span></a>
-<a class="sourceLine" id="cb83-10" title="10"><span class="co">#&gt;   book              section word        </span></a>
-<a class="sourceLine" id="cb83-11" title="11"><span class="co">#&gt;   &lt;fct&gt;               &lt;dbl&gt; &lt;chr&gt;       </span></a>
-<a class="sourceLine" id="cb83-12" title="12"><span class="co">#&gt; 1 Pride &amp; Prejudice       1 truth       </span></a>
-<a class="sourceLine" id="cb83-13" title="13"><span class="co">#&gt; 2 Pride &amp; Prejudice       1 universally </span></a>
-<a class="sourceLine" id="cb83-14" title="14"><span class="co">#&gt; 3 Pride &amp; Prejudice       1 acknowledged</span></a>
-<a class="sourceLine" id="cb83-15" title="15"><span class="co">#&gt; 4 Pride &amp; Prejudice       1 single      </span></a>
-<a class="sourceLine" id="cb83-16" title="16"><span class="co">#&gt; 5 Pride &amp; Prejudice       1 possession  </span></a>
-<a class="sourceLine" id="cb83-17" title="17"><span class="co">#&gt; 6 Pride &amp; Prejudice       1 fortune     </span></a>
-<a class="sourceLine" id="cb83-18" title="18"><span class="co">#&gt; # ... with 3.723e+04 more rows</span></a></code></pre></div>
+<div class="sourceCode" id="cb83"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb83-1"><a href="counting-and-correlating-pairs-of-words-with-widyr.html#cb83-1"></a>austen_section_words &lt;-<span class="st"> </span><span class="kw">austen_books</span>() <span class="op">%&gt;%</span></span>
+<span id="cb83-2"><a href="counting-and-correlating-pairs-of-words-with-widyr.html#cb83-2"></a><span class="st">  </span><span class="kw">filter</span>(book <span class="op">==</span><span class="st"> &quot;Pride &amp; Prejudice&quot;</span>) <span class="op">%&gt;%</span></span>
+<span id="cb83-3"><a href="counting-and-correlating-pairs-of-words-with-widyr.html#cb83-3"></a><span class="st">  </span><span class="kw">mutate</span>(<span class="dt">section =</span> <span class="kw">row_number</span>() <span class="op">%/%</span><span class="st"> </span><span class="dv">10</span>) <span class="op">%&gt;%</span></span>
+<span id="cb83-4"><a href="counting-and-correlating-pairs-of-words-with-widyr.html#cb83-4"></a><span class="st">  </span><span class="kw">filter</span>(section <span class="op">&gt;</span><span class="st"> </span><span class="dv">0</span>) <span class="op">%&gt;%</span></span>
+<span id="cb83-5"><a href="counting-and-correlating-pairs-of-words-with-widyr.html#cb83-5"></a><span class="st">  </span><span class="kw">unnest_tokens</span>(word, text) <span class="op">%&gt;%</span></span>
+<span id="cb83-6"><a href="counting-and-correlating-pairs-of-words-with-widyr.html#cb83-6"></a><span class="st">  </span><span class="kw">filter</span>(<span class="op">!</span>word <span class="op">%in%</span><span class="st"> </span>stop_words<span class="op">$</span>word)</span>
+<span id="cb83-7"><a href="counting-and-correlating-pairs-of-words-with-widyr.html#cb83-7"></a></span>
+<span id="cb83-8"><a href="counting-and-correlating-pairs-of-words-with-widyr.html#cb83-8"></a>austen_section_words</span>
+<span id="cb83-9"><a href="counting-and-correlating-pairs-of-words-with-widyr.html#cb83-9"></a><span class="co">#&gt; # A tibble: 37,240 x 3</span></span>
+<span id="cb83-10"><a href="counting-and-correlating-pairs-of-words-with-widyr.html#cb83-10"></a><span class="co">#&gt;   book              section word        </span></span>
+<span id="cb83-11"><a href="counting-and-correlating-pairs-of-words-with-widyr.html#cb83-11"></a><span class="co">#&gt;   &lt;fct&gt;               &lt;dbl&gt; &lt;chr&gt;       </span></span>
+<span id="cb83-12"><a href="counting-and-correlating-pairs-of-words-with-widyr.html#cb83-12"></a><span class="co">#&gt; 1 Pride &amp; Prejudice       1 truth       </span></span>
+<span id="cb83-13"><a href="counting-and-correlating-pairs-of-words-with-widyr.html#cb83-13"></a><span class="co">#&gt; 2 Pride &amp; Prejudice       1 universally </span></span>
+<span id="cb83-14"><a href="counting-and-correlating-pairs-of-words-with-widyr.html#cb83-14"></a><span class="co">#&gt; 3 Pride &amp; Prejudice       1 acknowledged</span></span>
+<span id="cb83-15"><a href="counting-and-correlating-pairs-of-words-with-widyr.html#cb83-15"></a><span class="co">#&gt; 4 Pride &amp; Prejudice       1 single      </span></span>
+<span id="cb83-16"><a href="counting-and-correlating-pairs-of-words-with-widyr.html#cb83-16"></a><span class="co">#&gt; 5 Pride &amp; Prejudice       1 possession  </span></span>
+<span id="cb83-17"><a href="counting-and-correlating-pairs-of-words-with-widyr.html#cb83-17"></a><span class="co">#&gt; 6 Pride &amp; Prejudice       1 fortune     </span></span>
+<span id="cb83-18"><a href="counting-and-correlating-pairs-of-words-with-widyr.html#cb83-18"></a><span class="co">#&gt; # ... with 3.723e+04 more rows</span></span></code></pre></div>
 <p><code>widyr::pairwise_counts()</code> counts the number of times each pair of <em>items</em> appear together within a group defined by “<em>feature</em>”. In this case, it counts the number of times each pair of words appear together within a section, note it still returns a tidy data frame, although the underlying computation took place in a matrix form :</p>
-<div class="sourceCode" id="cb84"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb84-1" title="1"><span class="kw">library</span>(widyr)</a>
-<a class="sourceLine" id="cb84-2" title="2"></a>
-<a class="sourceLine" id="cb84-3" title="3">austen_section_words <span class="op">%&gt;%</span><span class="st"> </span></a>
-<a class="sourceLine" id="cb84-4" title="4"><span class="st">  </span><span class="kw">pairwise_count</span>(word, section, <span class="dt">sort =</span> <span class="ot">TRUE</span>)</a>
-<a class="sourceLine" id="cb84-5" title="5"><span class="co">#&gt; # A tibble: 796,008 x 3</span></a>
-<a class="sourceLine" id="cb84-6" title="6"><span class="co">#&gt;   item1     item2         n</span></a>
-<a class="sourceLine" id="cb84-7" title="7"><span class="co">#&gt;   &lt;chr&gt;     &lt;chr&gt;     &lt;dbl&gt;</span></a>
-<a class="sourceLine" id="cb84-8" title="8"><span class="co">#&gt; 1 darcy     elizabeth   144</span></a>
-<a class="sourceLine" id="cb84-9" title="9"><span class="co">#&gt; 2 elizabeth darcy       144</span></a>
-<a class="sourceLine" id="cb84-10" title="10"><span class="co">#&gt; 3 miss      elizabeth   110</span></a>
-<a class="sourceLine" id="cb84-11" title="11"><span class="co">#&gt; 4 elizabeth miss        110</span></a>
-<a class="sourceLine" id="cb84-12" title="12"><span class="co">#&gt; 5 elizabeth jane        106</span></a>
-<a class="sourceLine" id="cb84-13" title="13"><span class="co">#&gt; 6 jane      elizabeth   106</span></a>
-<a class="sourceLine" id="cb84-14" title="14"><span class="co">#&gt; # ... with 7.96e+05 more rows</span></a></code></pre></div>
+<div class="sourceCode" id="cb84"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb84-1"><a href="counting-and-correlating-pairs-of-words-with-widyr.html#cb84-1"></a><span class="kw">library</span>(widyr)</span>
+<span id="cb84-2"><a href="counting-and-correlating-pairs-of-words-with-widyr.html#cb84-2"></a></span>
+<span id="cb84-3"><a href="counting-and-correlating-pairs-of-words-with-widyr.html#cb84-3"></a>austen_section_words <span class="op">%&gt;%</span><span class="st"> </span></span>
+<span id="cb84-4"><a href="counting-and-correlating-pairs-of-words-with-widyr.html#cb84-4"></a><span class="st">  </span><span class="kw">pairwise_count</span>(word, section, <span class="dt">sort =</span> <span class="ot">TRUE</span>)</span>
+<span id="cb84-5"><a href="counting-and-correlating-pairs-of-words-with-widyr.html#cb84-5"></a><span class="co">#&gt; # A tibble: 796,008 x 3</span></span>
+<span id="cb84-6"><a href="counting-and-correlating-pairs-of-words-with-widyr.html#cb84-6"></a><span class="co">#&gt;   item1     item2         n</span></span>
+<span id="cb84-7"><a href="counting-and-correlating-pairs-of-words-with-widyr.html#cb84-7"></a><span class="co">#&gt;   &lt;chr&gt;     &lt;chr&gt;     &lt;dbl&gt;</span></span>
+<span id="cb84-8"><a href="counting-and-correlating-pairs-of-words-with-widyr.html#cb84-8"></a><span class="co">#&gt; 1 darcy     elizabeth   144</span></span>
+<span id="cb84-9"><a href="counting-and-correlating-pairs-of-words-with-widyr.html#cb84-9"></a><span class="co">#&gt; 2 elizabeth darcy       144</span></span>
+<span id="cb84-10"><a href="counting-and-correlating-pairs-of-words-with-widyr.html#cb84-10"></a><span class="co">#&gt; 3 miss      elizabeth   110</span></span>
+<span id="cb84-11"><a href="counting-and-correlating-pairs-of-words-with-widyr.html#cb84-11"></a><span class="co">#&gt; 4 elizabeth miss        110</span></span>
+<span id="cb84-12"><a href="counting-and-correlating-pairs-of-words-with-widyr.html#cb84-12"></a><span class="co">#&gt; 5 elizabeth jane        106</span></span>
+<span id="cb84-13"><a href="counting-and-correlating-pairs-of-words-with-widyr.html#cb84-13"></a><span class="co">#&gt; 6 jane      elizabeth   106</span></span>
+<span id="cb84-14"><a href="counting-and-correlating-pairs-of-words-with-widyr.html#cb84-14"></a><span class="co">#&gt; # ... with 7.96e+05 more rows</span></span></code></pre></div>
 <p>We can easily find the words that most often occur with Darcy. Since <code>pairwise_count</code> records both the counts of <code>(word_A, word_B)</code> and <code>(word_B, word_B)</code>, it does not matter we <code>filter</code> at <code>item1</code> or <code>item2</code></p>
-<div class="sourceCode" id="cb85"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb85-1" title="1">austen_section_words <span class="op">%&gt;%</span><span class="st"> </span></a>
-<a class="sourceLine" id="cb85-2" title="2"><span class="st">  </span><span class="kw">pairwise_count</span>(word, section, <span class="dt">sort =</span> <span class="ot">TRUE</span>) <span class="op">%&gt;%</span><span class="st"> </span></a>
-<a class="sourceLine" id="cb85-3" title="3"><span class="st">  </span><span class="kw">filter</span>(item1 <span class="op">==</span><span class="st"> &quot;darcy&quot;</span>)</a>
-<a class="sourceLine" id="cb85-4" title="4"><span class="co">#&gt; # A tibble: 2,930 x 3</span></a>
-<a class="sourceLine" id="cb85-5" title="5"><span class="co">#&gt;   item1 item2         n</span></a>
-<a class="sourceLine" id="cb85-6" title="6"><span class="co">#&gt;   &lt;chr&gt; &lt;chr&gt;     &lt;dbl&gt;</span></a>
-<a class="sourceLine" id="cb85-7" title="7"><span class="co">#&gt; 1 darcy elizabeth   144</span></a>
-<a class="sourceLine" id="cb85-8" title="8"><span class="co">#&gt; 2 darcy miss         92</span></a>
-<a class="sourceLine" id="cb85-9" title="9"><span class="co">#&gt; 3 darcy bingley      86</span></a>
-<a class="sourceLine" id="cb85-10" title="10"><span class="co">#&gt; 4 darcy jane         46</span></a>
-<a class="sourceLine" id="cb85-11" title="11"><span class="co">#&gt; 5 darcy bennet       45</span></a>
-<a class="sourceLine" id="cb85-12" title="12"><span class="co">#&gt; 6 darcy sister       45</span></a>
-<a class="sourceLine" id="cb85-13" title="13"><span class="co">#&gt; # ... with 2,924 more rows</span></a></code></pre></div>
+<div class="sourceCode" id="cb85"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb85-1"><a href="counting-and-correlating-pairs-of-words-with-widyr.html#cb85-1"></a>austen_section_words <span class="op">%&gt;%</span><span class="st"> </span></span>
+<span id="cb85-2"><a href="counting-and-correlating-pairs-of-words-with-widyr.html#cb85-2"></a><span class="st">  </span><span class="kw">pairwise_count</span>(word, section, <span class="dt">sort =</span> <span class="ot">TRUE</span>) <span class="op">%&gt;%</span><span class="st"> </span></span>
+<span id="cb85-3"><a href="counting-and-correlating-pairs-of-words-with-widyr.html#cb85-3"></a><span class="st">  </span><span class="kw">filter</span>(item1 <span class="op">==</span><span class="st"> &quot;darcy&quot;</span>)</span>
+<span id="cb85-4"><a href="counting-and-correlating-pairs-of-words-with-widyr.html#cb85-4"></a><span class="co">#&gt; # A tibble: 2,930 x 3</span></span>
+<span id="cb85-5"><a href="counting-and-correlating-pairs-of-words-with-widyr.html#cb85-5"></a><span class="co">#&gt;   item1 item2         n</span></span>
+<span id="cb85-6"><a href="counting-and-correlating-pairs-of-words-with-widyr.html#cb85-6"></a><span class="co">#&gt;   &lt;chr&gt; &lt;chr&gt;     &lt;dbl&gt;</span></span>
+<span id="cb85-7"><a href="counting-and-correlating-pairs-of-words-with-widyr.html#cb85-7"></a><span class="co">#&gt; 1 darcy elizabeth   144</span></span>
+<span id="cb85-8"><a href="counting-and-correlating-pairs-of-words-with-widyr.html#cb85-8"></a><span class="co">#&gt; 2 darcy miss         92</span></span>
+<span id="cb85-9"><a href="counting-and-correlating-pairs-of-words-with-widyr.html#cb85-9"></a><span class="co">#&gt; 3 darcy bingley      86</span></span>
+<span id="cb85-10"><a href="counting-and-correlating-pairs-of-words-with-widyr.html#cb85-10"></a><span class="co">#&gt; 4 darcy jane         46</span></span>
+<span id="cb85-11"><a href="counting-and-correlating-pairs-of-words-with-widyr.html#cb85-11"></a><span class="co">#&gt; 5 darcy bennet       45</span></span>
+<span id="cb85-12"><a href="counting-and-correlating-pairs-of-words-with-widyr.html#cb85-12"></a><span class="co">#&gt; 6 darcy sister       45</span></span>
+<span id="cb85-13"><a href="counting-and-correlating-pairs-of-words-with-widyr.html#cb85-13"></a><span class="co">#&gt; # ... with 2,924 more rows</span></span></code></pre></div>
 </div>
 <div id="pairwise-correlation" class="section level3">
 <h3><span class="header-section-number">4.2.2</span> Pairwise correlation</h3>
@@ -305,52 +308,52 @@ code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } /* Warni
 \]</span></p>
 <p>We see, from the above quation, that <span class="math inline">\(\phi\)</span> is “standarized” by individual counts, so various word pair with different individual frequency can be compared to each other:</p>
 <p>The computation of <span class="math inline">\(\phi\)</span> can be simply done by <code>pairwise_cor</code> (other choice of correlation coefficients specified by <code>method</code>). The procedure can be somewhat computationally expensive, so we filter out uncommon words</p>
-<div class="sourceCode" id="cb86"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb86-1" title="1">word_cors &lt;-<span class="st"> </span>austen_section_words <span class="op">%&gt;%</span><span class="st"> </span></a>
-<a class="sourceLine" id="cb86-2" title="2"><span class="st">  </span><span class="kw">add_count</span>(word) <span class="op">%&gt;%</span><span class="st"> </span></a>
-<a class="sourceLine" id="cb86-3" title="3"><span class="st">  </span><span class="kw">filter</span>(n <span class="op">&gt;=</span><span class="st"> </span><span class="dv">20</span>) <span class="op">%&gt;%</span><span class="st"> </span></a>
-<a class="sourceLine" id="cb86-4" title="4"><span class="st">  </span><span class="kw">select</span>(<span class="op">-</span>n) <span class="op">%&gt;%</span></a>
-<a class="sourceLine" id="cb86-5" title="5"><span class="st">  </span><span class="kw">pairwise_cor</span>(word, section, <span class="dt">sort =</span> <span class="ot">TRUE</span>)</a>
-<a class="sourceLine" id="cb86-6" title="6"></a>
-<a class="sourceLine" id="cb86-7" title="7">word_cors</a>
-<a class="sourceLine" id="cb86-8" title="8"><span class="co">#&gt; # A tibble: 154,842 x 3</span></a>
-<a class="sourceLine" id="cb86-9" title="9"><span class="co">#&gt;   item1    item2    correlation</span></a>
-<a class="sourceLine" id="cb86-10" title="10"><span class="co">#&gt;   &lt;chr&gt;    &lt;chr&gt;          &lt;dbl&gt;</span></a>
-<a class="sourceLine" id="cb86-11" title="11"><span class="co">#&gt; 1 bourgh   de             0.951</span></a>
-<a class="sourceLine" id="cb86-12" title="12"><span class="co">#&gt; 2 de       bourgh         0.951</span></a>
-<a class="sourceLine" id="cb86-13" title="13"><span class="co">#&gt; 3 pounds   thousand       0.701</span></a>
-<a class="sourceLine" id="cb86-14" title="14"><span class="co">#&gt; 4 thousand pounds         0.701</span></a>
-<a class="sourceLine" id="cb86-15" title="15"><span class="co">#&gt; 5 william  sir            0.664</span></a>
-<a class="sourceLine" id="cb86-16" title="16"><span class="co">#&gt; 6 sir      william        0.664</span></a>
-<a class="sourceLine" id="cb86-17" title="17"><span class="co">#&gt; # ... with 1.548e+05 more rows</span></a></code></pre></div>
+<div class="sourceCode" id="cb86"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb86-1"><a href="counting-and-correlating-pairs-of-words-with-widyr.html#cb86-1"></a>word_cors &lt;-<span class="st"> </span>austen_section_words <span class="op">%&gt;%</span><span class="st"> </span></span>
+<span id="cb86-2"><a href="counting-and-correlating-pairs-of-words-with-widyr.html#cb86-2"></a><span class="st">  </span><span class="kw">add_count</span>(word) <span class="op">%&gt;%</span><span class="st"> </span></span>
+<span id="cb86-3"><a href="counting-and-correlating-pairs-of-words-with-widyr.html#cb86-3"></a><span class="st">  </span><span class="kw">filter</span>(n <span class="op">&gt;=</span><span class="st"> </span><span class="dv">20</span>) <span class="op">%&gt;%</span><span class="st"> </span></span>
+<span id="cb86-4"><a href="counting-and-correlating-pairs-of-words-with-widyr.html#cb86-4"></a><span class="st">  </span><span class="kw">select</span>(<span class="op">-</span>n) <span class="op">%&gt;%</span></span>
+<span id="cb86-5"><a href="counting-and-correlating-pairs-of-words-with-widyr.html#cb86-5"></a><span class="st">  </span><span class="kw">pairwise_cor</span>(word, section, <span class="dt">sort =</span> <span class="ot">TRUE</span>)</span>
+<span id="cb86-6"><a href="counting-and-correlating-pairs-of-words-with-widyr.html#cb86-6"></a></span>
+<span id="cb86-7"><a href="counting-and-correlating-pairs-of-words-with-widyr.html#cb86-7"></a>word_cors</span>
+<span id="cb86-8"><a href="counting-and-correlating-pairs-of-words-with-widyr.html#cb86-8"></a><span class="co">#&gt; # A tibble: 154,842 x 3</span></span>
+<span id="cb86-9"><a href="counting-and-correlating-pairs-of-words-with-widyr.html#cb86-9"></a><span class="co">#&gt;   item1    item2    correlation</span></span>
+<span id="cb86-10"><a href="counting-and-correlating-pairs-of-words-with-widyr.html#cb86-10"></a><span class="co">#&gt;   &lt;chr&gt;    &lt;chr&gt;          &lt;dbl&gt;</span></span>
+<span id="cb86-11"><a href="counting-and-correlating-pairs-of-words-with-widyr.html#cb86-11"></a><span class="co">#&gt; 1 bourgh   de             0.951</span></span>
+<span id="cb86-12"><a href="counting-and-correlating-pairs-of-words-with-widyr.html#cb86-12"></a><span class="co">#&gt; 2 de       bourgh         0.951</span></span>
+<span id="cb86-13"><a href="counting-and-correlating-pairs-of-words-with-widyr.html#cb86-13"></a><span class="co">#&gt; 3 pounds   thousand       0.701</span></span>
+<span id="cb86-14"><a href="counting-and-correlating-pairs-of-words-with-widyr.html#cb86-14"></a><span class="co">#&gt; 4 thousand pounds         0.701</span></span>
+<span id="cb86-15"><a href="counting-and-correlating-pairs-of-words-with-widyr.html#cb86-15"></a><span class="co">#&gt; 5 william  sir            0.664</span></span>
+<span id="cb86-16"><a href="counting-and-correlating-pairs-of-words-with-widyr.html#cb86-16"></a><span class="co">#&gt; 6 sir      william        0.664</span></span>
+<span id="cb86-17"><a href="counting-and-correlating-pairs-of-words-with-widyr.html#cb86-17"></a><span class="co">#&gt; # ... with 1.548e+05 more rows</span></span></code></pre></div>
 <p>Which word is most correlated with “lady”?</p>
-<div class="sourceCode" id="cb87"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb87-1" title="1">word_cors <span class="op">%&gt;%</span><span class="st"> </span></a>
-<a class="sourceLine" id="cb87-2" title="2"><span class="st">  </span><span class="kw">filter</span>(item1 <span class="op">==</span><span class="st"> &quot;lady&quot;</span>)</a>
-<a class="sourceLine" id="cb87-3" title="3"><span class="co">#&gt; # A tibble: 393 x 3</span></a>
-<a class="sourceLine" id="cb87-4" title="4"><span class="co">#&gt;   item1 item2     correlation</span></a>
-<a class="sourceLine" id="cb87-5" title="5"><span class="co">#&gt;   &lt;chr&gt; &lt;chr&gt;           &lt;dbl&gt;</span></a>
-<a class="sourceLine" id="cb87-6" title="6"><span class="co">#&gt; 1 lady  catherine       0.663</span></a>
-<a class="sourceLine" id="cb87-7" title="7"><span class="co">#&gt; 2 lady  de              0.283</span></a>
-<a class="sourceLine" id="cb87-8" title="8"><span class="co">#&gt; 3 lady  bourgh          0.254</span></a>
-<a class="sourceLine" id="cb87-9" title="9"><span class="co">#&gt; 4 lady  ladyship        0.227</span></a>
-<a class="sourceLine" id="cb87-10" title="10"><span class="co">#&gt; 5 lady  lucas           0.198</span></a>
-<a class="sourceLine" id="cb87-11" title="11"><span class="co">#&gt; 6 lady  collins         0.176</span></a>
-<a class="sourceLine" id="cb87-12" title="12"><span class="co">#&gt; # ... with 387 more rows</span></a></code></pre></div>
+<div class="sourceCode" id="cb87"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb87-1"><a href="counting-and-correlating-pairs-of-words-with-widyr.html#cb87-1"></a>word_cors <span class="op">%&gt;%</span><span class="st"> </span></span>
+<span id="cb87-2"><a href="counting-and-correlating-pairs-of-words-with-widyr.html#cb87-2"></a><span class="st">  </span><span class="kw">filter</span>(item1 <span class="op">==</span><span class="st"> &quot;lady&quot;</span>)</span>
+<span id="cb87-3"><a href="counting-and-correlating-pairs-of-words-with-widyr.html#cb87-3"></a><span class="co">#&gt; # A tibble: 393 x 3</span></span>
+<span id="cb87-4"><a href="counting-and-correlating-pairs-of-words-with-widyr.html#cb87-4"></a><span class="co">#&gt;   item1 item2     correlation</span></span>
+<span id="cb87-5"><a href="counting-and-correlating-pairs-of-words-with-widyr.html#cb87-5"></a><span class="co">#&gt;   &lt;chr&gt; &lt;chr&gt;           &lt;dbl&gt;</span></span>
+<span id="cb87-6"><a href="counting-and-correlating-pairs-of-words-with-widyr.html#cb87-6"></a><span class="co">#&gt; 1 lady  catherine       0.663</span></span>
+<span id="cb87-7"><a href="counting-and-correlating-pairs-of-words-with-widyr.html#cb87-7"></a><span class="co">#&gt; 2 lady  de              0.283</span></span>
+<span id="cb87-8"><a href="counting-and-correlating-pairs-of-words-with-widyr.html#cb87-8"></a><span class="co">#&gt; 3 lady  bourgh          0.254</span></span>
+<span id="cb87-9"><a href="counting-and-correlating-pairs-of-words-with-widyr.html#cb87-9"></a><span class="co">#&gt; 4 lady  ladyship        0.227</span></span>
+<span id="cb87-10"><a href="counting-and-correlating-pairs-of-words-with-widyr.html#cb87-10"></a><span class="co">#&gt; 5 lady  lucas           0.198</span></span>
+<span id="cb87-11"><a href="counting-and-correlating-pairs-of-words-with-widyr.html#cb87-11"></a><span class="co">#&gt; 6 lady  collins         0.176</span></span>
+<span id="cb87-12"><a href="counting-and-correlating-pairs-of-words-with-widyr.html#cb87-12"></a><span class="co">#&gt; # ... with 387 more rows</span></span></code></pre></div>
 <p>This lets us pick particular interesting words and find the other words most associated with them</p>
-<div class="sourceCode" id="cb88"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb88-1" title="1">word_cors <span class="op">%&gt;%</span></a>
-<a class="sourceLine" id="cb88-2" title="2"><span class="st">  </span><span class="kw">filter</span>(item1 <span class="op">%in%</span><span class="st"> </span><span class="kw">c</span>(<span class="st">&quot;elizabeth&quot;</span>, <span class="st">&quot;pounds&quot;</span>, <span class="st">&quot;married&quot;</span>, <span class="st">&quot;pride&quot;</span>)) <span class="op">%&gt;%</span></a>
-<a class="sourceLine" id="cb88-3" title="3"><span class="st">  </span><span class="kw">group_by</span>(item1) <span class="op">%&gt;%</span></a>
-<a class="sourceLine" id="cb88-4" title="4"><span class="st">  </span><span class="kw">top_n</span>(<span class="dv">6</span>) <span class="op">%&gt;%</span></a>
-<a class="sourceLine" id="cb88-5" title="5"><span class="st">  </span><span class="kw">ungroup</span>() <span class="op">%&gt;%</span></a>
-<a class="sourceLine" id="cb88-6" title="6"><span class="st">  </span><span class="kw">facet_bar</span>(<span class="dt">y =</span> item2, <span class="dt">x =</span> correlation, <span class="dt">by =</span> item1)</a></code></pre></div>
+<div class="sourceCode" id="cb88"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb88-1"><a href="counting-and-correlating-pairs-of-words-with-widyr.html#cb88-1"></a>word_cors <span class="op">%&gt;%</span></span>
+<span id="cb88-2"><a href="counting-and-correlating-pairs-of-words-with-widyr.html#cb88-2"></a><span class="st">  </span><span class="kw">filter</span>(item1 <span class="op">%in%</span><span class="st"> </span><span class="kw">c</span>(<span class="st">&quot;elizabeth&quot;</span>, <span class="st">&quot;pounds&quot;</span>, <span class="st">&quot;married&quot;</span>, <span class="st">&quot;pride&quot;</span>)) <span class="op">%&gt;%</span></span>
+<span id="cb88-3"><a href="counting-and-correlating-pairs-of-words-with-widyr.html#cb88-3"></a><span class="st">  </span><span class="kw">group_by</span>(item1) <span class="op">%&gt;%</span></span>
+<span id="cb88-4"><a href="counting-and-correlating-pairs-of-words-with-widyr.html#cb88-4"></a><span class="st">  </span><span class="kw">top_n</span>(<span class="dv">6</span>) <span class="op">%&gt;%</span></span>
+<span id="cb88-5"><a href="counting-and-correlating-pairs-of-words-with-widyr.html#cb88-5"></a><span class="st">  </span><span class="kw">ungroup</span>() <span class="op">%&gt;%</span></span>
+<span id="cb88-6"><a href="counting-and-correlating-pairs-of-words-with-widyr.html#cb88-6"></a><span class="st">  </span><span class="kw">facet_bar</span>(<span class="dt">y =</span> item2, <span class="dt">x =</span> correlation, <span class="dt">by =</span> item1)</span></code></pre></div>
 <p><img src="relationship-between-words_files/figure-html/unnamed-chunk-26-1.png" width="960" style="display: block; margin: auto;" /></p>
 <p>How about a network visualization to see the overall correlation pattern?</p>
-<div class="sourceCode" id="cb89"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb89-1" title="1">word_cors <span class="op">%&gt;%</span></a>
-<a class="sourceLine" id="cb89-2" title="2"><span class="st">  </span><span class="kw">filter</span>(correlation <span class="op">&gt;</span><span class="st"> </span><span class="fl">.15</span>) <span class="op">%&gt;%</span></a>
-<a class="sourceLine" id="cb89-3" title="3"><span class="st">  </span><span class="kw">as_tbl_graph</span>() <span class="op">%&gt;%</span></a>
-<a class="sourceLine" id="cb89-4" title="4"><span class="st">  </span><span class="kw">ggraph</span>(<span class="dt">layout =</span> <span class="st">&quot;fr&quot;</span>) <span class="op">+</span></a>
-<a class="sourceLine" id="cb89-5" title="5"><span class="st">  </span><span class="kw">geom_edge_link</span>(<span class="kw">aes</span>(<span class="dt">edge_alpha =</span> correlation), <span class="dt">show.legend =</span> <span class="ot">FALSE</span>) <span class="op">+</span></a>
-<a class="sourceLine" id="cb89-6" title="6"><span class="st">  </span><span class="kw">geom_node_point</span>(<span class="dt">color =</span> <span class="st">&quot;lightblue&quot;</span>, <span class="dt">size =</span> <span class="dv">5</span>) <span class="op">+</span></a>
-<a class="sourceLine" id="cb89-7" title="7"><span class="st">  </span><span class="kw">geom_node_text</span>(<span class="kw">aes</span>(<span class="dt">label =</span> name), <span class="dt">repel =</span> <span class="ot">TRUE</span>)</a></code></pre></div>
+<div class="sourceCode" id="cb89"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb89-1"><a href="counting-and-correlating-pairs-of-words-with-widyr.html#cb89-1"></a>word_cors <span class="op">%&gt;%</span></span>
+<span id="cb89-2"><a href="counting-and-correlating-pairs-of-words-with-widyr.html#cb89-2"></a><span class="st">  </span><span class="kw">filter</span>(correlation <span class="op">&gt;</span><span class="st"> </span><span class="fl">.15</span>) <span class="op">%&gt;%</span></span>
+<span id="cb89-3"><a href="counting-and-correlating-pairs-of-words-with-widyr.html#cb89-3"></a><span class="st">  </span><span class="kw">as_tbl_graph</span>() <span class="op">%&gt;%</span></span>
+<span id="cb89-4"><a href="counting-and-correlating-pairs-of-words-with-widyr.html#cb89-4"></a><span class="st">  </span><span class="kw">ggraph</span>(<span class="dt">layout =</span> <span class="st">&quot;fr&quot;</span>) <span class="op">+</span></span>
+<span id="cb89-5"><a href="counting-and-correlating-pairs-of-words-with-widyr.html#cb89-5"></a><span class="st">  </span><span class="kw">geom_edge_link</span>(<span class="kw">aes</span>(<span class="dt">edge_alpha =</span> correlation), <span class="dt">show.legend =</span> <span class="ot">FALSE</span>) <span class="op">+</span></span>
+<span id="cb89-6"><a href="counting-and-correlating-pairs-of-words-with-widyr.html#cb89-6"></a><span class="st">  </span><span class="kw">geom_node_point</span>(<span class="dt">color =</span> <span class="st">&quot;lightblue&quot;</span>, <span class="dt">size =</span> <span class="dv">5</span>) <span class="op">+</span></span>
+<span id="cb89-7"><a href="counting-and-correlating-pairs-of-words-with-widyr.html#cb89-7"></a><span class="st">  </span><span class="kw">geom_node_text</span>(<span class="kw">aes</span>(<span class="dt">label =</span> name), <span class="dt">repel =</span> <span class="ot">TRUE</span>)</span></code></pre></div>
 <p><img src="relationship-between-words_files/figure-html/unnamed-chunk-27-1.png" width="960" style="display: block; margin: auto;" /></p>
 <p>Note that unlike the bigram analysis, the relationships here are <strong>symmetrical, rather than directional</strong> (there are no arrows). We can also see that while pairings of names and titles that dominated bigram pairings are common, such as “colonel/fitzwilliam”, we can also see pairings of words that appear close to each other, such as “walk” and “park”, or “dance” and “ball”.</p>
 
