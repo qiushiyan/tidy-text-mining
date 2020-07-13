@@ -6,22 +6,38 @@
 # Reviews on regular expressions
 
 
-References: [Sams Teach Yourself Regular Expressions in 10 Minutes](https://www.amazon.com/Teach-Yourself-Regular-Expressions-Minutes-ebook/dp/B0027KRPHM/ref=sr_1_2?dchild=1&keywords=Sams+Teach+Yourself+Regular+Expressions+in+10+Minutes&qid=1585917048&sr=8-2)  
+References:
 
-## POSIX Character Classes  
+- [Sams Teach Yourself Regular Expressions in 10 Minutes](https://www.amazon.com/Teach-Yourself-Regular-Expressions-Minutes-ebook/dp/B0027KRPHM/ref=sr_1_2?dchild=1&keywords=Sams+Teach+Yourself+Regular+Expressions+in+10+Minutes&qid=1585917048&sr=8-2)  
+- https://regexr.com/
 
+## Metacharacters and POSIX character classes  
+
+- `\w` matches any word character (alphabet or number, or alphanumeric) and underscore, equivalent to `[A-Za-z0-9_]`.  
+- `\W` is the opposite of `\w` that matches non-word character, or `[^A-Za-z0-9_]`
+- `\d` matches any single digit number  
+- `.` matches any character **except** linebreaks, equivalent to `[^\r\n]` (Windows) or `[\n]` (Mac)  
+- `\s` matches any white space, including spaces, tabs and vertical tab, return and line breaks, equivalent to `[:space:]` in the following table.  
+- `\S` is the opposite of `\s` that matches any non-white character. `[\s\S]` is a common shorthand for **matching everything**, since `.` does not match linebreak. 
+
+
+And there are POSIX character classes.  
 
 |class|description|
 |:-:|:-:|
-|`[:alnum:]`|characters or numbers, equivalent to `[A-Za-z0-9]`|
-|`[:alpha:]`|characters, equivalent to `[A-Za-z]`|
-|`[:punct:]`|punctuations|
+|`[:alnum:]`|alphabets or numbers, equivalent to `[A-Za-z0-9]`|
+|`[:alpha:]`|alphabets, equivalent to `[A-Za-z]`|
+|`[:punct:]`|punctuation|
 |`[:blank:]`|space or tab, equivalent to `[\t ]`|  
 |`[:space:]`|any whitespace character including space `[\f\n\r\t\v ]`| 
 |`[:print:]`|any printable character, a similar expression is `[:graph:]` which excludes space  
 |`[:xdigit:]`|any hexadecimal digit, equivalent to  `[F-Aa-f0-9]`|  
 
+## Unicode Code Points, Categories, Blocks, and Scripts  
 
+https://www.regular-expressions.info/unicode.html
+
+Unicode is a character set that aims to define all characters and glyphs from all human languages, living and dead. If 
 
 ## Greedy and lazy quantifiers 
 
