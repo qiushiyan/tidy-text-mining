@@ -4,11 +4,11 @@
 
   <meta charset="utf-8" />
   <meta http-equiv="X-UA-Compatible" content="IE=edge" />
-  <title>References | Notes for “Text Mining with R: A Tidy Approach”</title>
-  <meta name="description" content="References | Notes for “Text Mining with R: A Tidy Approach”" />
+  <title>A.2 Unicode Code Points, Categories, Blocks, and Scripts | Notes for “Text Mining with R: A Tidy Approach”</title>
+  <meta name="description" content="A.2 Unicode Code Points, Categories, Blocks, and Scripts | Notes for “Text Mining with R: A Tidy Approach”" />
   <meta name="generator" content="bookdown 0.20 and GitBook 2.6.7" />
 
-  <meta property="og:title" content="References | Notes for “Text Mining with R: A Tidy Approach”" />
+  <meta property="og:title" content="A.2 Unicode Code Points, Categories, Blocks, and Scripts | Notes for “Text Mining with R: A Tidy Approach”" />
   <meta property="og:type" content="book" />
   
   
@@ -16,7 +16,7 @@
   <meta name="github-repo" content="enixam/tidy-text-mining" />
 
   <meta name="twitter:card" content="summary" />
-  <meta name="twitter:title" content="References | Notes for “Text Mining with R: A Tidy Approach”" />
+  <meta name="twitter:title" content="A.2 Unicode Code Points, Categories, Blocks, and Scripts | Notes for “Text Mining with R: A Tidy Approach”" />
   
   
   
@@ -31,8 +31,8 @@
   <meta name="apple-mobile-web-app-status-bar-style" content="black" />
   
   
-<link rel="prev" href="text-classification.html"/>
-<link rel="next" href="reviews-on-regular-expressions.html"/>
+<link rel="prev" href="metacharacters-and-posix-character-classes.html"/>
+<link rel="next" href="greedy-and-lazy-quantifiers.html"/>
 <script src="libs/jquery-2.2.3/jquery.min.js"></script>
 <link href="libs/gitbook-2.6.7/css/style.css" rel="stylesheet" />
 <link href="libs/gitbook-2.6.7/css/plugin-table.css" rel="stylesheet" />
@@ -239,34 +239,47 @@ code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } /* Warni
           <div class="page-inner">
 
             <section class="normal" id="section-">
-<div id="references" class="section level1 unnumbered">
-<h1>References</h1>
-<div id="refs">
-<div id="ref-10.5210/fm.v19i4.4944">
-<p>Jurafsky, Dan, Victor Chahuneau, Bryan Routledge, and Noah Smith. 2014. “Narrative Framing of Consumer Sentiment in Online Restaurant Reviews.” <em>First Monday</em> 19 (April). <a href="https://doi.org/10.5210/fm.v19i4.4944">https://doi.org/10.5210/fm.v19i4.4944</a>.</p>
+<div id="unicode-code-points-categories-blocks-and-scripts" class="section level2">
+<h2><span class="header-section-number">A.2</span> Unicode Code Points, Categories, Blocks, and Scripts</h2>
+<p><a href="https://www.regular-expressions.info/unicode.html" class="uri">https://www.regular-expressions.info/unicode.html</a></p>
+<p>Unicode is a character set that aims to define all characters and glyphs from all human languages, living and dead. The Unicode Standard defines a codespace of numerical values ranging from 0 through 10FFFF16, called code points and denoted as U+0000 through U+10FFFF (“U+” plus the code point value in hexadecimal, prepended with leading zeros as necessary to result in a minimum of four digits<a href="#fn1" class="footnote-ref" id="fnref1"><sup>1</sup></a>. This section introduces regular expressions that leverage this powerful mapping.</p>
+<p>We have stated that <code>.</code> matches any single character, in Unicode parlance this means “the dot matches any single <strong>Unicode code point</strong>”. For instance, à can be encoded as two code points: U+0061 (a) followed by U+0300 (grave accent)<a href="#fn2" class="footnote-ref" id="fnref2"><sup>2</sup></a>. In this situation, . applied to à will match the first code point without the accent. <code>^.$</code> will fail to match, and <code>^..$</code> matches <code>à</code>.</p>
+<p>The Unicode code point U+0300 (grave accent) is a <strong>combining mark</strong>. Any code point that is not a combining mark can be followed by any number of combining marks. This sequence, like U+0061 U+0300 above, is displayed as a single grapheme<a href="#fn3" class="footnote-ref" id="fnref3"><sup>3</sup></a> on the screen.</p>
+<p>To match a single grapheme, whether it be just one codepoint all a codepoint followed by multiple combining marks, we can use metacharacter <code>\X</code>, which is rougly the Unicode version of <code>.</code>. One difference is that <code>\X</code> always matches line break characters.</p>
+<div id="unicode-categories" class="section level3">
+<h3><span class="header-section-number">A.2.1</span> Unicode categories</h3>
+<p>In the case of regualr expressions, Unicode also brings new possibilites of matching. One notion is that each Unicode character belongs to a certain category. For example, <code>\p{L}</code> will match a single character belonging to the <em>letter</em> category, and <code>\p{P}</code> means the <em>punctuation category</em>. There are also subcategories such as <code>\p{LI}</code> will match the lowercase letter subcategory, children of <code>\p{L}</code>. A list of all Unicode categories and subcategories can be found at <a href="https://en.wikipedia.org/wiki/Unicode_character_property#General_Category" class="uri">https://en.wikipedia.org/wiki/Unicode_character_property#General_Category</a>.</p>
 </div>
-<div id="ref-lee">
-<p>Lee, Junseok, Ji-Ho Kang, Sunghae Jun, Hyunwoong Lim, Dongsik Jang, and Sangsung Park. 2018. “Ensemble Modeling for Sustainable Technology Transfer.” <em>Sustainability</em> 10 (July): 2278. <a href="https://doi.org/10.3390/su10072278">https://doi.org/10.3390/su10072278</a>.</p>
+<div id="unicode-scripts" class="section level3">
+<h3><span class="header-section-number">A.2.2</span> Unicode scripts</h3>
+<p>The Unicode standard places each assigned code point (character) into one script. A script is a group of code points used by a particular human writing system. There are scripts like <code>Thai</code> Thai correspond to a single human language (denoted by <code>\p{Common}</code>), and scripts like <code>Latin</code> spanning multiple languages (denoted by <code>\p{Latin}</code>, including basic ASCII characters, latin supplements, latin extended and more).</p>
+<p><code>\p{Han}</code> is the script for Chinese.</p>
+<div class="sourceCode" id="cb136"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb136-1"><a href="unicode-code-points-categories-blocks-and-scripts.html#cb136-1"></a><span class="kw">str_view_all</span>(<span class="st">&quot;彷佛全世界的细雨下在全世界的grassland上&quot;</span>, <span class="st">&quot;</span><span class="ch">\\</span><span class="st">p{Han}&quot;</span>)</span></code></pre></div>
+<div id="htmlwidget-d87e2579ce8ae6f76324" style="width:960px;height:100%;" class="str_view html-widget"></div>
+<script type="application/json" data-for="htmlwidget-d87e2579ce8ae6f76324">{"x":{"html":"<ul>\n  <li><span class='match'>彷<\/span><span class='match'>佛<\/span><span class='match'>全<\/span><span class='match'>世<\/span><span class='match'>界<\/span><span class='match'>的<\/span><span class='match'>细<\/span><span class='match'>雨<\/span><span class='match'>下<\/span><span class='match'>在<\/span><span class='match'>全<\/span><span class='match'>世<\/span><span class='match'>界<\/span><span class='match'>的<\/span>grassland<span class='match'>上<\/span><\/li>\n<\/ul>"},"evals":[],"jsHooks":[]}</script>
+<p>A special script is the <code>Common</code> script. This script contains all sorts of characters that are common to a wide range of scripts. It includes all sorts of punctuation, whitespace and miscellaneous symbols.</p>
 </div>
-<div id="ref-monroe_colaresi_quinn">
-<p>Monroe, Burt L., Michael P. Colaresi, and Kevin M. Quinn. 2008. “Fightin’ Words: Lexical Feature Selection and Evaluation for Identifying the Content of Political Conflict.” <em>Political Analysis</em> 16 (4): 372–403. <a href="https://doi.org/10.1093/pan/mpn018">https://doi.org/10.1093/pan/mpn018</a>.</p>
+<div id="unicode-blocks" class="section level3">
+<h3><span class="header-section-number">A.2.3</span> Unicode blocks</h3>
+<p>A Unicode block is a certain range of code points. An essential difference between blocks and scripts is that a block is a single contiguous range of code points, and blocks do not correspond 100% with scripts.</p>
+<p>For ASCII characters, the block is <code>[\u0000–\u007F ]</code>, and for Chinese <code>[\u4E00-\u9FA5]</code></p>
 </div>
-<div id="ref-10.5555/3165010">
-<p>Silge, Julia, and David Robinson. 2017. <em>Text Mining with R: A Tidy Approach</em>. 1st ed. O’Reilly Media, Inc.</p>
 </div>
+<div class="footnotes">
+<hr />
+<ol start="1">
+<li id="fn1"><p>Not all codepoint correspond to a character since there are many reserved positions, the first meaningful character in current Unicode is <code>U+0020</code>, which is the blank space as word divider<a href="unicode-code-points-categories-blocks-and-scripts.html#fnref1" class="footnote-back">↩︎</a></p></li>
+<li id="fn2"><p>In R, this can be printed with <code>print("\u0061\u0300")</code><a href="unicode-code-points-categories-blocks-and-scripts.html#fnref2" class="footnote-back">↩︎</a></p></li>
+<li id="fn3"><p>The smallest meaningful contrastive unit in a writing system.<a href="unicode-code-points-categories-blocks-and-scripts.html#fnref3" class="footnote-back">↩︎</a></p></li>
+</ol>
 </div>
-
-</div>
-
-
-
             </section>
 
           </div>
         </div>
       </div>
-<a href="text-classification.html" class="navigation navigation-prev " aria-label="Previous page"><i class="fa fa-angle-left"></i></a>
-<a href="reviews-on-regular-expressions.html" class="navigation navigation-next " aria-label="Next page"><i class="fa fa-angle-right"></i></a>
+<a href="metacharacters-and-posix-character-classes.html" class="navigation navigation-prev " aria-label="Previous page"><i class="fa fa-angle-left"></i></a>
+<a href="greedy-and-lazy-quantifiers.html" class="navigation navigation-next " aria-label="Next page"><i class="fa fa-angle-right"></i></a>
     </div>
   </div>
 <script src="libs/gitbook-2.6.7/js/app.min.js"></script>
@@ -297,7 +310,7 @@ gitbook.start({
 "size": 2
 },
 "edit": {
-"link": "https://github.com/enixam/tidy-text-mining/edit/master/book/references.Rmd",
+"link": "https://github.com/enixam/tidy-text-mining/edit/master/book/regex.Rmd",
 "text": "Edit"
 },
 "history": {

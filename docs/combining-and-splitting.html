@@ -24,7 +24,7 @@
 <meta name="author" content="Qiushi Yan" />
 
 
-<meta name="date" content="2020-06-27" />
+<meta name="date" content="2020-07-13" />
 
   <meta name="viewport" content="width=device-width, initial-scale=1" />
   <meta name="apple-mobile-web-app-capable" content="yes" />
@@ -201,10 +201,15 @@ code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } /* Warni
 <li class="chapter" data-level="" data-path="references.html"><a href="references.html"><i class="fa fa-check"></i>References</a></li>
 <li class="appendix"><span><b>Appendix</b></span></li>
 <li class="chapter" data-level="A" data-path="reviews-on-regular-expressions.html"><a href="reviews-on-regular-expressions.html"><i class="fa fa-check"></i><b>A</b> Reviews on regular expressions</a><ul>
-<li class="chapter" data-level="A.1" data-path="posix-character-classes.html"><a href="posix-character-classes.html"><i class="fa fa-check"></i><b>A.1</b> POSIX Character Classes</a></li>
-<li class="chapter" data-level="A.2" data-path="greedy-and-lazy-quantifiers.html"><a href="greedy-and-lazy-quantifiers.html"><i class="fa fa-check"></i><b>A.2</b> Greedy and lazy quantifiers</a></li>
-<li class="chapter" data-level="A.3" data-path="looking-ahead-and-back.html"><a href="looking-ahead-and-back.html"><i class="fa fa-check"></i><b>A.3</b> Looking ahead and back</a></li>
-<li class="chapter" data-level="A.4" data-path="backreferences.html"><a href="backreferences.html"><i class="fa fa-check"></i><b>A.4</b> Backreferences</a></li>
+<li class="chapter" data-level="A.1" data-path="metacharacters-and-posix-character-classes.html"><a href="metacharacters-and-posix-character-classes.html"><i class="fa fa-check"></i><b>A.1</b> Metacharacters and POSIX character classes</a></li>
+<li class="chapter" data-level="A.2" data-path="unicode-code-points-categories-blocks-and-scripts.html"><a href="unicode-code-points-categories-blocks-and-scripts.html"><i class="fa fa-check"></i><b>A.2</b> Unicode Code Points, Categories, Blocks, and Scripts</a><ul>
+<li class="chapter" data-level="A.2.1" data-path="unicode-code-points-categories-blocks-and-scripts.html"><a href="unicode-code-points-categories-blocks-and-scripts.html#unicode-categories"><i class="fa fa-check"></i><b>A.2.1</b> Unicode categories</a></li>
+<li class="chapter" data-level="A.2.2" data-path="unicode-code-points-categories-blocks-and-scripts.html"><a href="unicode-code-points-categories-blocks-and-scripts.html#unicode-scripts"><i class="fa fa-check"></i><b>A.2.2</b> Unicode scripts</a></li>
+<li class="chapter" data-level="A.2.3" data-path="unicode-code-points-categories-blocks-and-scripts.html"><a href="unicode-code-points-categories-blocks-and-scripts.html#unicode-blocks"><i class="fa fa-check"></i><b>A.2.3</b> Unicode blocks</a></li>
+</ul></li>
+<li class="chapter" data-level="A.3" data-path="greedy-and-lazy-quantifiers.html"><a href="greedy-and-lazy-quantifiers.html"><i class="fa fa-check"></i><b>A.3</b> Greedy and lazy quantifiers</a></li>
+<li class="chapter" data-level="A.4" data-path="looking-ahead-and-back.html"><a href="looking-ahead-and-back.html"><i class="fa fa-check"></i><b>A.4</b> Looking ahead and back</a></li>
+<li class="chapter" data-level="A.5" data-path="backreferences.html"><a href="backreferences.html"><i class="fa fa-check"></i><b>A.5</b> Backreferences</a></li>
 </ul></li>
 <li class="chapter" data-level="B" data-path="text-processing-examples-in-r.html"><a href="text-processing-examples-in-r.html"><i class="fa fa-check"></i><b>B</b> Text processing examples in R</a><ul>
 <li class="chapter" data-level="B.1" data-path="replacing-and-removing.html"><a href="replacing-and-removing.html"><i class="fa fa-check"></i><b>B.1</b> Replacing and removing</a></li>
@@ -237,203 +242,203 @@ code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } /* Warni
 <div id="combining-and-splitting" class="section level2">
 <h2><span class="header-section-number">B.2</span> Combining and splitting</h2>
 <p>Combine multiple line tokens to one paragraph (with a defined length) and the other way around</p>
-<div class="sourceCode" id="cb144"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb144-1"><a href="combining-and-splitting.html#cb144-1"></a><span class="kw">library</span>(ggpage)</span>
-<span id="cb144-2"><a href="combining-and-splitting.html#cb144-2"></a></span>
-<span id="cb144-3"><a href="combining-and-splitting.html#cb144-3"></a>tinderbox_line &lt;-<span class="st"> </span><span class="kw">head</span>(tinderbox)</span>
-<span id="cb144-4"><a href="combining-and-splitting.html#cb144-4"></a>tinderbox_paragraph &lt;-<span class="st"> </span><span class="kw">head</span>(tinderbox_paragraph) </span>
-<span id="cb144-5"><a href="combining-and-splitting.html#cb144-5"></a>  </span>
-<span id="cb144-6"><a href="combining-and-splitting.html#cb144-6"></a>  </span>
-<span id="cb144-7"><a href="combining-and-splitting.html#cb144-7"></a><span class="co"># combine all six rows into a paragraph</span></span>
-<span id="cb144-8"><a href="combining-and-splitting.html#cb144-8"></a>tinderbox_line <span class="op">%&gt;%</span><span class="st"> </span></span>
-<span id="cb144-9"><a href="combining-and-splitting.html#cb144-9"></a><span class="st">  </span><span class="kw">summarize</span>(<span class="dt">paragraph =</span> <span class="kw">str_c</span>(text, <span class="dt">collapse =</span> <span class="st">&quot; &quot;</span>))</span>
-<span id="cb144-10"><a href="combining-and-splitting.html#cb144-10"></a><span class="co">#&gt; # A tibble: 1 x 1</span></span>
-<span id="cb144-11"><a href="combining-and-splitting.html#cb144-11"></a><span class="co">#&gt;   paragraph                                                                     </span></span>
-<span id="cb144-12"><a href="combining-and-splitting.html#cb144-12"></a><span class="co">#&gt;   &lt;chr&gt;                                                                         </span></span>
-<span id="cb144-13"><a href="combining-and-splitting.html#cb144-13"></a><span class="co">#&gt; 1 &quot;A soldier came marching along the high road: \&quot;Left, right - left, right.\&quot; ~</span></span>
-<span id="cb144-14"><a href="combining-and-splitting.html#cb144-14"></a></span>
-<span id="cb144-15"><a href="combining-and-splitting.html#cb144-15"></a><span class="co"># split one paragraph into multiple rows </span></span>
-<span id="cb144-16"><a href="combining-and-splitting.html#cb144-16"></a><span class="co"># ggpage::nest_paragraphs() extends str_wrap()</span></span>
-<span id="cb144-17"><a href="combining-and-splitting.html#cb144-17"></a>tinderbox_paragraph <span class="op">%&gt;%</span><span class="st"> </span></span>
-<span id="cb144-18"><a href="combining-and-splitting.html#cb144-18"></a><span class="st">  </span><span class="kw">mutate</span>(<span class="dt">paragraph_length =</span> <span class="kw">str_length</span>(text)) <span class="op">%&gt;%</span><span class="st"> </span></span>
-<span id="cb144-19"><a href="combining-and-splitting.html#cb144-19"></a><span class="st">  </span><span class="kw">nest_paragraphs</span>(text, <span class="dt">width =</span> <span class="dv">50</span>)  <span class="co"># no more than 50 characters per row</span></span>
-<span id="cb144-20"><a href="combining-and-splitting.html#cb144-20"></a><span class="co">#&gt;                                                   text paragraph_length</span></span>
-<span id="cb144-21"><a href="combining-and-splitting.html#cb144-21"></a><span class="co">#&gt; 1         A soldier came marching along the high road:              480</span></span>
-<span id="cb144-22"><a href="combining-and-splitting.html#cb144-22"></a><span class="co">#&gt; 2     &quot;Left, right - left, right.&quot; He had his knapsack              480</span></span>
-<span id="cb144-23"><a href="combining-and-splitting.html#cb144-23"></a><span class="co">#&gt; 3    on his back, and a sword at his side; he had been              480</span></span>
-<span id="cb144-24"><a href="combining-and-splitting.html#cb144-24"></a><span class="co">#&gt; 4       to the wars, and was now returning home. As he              480</span></span>
-<span id="cb144-25"><a href="combining-and-splitting.html#cb144-25"></a><span class="co">#&gt; 5       walked on, he met a very frightful-looking old              480</span></span>
-<span id="cb144-26"><a href="combining-and-splitting.html#cb144-26"></a><span class="co">#&gt; 6     witch in the road. Her under-lip hung quite down              480</span></span>
-<span id="cb144-27"><a href="combining-and-splitting.html#cb144-27"></a><span class="co">#&gt; 7       on her breast, and she stopped and said, &quot;Good              480</span></span>
-<span id="cb144-28"><a href="combining-and-splitting.html#cb144-28"></a><span class="co">#&gt; 8    evening, soldier; you have a very fine sword, and              480</span></span>
-<span id="cb144-29"><a href="combining-and-splitting.html#cb144-29"></a><span class="co">#&gt; 9     a large knapsack, and you are a real soldier; so              480</span></span>
-<span id="cb144-30"><a href="combining-and-splitting.html#cb144-30"></a><span class="co">#&gt; 10     you shall have as much money as ever you like.&quot;              480</span></span>
-<span id="cb144-31"><a href="combining-and-splitting.html#cb144-31"></a><span class="co">#&gt; 11   &quot;Thank you, old witch,&quot; said the soldier. &quot;Do you             2073</span></span>
-<span id="cb144-32"><a href="combining-and-splitting.html#cb144-32"></a><span class="co">#&gt; 12   see that large tree,&quot; said the witch, pointing to             2073</span></span>
-<span id="cb144-33"><a href="combining-and-splitting.html#cb144-33"></a><span class="co">#&gt; 13  a tree which stood beside them. &quot;Well, it is quite             2073</span></span>
-<span id="cb144-34"><a href="combining-and-splitting.html#cb144-34"></a><span class="co">#&gt; 14       hollow inside, and you must climb to the top,             2073</span></span>
-<span id="cb144-35"><a href="combining-and-splitting.html#cb144-35"></a><span class="co">#&gt; 15     when you will see a hole, through which you can             2073</span></span>
-<span id="cb144-36"><a href="combining-and-splitting.html#cb144-36"></a><span class="co">#&gt; 16   let yourself down into the tree to a great depth.             2073</span></span>
-<span id="cb144-37"><a href="combining-and-splitting.html#cb144-37"></a><span class="co">#&gt; 17    I will tie a rope round your body, so that I can             2073</span></span>
-<span id="cb144-38"><a href="combining-and-splitting.html#cb144-38"></a><span class="co">#&gt; 18    pull you up again when you call out to me.&quot; &quot;But             2073</span></span>
-<span id="cb144-39"><a href="combining-and-splitting.html#cb144-39"></a><span class="co">#&gt; 19     what am I to do, down there in the tree?&quot; asked             2073</span></span>
-<span id="cb144-40"><a href="combining-and-splitting.html#cb144-40"></a><span class="co">#&gt; 20     the soldier. &quot;Get money,&quot; she replied; &quot;for you             2073</span></span>
-<span id="cb144-41"><a href="combining-and-splitting.html#cb144-41"></a><span class="co">#&gt; 21      must know that when you reach the ground under             2073</span></span>
-<span id="cb144-42"><a href="combining-and-splitting.html#cb144-42"></a><span class="co">#&gt; 22   the tree, you will find yourself in a large hall,             2073</span></span>
-<span id="cb144-43"><a href="combining-and-splitting.html#cb144-43"></a><span class="co">#&gt; 23    lighted up by three hundred lamps; you will then             2073</span></span>
-<span id="cb144-44"><a href="combining-and-splitting.html#cb144-44"></a><span class="co">#&gt; 24    see three doors, which can be easily opened, for             2073</span></span>
-<span id="cb144-45"><a href="combining-and-splitting.html#cb144-45"></a><span class="co">#&gt; 25      the keys are in all the locks. On entering the             2073</span></span>
-<span id="cb144-46"><a href="combining-and-splitting.html#cb144-46"></a><span class="co">#&gt; 26   first of the chambers, to which these doors lead,             2073</span></span>
-<span id="cb144-47"><a href="combining-and-splitting.html#cb144-47"></a><span class="co">#&gt; 27  you will see a large chest, standing in the middle             2073</span></span>
-<span id="cb144-48"><a href="combining-and-splitting.html#cb144-48"></a><span class="co">#&gt; 28      of the floor, and upon it a dog seated, with a             2073</span></span>
-<span id="cb144-49"><a href="combining-and-splitting.html#cb144-49"></a><span class="co">#&gt; 29      pair of eyes as large as teacups. But you need             2073</span></span>
-<span id="cb144-50"><a href="combining-and-splitting.html#cb144-50"></a><span class="co">#&gt; 30     not be at all afraid of him; I will give you my             2073</span></span>
-<span id="cb144-51"><a href="combining-and-splitting.html#cb144-51"></a><span class="co">#&gt; 31  blue checked apron, which you must spread upon the             2073</span></span>
-<span id="cb144-52"><a href="combining-and-splitting.html#cb144-52"></a><span class="co">#&gt; 32   floor, and then boldly seize hold of the dog, and             2073</span></span>
-<span id="cb144-53"><a href="combining-and-splitting.html#cb144-53"></a><span class="co">#&gt; 33     place him upon it. You can then open the chest,             2073</span></span>
-<span id="cb144-54"><a href="combining-and-splitting.html#cb144-54"></a><span class="co">#&gt; 34  and take from it as many pence as you please, they             2073</span></span>
-<span id="cb144-55"><a href="combining-and-splitting.html#cb144-55"></a><span class="co">#&gt; 35      are only copper pence; but if you would rather             2073</span></span>
-<span id="cb144-56"><a href="combining-and-splitting.html#cb144-56"></a><span class="co">#&gt; 36      have silver money, you must go into the second             2073</span></span>
-<span id="cb144-57"><a href="combining-and-splitting.html#cb144-57"></a><span class="co">#&gt; 37  chamber. Here you will find another dog, with eyes             2073</span></span>
-<span id="cb144-58"><a href="combining-and-splitting.html#cb144-58"></a><span class="co">#&gt; 38  as big as mill-wheels; but do not let that trouble             2073</span></span>
-<span id="cb144-59"><a href="combining-and-splitting.html#cb144-59"></a><span class="co">#&gt; 39    you. Place him upon my apron, and then take what             2073</span></span>
-<span id="cb144-60"><a href="combining-and-splitting.html#cb144-60"></a><span class="co">#&gt; 40  money you please. If, however, you like gold best,             2073</span></span>
-<span id="cb144-61"><a href="combining-and-splitting.html#cb144-61"></a><span class="co">#&gt; 41     enter the third chamber, where there is another             2073</span></span>
-<span id="cb144-62"><a href="combining-and-splitting.html#cb144-62"></a><span class="co">#&gt; 42    chest full of it. The dog who sits on this chest             2073</span></span>
-<span id="cb144-63"><a href="combining-and-splitting.html#cb144-63"></a><span class="co">#&gt; 43   is very dreadful; his eyes are as big as a tower,             2073</span></span>
-<span id="cb144-64"><a href="combining-and-splitting.html#cb144-64"></a><span class="co">#&gt; 44   but do not mind him. If he also is placed upon my             2073</span></span>
-<span id="cb144-65"><a href="combining-and-splitting.html#cb144-65"></a><span class="co">#&gt; 45    apron, he cannot hurt you, and you may take from             2073</span></span>
-<span id="cb144-66"><a href="combining-and-splitting.html#cb144-66"></a><span class="co">#&gt; 46   the chest what gold you will.&quot; &quot;This is not a bad             2073</span></span>
-<span id="cb144-67"><a href="combining-and-splitting.html#cb144-67"></a><span class="co">#&gt; 47    story,&quot; said the soldier; &quot;but what am I to give             2073</span></span>
-<span id="cb144-68"><a href="combining-and-splitting.html#cb144-68"></a><span class="co">#&gt; 48      you, you old witch? For, of course, you do not             2073</span></span>
-<span id="cb144-69"><a href="combining-and-splitting.html#cb144-69"></a><span class="co">#&gt; 49   mean to tell me all this for nothing.&quot; &quot;No,&quot; said             2073</span></span>
-<span id="cb144-70"><a href="combining-and-splitting.html#cb144-70"></a><span class="co">#&gt; 50    the witch; &quot;but I do not ask for a single penny.             2073</span></span>
-<span id="cb144-71"><a href="combining-and-splitting.html#cb144-71"></a><span class="co">#&gt; 51   Only promise to bring me an old tinder-box, which             2073</span></span>
-<span id="cb144-72"><a href="combining-and-splitting.html#cb144-72"></a><span class="co">#&gt; 52   my grandmother left behind the last time she went             2073</span></span>
-<span id="cb144-73"><a href="combining-and-splitting.html#cb144-73"></a><span class="co">#&gt; 53                                        down there.&quot;             2073</span></span>
-<span id="cb144-74"><a href="combining-and-splitting.html#cb144-74"></a><span class="co">#&gt; 54    &quot;Very well; I promise. Now tie the rope round my              798</span></span>
-<span id="cb144-75"><a href="combining-and-splitting.html#cb144-75"></a><span class="co">#&gt; 55   body.&quot; &quot;Here it is,&quot; replied the witch; &quot;and here              798</span></span>
-<span id="cb144-76"><a href="combining-and-splitting.html#cb144-76"></a><span class="co">#&gt; 56      is my blue checked apron.&quot; As soon as the rope              798</span></span>
-<span id="cb144-77"><a href="combining-and-splitting.html#cb144-77"></a><span class="co">#&gt; 57      was tied, the soldier climbed up the tree, and              798</span></span>
-<span id="cb144-78"><a href="combining-and-splitting.html#cb144-78"></a><span class="co">#&gt; 58   let himself down through the hollow to the ground              798</span></span>
-<span id="cb144-79"><a href="combining-and-splitting.html#cb144-79"></a><span class="co">#&gt; 59   beneath; and here he found, as the witch had told              798</span></span>
-<span id="cb144-80"><a href="combining-and-splitting.html#cb144-80"></a><span class="co">#&gt; 60      him, a large hall, in which many hundred lamps              798</span></span>
-<span id="cb144-81"><a href="combining-and-splitting.html#cb144-81"></a><span class="co">#&gt; 61    were all burning. Then he opened the first door.              798</span></span>
-<span id="cb144-82"><a href="combining-and-splitting.html#cb144-82"></a><span class="co">#&gt; 62  &quot;Ah!&quot; there sat the dog, with the eyes as large as              798</span></span>
-<span id="cb144-83"><a href="combining-and-splitting.html#cb144-83"></a><span class="co">#&gt; 63  teacups, staring at him. &quot;You&#39;re a pretty fellow,&quot;              798</span></span>
-<span id="cb144-84"><a href="combining-and-splitting.html#cb144-84"></a><span class="co">#&gt; 64      said the soldier, seizing him, and placing him              798</span></span>
-<span id="cb144-85"><a href="combining-and-splitting.html#cb144-85"></a><span class="co">#&gt; 65   on the witch&#39;s apron, while he filled his pockets              798</span></span>
-<span id="cb144-86"><a href="combining-and-splitting.html#cb144-86"></a><span class="co">#&gt; 66    from the chest with as many pieces as they would              798</span></span>
-<span id="cb144-87"><a href="combining-and-splitting.html#cb144-87"></a><span class="co">#&gt; 67   hold. Then he closed the lid, seated the dog upon              798</span></span>
-<span id="cb144-88"><a href="combining-and-splitting.html#cb144-88"></a><span class="co">#&gt; 68     it again, and walked into another chamber, and,              798</span></span>
-<span id="cb144-89"><a href="combining-and-splitting.html#cb144-89"></a><span class="co">#&gt; 69  sure enough, there sat the dog with eyes as big as              798</span></span>
-<span id="cb144-90"><a href="combining-and-splitting.html#cb144-90"></a><span class="co">#&gt; 70                                        mill-wheels.              798</span></span>
-<span id="cb144-91"><a href="combining-and-splitting.html#cb144-91"></a><span class="co">#&gt; 71   &quot;You had better not look at me in that way,&quot; said             1797</span></span>
-<span id="cb144-92"><a href="combining-and-splitting.html#cb144-92"></a><span class="co">#&gt; 72   the soldier; &quot;you will make your eyes water;&quot; and             1797</span></span>
-<span id="cb144-93"><a href="combining-and-splitting.html#cb144-93"></a><span class="co">#&gt; 73  then he seated him also upon the apron, and opened             1797</span></span>
-<span id="cb144-94"><a href="combining-and-splitting.html#cb144-94"></a><span class="co">#&gt; 74       the chest. But when he saw what a quantity of             1797</span></span>
-<span id="cb144-95"><a href="combining-and-splitting.html#cb144-95"></a><span class="co">#&gt; 75    silver money it contained, he very quickly threw             1797</span></span>
-<span id="cb144-96"><a href="combining-and-splitting.html#cb144-96"></a><span class="co">#&gt; 76   away all the coppers he had taken, and filled his             1797</span></span>
-<span id="cb144-97"><a href="combining-and-splitting.html#cb144-97"></a><span class="co">#&gt; 77   pockets and his knapsack with nothing but silver.             1797</span></span>
-<span id="cb144-98"><a href="combining-and-splitting.html#cb144-98"></a><span class="co">#&gt; 78     Then he went into the third room, and there the             1797</span></span>
-<span id="cb144-99"><a href="combining-and-splitting.html#cb144-99"></a><span class="co">#&gt; 79    dog was really hideous; his eyes were, truly, as             1797</span></span>
-<span id="cb144-100"><a href="combining-and-splitting.html#cb144-100"></a><span class="co">#&gt; 80      big as towers, and they turned round and round             1797</span></span>
-<span id="cb144-101"><a href="combining-and-splitting.html#cb144-101"></a><span class="co">#&gt; 81       in his head like wheels. &quot;Good morning,&quot; said             1797</span></span>
-<span id="cb144-102"><a href="combining-and-splitting.html#cb144-102"></a><span class="co">#&gt; 82     the soldier, touching his cap, for he had never             1797</span></span>
-<span id="cb144-103"><a href="combining-and-splitting.html#cb144-103"></a><span class="co">#&gt; 83      seen such a dog in his life. But after looking             1797</span></span>
-<span id="cb144-104"><a href="combining-and-splitting.html#cb144-104"></a><span class="co">#&gt; 84   at him more closely, he thought he had been civil             1797</span></span>
-<span id="cb144-105"><a href="combining-and-splitting.html#cb144-105"></a><span class="co">#&gt; 85   enough, so he placed him on the floor, and opened             1797</span></span>
-<span id="cb144-106"><a href="combining-and-splitting.html#cb144-106"></a><span class="co">#&gt; 86   the chest. Good gracious, what a quantity of gold             1797</span></span>
-<span id="cb144-107"><a href="combining-and-splitting.html#cb144-107"></a><span class="co">#&gt; 87       there was! enough to buy all the sugar-sticks             1797</span></span>
-<span id="cb144-108"><a href="combining-and-splitting.html#cb144-108"></a><span class="co">#&gt; 88     of the sweet-stuff women; all the tin soldiers,             1797</span></span>
-<span id="cb144-109"><a href="combining-and-splitting.html#cb144-109"></a><span class="co">#&gt; 89     whips, and rocking-horses in the world, or even             1797</span></span>
-<span id="cb144-110"><a href="combining-and-splitting.html#cb144-110"></a><span class="co">#&gt; 90         the whole town itself There was, indeed, an             1797</span></span>
-<span id="cb144-111"><a href="combining-and-splitting.html#cb144-111"></a><span class="co">#&gt; 91     immense quantity. So the soldier now threw away             1797</span></span>
-<span id="cb144-112"><a href="combining-and-splitting.html#cb144-112"></a><span class="co">#&gt; 92   all the silver money he had taken, and filled his             1797</span></span>
-<span id="cb144-113"><a href="combining-and-splitting.html#cb144-113"></a><span class="co">#&gt; 93     pockets and his knapsack with gold instead; and             1797</span></span>
-<span id="cb144-114"><a href="combining-and-splitting.html#cb144-114"></a><span class="co">#&gt; 94     not only his pockets and his knapsack, but even             1797</span></span>
-<span id="cb144-115"><a href="combining-and-splitting.html#cb144-115"></a><span class="co">#&gt; 95  his cap and boots, so that he could scarcely walk.             1797</span></span>
-<span id="cb144-116"><a href="combining-and-splitting.html#cb144-116"></a><span class="co">#&gt; 96   He was really rich now; so he replaced the dog on             1797</span></span>
-<span id="cb144-117"><a href="combining-and-splitting.html#cb144-117"></a><span class="co">#&gt; 97   the chest, closed the door, and called up through             1797</span></span>
-<span id="cb144-118"><a href="combining-and-splitting.html#cb144-118"></a><span class="co">#&gt; 98   the tree: &quot;Now pull me out, you old witch.&quot; &quot;Have             1797</span></span>
-<span id="cb144-119"><a href="combining-and-splitting.html#cb144-119"></a><span class="co">#&gt; 99    you got the tinder-box?&quot; asked the witch. &quot;No; I             1797</span></span>
-<span id="cb144-120"><a href="combining-and-splitting.html#cb144-120"></a><span class="co">#&gt; 100    declare I quite forgot it.&quot; So he went back and             1797</span></span>
-<span id="cb144-121"><a href="combining-and-splitting.html#cb144-121"></a><span class="co">#&gt; 101 fetched the tinderbox, and then the witch drew him             1797</span></span>
-<span id="cb144-122"><a href="combining-and-splitting.html#cb144-122"></a><span class="co">#&gt; 102 up out of the tree, and he stood again in the high             1797</span></span>
-<span id="cb144-123"><a href="combining-and-splitting.html#cb144-123"></a><span class="co">#&gt; 103 road, with his pockets, his knapsack, his cap, and             1797</span></span>
-<span id="cb144-124"><a href="combining-and-splitting.html#cb144-124"></a><span class="co">#&gt; 104  his boots full of gold. &quot;What are you going to do             1797</span></span>
-<span id="cb144-125"><a href="combining-and-splitting.html#cb144-125"></a><span class="co">#&gt; 105  with the tinder-box?&quot; asked the soldier. &quot;That is             1797</span></span>
-<span id="cb144-126"><a href="combining-and-splitting.html#cb144-126"></a><span class="co">#&gt; 106  nothing to you,&quot; replied the witch; &quot;you have the             1797</span></span>
-<span id="cb144-127"><a href="combining-and-splitting.html#cb144-127"></a><span class="co">#&gt; 107                money, now give me the tinder-box.&quot;             1797</span></span>
-<span id="cb144-128"><a href="combining-and-splitting.html#cb144-128"></a><span class="co">#&gt; 108 &quot;I tell you what,&quot; said the soldier, &quot;if you don&#39;t             2188</span></span>
-<span id="cb144-129"><a href="combining-and-splitting.html#cb144-129"></a><span class="co">#&gt; 109   tell me what you are going to do with it, I will             2188</span></span>
-<span id="cb144-130"><a href="combining-and-splitting.html#cb144-130"></a><span class="co">#&gt; 110   draw my sword and cut off your head.&quot; &quot;No,&quot; said             2188</span></span>
-<span id="cb144-131"><a href="combining-and-splitting.html#cb144-131"></a><span class="co">#&gt; 111     the witch. The soldier immediately cut off her             2188</span></span>
-<span id="cb144-132"><a href="combining-and-splitting.html#cb144-132"></a><span class="co">#&gt; 112     head, and there she lay on the ground. Then he             2188</span></span>
-<span id="cb144-133"><a href="combining-and-splitting.html#cb144-133"></a><span class="co">#&gt; 113   tied up all his money in her apron, and slung it             2188</span></span>
-<span id="cb144-134"><a href="combining-and-splitting.html#cb144-134"></a><span class="co">#&gt; 114    on his back like a bundle, put the tinderbox in             2188</span></span>
-<span id="cb144-135"><a href="combining-and-splitting.html#cb144-135"></a><span class="co">#&gt; 115    his pocket, and walked off to the nearest town.             2188</span></span>
-<span id="cb144-136"><a href="combining-and-splitting.html#cb144-136"></a><span class="co">#&gt; 116 It was a very nice town, and he put up at the best             2188</span></span>
-<span id="cb144-137"><a href="combining-and-splitting.html#cb144-137"></a><span class="co">#&gt; 117     inn, and ordered a dinner of all his favourite             2188</span></span>
-<span id="cb144-138"><a href="combining-and-splitting.html#cb144-138"></a><span class="co">#&gt; 118      dishes, for now he was rich and had plenty of             2188</span></span>
-<span id="cb144-139"><a href="combining-and-splitting.html#cb144-139"></a><span class="co">#&gt; 119 money. The servant, who cleaned his boots, thought             2188</span></span>
-<span id="cb144-140"><a href="combining-and-splitting.html#cb144-140"></a><span class="co">#&gt; 120    they certainly were a shabby pair to be worn by             2188</span></span>
-<span id="cb144-141"><a href="combining-and-splitting.html#cb144-141"></a><span class="co">#&gt; 121   such a rich gentleman, for he had not yet bought             2188</span></span>
-<span id="cb144-142"><a href="combining-and-splitting.html#cb144-142"></a><span class="co">#&gt; 122   any new ones. The next day, however, he procured             2188</span></span>
-<span id="cb144-143"><a href="combining-and-splitting.html#cb144-143"></a><span class="co">#&gt; 123    some good clothes and proper boots, so that our             2188</span></span>
-<span id="cb144-144"><a href="combining-and-splitting.html#cb144-144"></a><span class="co">#&gt; 124     soldier soon became known as a fine gentleman,             2188</span></span>
-<span id="cb144-145"><a href="combining-and-splitting.html#cb144-145"></a><span class="co">#&gt; 125   and the people visited him, and told him all the             2188</span></span>
-<span id="cb144-146"><a href="combining-and-splitting.html#cb144-146"></a><span class="co">#&gt; 126      wonders that were to be seen in the town, and             2188</span></span>
-<span id="cb144-147"><a href="combining-and-splitting.html#cb144-147"></a><span class="co">#&gt; 127    of the king&#39;s beautiful daughter, the princess.             2188</span></span>
-<span id="cb144-148"><a href="combining-and-splitting.html#cb144-148"></a><span class="co">#&gt; 128     &quot;Where can I see her?&quot; asked the soldier. &quot;She             2188</span></span>
-<span id="cb144-149"><a href="combining-and-splitting.html#cb144-149"></a><span class="co">#&gt; 129   is not to be seen at all,&quot; they said; &quot;she lives             2188</span></span>
-<span id="cb144-150"><a href="combining-and-splitting.html#cb144-150"></a><span class="co">#&gt; 130  in a large copper castle, surrounded by walls and             2188</span></span>
-<span id="cb144-151"><a href="combining-and-splitting.html#cb144-151"></a><span class="co">#&gt; 131    towers. No one but the king himself can pass in             2188</span></span>
-<span id="cb144-152"><a href="combining-and-splitting.html#cb144-152"></a><span class="co">#&gt; 132     or out, for there has been a prophecy that she             2188</span></span>
-<span id="cb144-153"><a href="combining-and-splitting.html#cb144-153"></a><span class="co">#&gt; 133   will marry a common soldier, and the king cannot             2188</span></span>
-<span id="cb144-154"><a href="combining-and-splitting.html#cb144-154"></a><span class="co">#&gt; 134  bear to think of such a marriage.&quot; &quot;I should like             2188</span></span>
-<span id="cb144-155"><a href="combining-and-splitting.html#cb144-155"></a><span class="co">#&gt; 135 very much to see her,&quot; thought the soldier; but he             2188</span></span>
-<span id="cb144-156"><a href="combining-and-splitting.html#cb144-156"></a><span class="co">#&gt; 136  could not obtain permission to do so. However, he             2188</span></span>
-<span id="cb144-157"><a href="combining-and-splitting.html#cb144-157"></a><span class="co">#&gt; 137  passed a very pleasant time; went to the theatre,             2188</span></span>
-<span id="cb144-158"><a href="combining-and-splitting.html#cb144-158"></a><span class="co">#&gt; 138  drove in the king&#39;s garden, and gave a great deal             2188</span></span>
-<span id="cb144-159"><a href="combining-and-splitting.html#cb144-159"></a><span class="co">#&gt; 139  of money to the poor, which was very good of him;             2188</span></span>
-<span id="cb144-160"><a href="combining-and-splitting.html#cb144-160"></a><span class="co">#&gt; 140   he remembered what it had been in olden times to             2188</span></span>
-<span id="cb144-161"><a href="combining-and-splitting.html#cb144-161"></a><span class="co">#&gt; 141   be without a shilling. Now he was rich, had fine             2188</span></span>
-<span id="cb144-162"><a href="combining-and-splitting.html#cb144-162"></a><span class="co">#&gt; 142 clothes, and many friends, who all declared he was             2188</span></span>
-<span id="cb144-163"><a href="combining-and-splitting.html#cb144-163"></a><span class="co">#&gt; 143   a fine fellow and a real gentleman, and all this             2188</span></span>
-<span id="cb144-164"><a href="combining-and-splitting.html#cb144-164"></a><span class="co">#&gt; 144     gratified him exceedingly. But his money would             2188</span></span>
-<span id="cb144-165"><a href="combining-and-splitting.html#cb144-165"></a><span class="co">#&gt; 145    not last forever; and as he spent and gave away             2188</span></span>
-<span id="cb144-166"><a href="combining-and-splitting.html#cb144-166"></a><span class="co">#&gt; 146    a great deal daily, and received none, he found             2188</span></span>
-<span id="cb144-167"><a href="combining-and-splitting.html#cb144-167"></a><span class="co">#&gt; 147   himself at last with only two shillings left. So             2188</span></span>
-<span id="cb144-168"><a href="combining-and-splitting.html#cb144-168"></a><span class="co">#&gt; 148     he was obliged to leave his elegant rooms, and             2188</span></span>
-<span id="cb144-169"><a href="combining-and-splitting.html#cb144-169"></a><span class="co">#&gt; 149   live in a little garret under the roof, where he             2188</span></span>
-<span id="cb144-170"><a href="combining-and-splitting.html#cb144-170"></a><span class="co">#&gt; 150     had to clean his own boots, and even mend them             2188</span></span>
-<span id="cb144-171"><a href="combining-and-splitting.html#cb144-171"></a><span class="co">#&gt; 151   with a large needle. None of his friends came to             2188</span></span>
-<span id="cb144-172"><a href="combining-and-splitting.html#cb144-172"></a><span class="co">#&gt; 152   see him, there were too many stairs to mount up.             2188</span></span>
-<span id="cb144-173"><a href="combining-and-splitting.html#cb144-173"></a><span class="co">#&gt; 153 One dark evening, he had not even a penny to buy a             1191</span></span>
-<span id="cb144-174"><a href="combining-and-splitting.html#cb144-174"></a><span class="co">#&gt; 154  candle; then all at once he remembered that there             1191</span></span>
-<span id="cb144-175"><a href="combining-and-splitting.html#cb144-175"></a><span class="co">#&gt; 155     was a piece of candle stuck in the tinder-box,             1191</span></span>
-<span id="cb144-176"><a href="combining-and-splitting.html#cb144-176"></a><span class="co">#&gt; 156 which he had brought from the old tree, into which             1191</span></span>
-<span id="cb144-177"><a href="combining-and-splitting.html#cb144-177"></a><span class="co">#&gt; 157     the witch had helped him. He found the tinder-             1191</span></span>
-<span id="cb144-178"><a href="combining-and-splitting.html#cb144-178"></a><span class="co">#&gt; 158 box, but no sooner had he struck a few sparks from             1191</span></span>
-<span id="cb144-179"><a href="combining-and-splitting.html#cb144-179"></a><span class="co">#&gt; 159   the flint and steel, than the door flew open and             1191</span></span>
-<span id="cb144-180"><a href="combining-and-splitting.html#cb144-180"></a><span class="co">#&gt; 160   the dog with eyes as big as teacups, whom he had             1191</span></span>
-<span id="cb144-181"><a href="combining-and-splitting.html#cb144-181"></a><span class="co">#&gt; 161     seen while down in the tree, stood before him,             1191</span></span>
-<span id="cb144-182"><a href="combining-and-splitting.html#cb144-182"></a><span class="co">#&gt; 162     and said, &quot;What orders, master?&quot; &quot;Hallo,&quot; said             1191</span></span>
-<span id="cb144-183"><a href="combining-and-splitting.html#cb144-183"></a><span class="co">#&gt; 163   the soldier; &quot;well this is a pleasant tinderbox,             1191</span></span>
-<span id="cb144-184"><a href="combining-and-splitting.html#cb144-184"></a><span class="co">#&gt; 164       if it brings me all I wish for.&quot; - &quot;Bring me             1191</span></span>
-<span id="cb144-185"><a href="combining-and-splitting.html#cb144-185"></a><span class="co">#&gt; 165  some money,&quot; said he to the dog. He was gone in a             1191</span></span>
-<span id="cb144-186"><a href="combining-and-splitting.html#cb144-186"></a><span class="co">#&gt; 166   moment, and presently returned, carrying a large             1191</span></span>
-<span id="cb144-187"><a href="combining-and-splitting.html#cb144-187"></a><span class="co">#&gt; 167 bag of coppers in his month. The soldier very soon             1191</span></span>
-<span id="cb144-188"><a href="combining-and-splitting.html#cb144-188"></a><span class="co">#&gt; 168     discovered after this the value of the tinder-             1191</span></span>
-<span id="cb144-189"><a href="combining-and-splitting.html#cb144-189"></a><span class="co">#&gt; 169  box. If he struck the flint once, the dog who sat             1191</span></span>
-<span id="cb144-190"><a href="combining-and-splitting.html#cb144-190"></a><span class="co">#&gt; 170  on the chest of copper money made his appearance;             1191</span></span>
-<span id="cb144-191"><a href="combining-and-splitting.html#cb144-191"></a><span class="co">#&gt; 171   if twice, the dog came from the chest of silver;             1191</span></span>
-<span id="cb144-192"><a href="combining-and-splitting.html#cb144-192"></a><span class="co">#&gt; 172 and if three times, the dog with eyes like towers,             1191</span></span>
-<span id="cb144-193"><a href="combining-and-splitting.html#cb144-193"></a><span class="co">#&gt; 173     who watched over the gold. The soldier had now             1191</span></span>
-<span id="cb144-194"><a href="combining-and-splitting.html#cb144-194"></a><span class="co">#&gt; 174 plenty of money; he returned to his elegant rooms,             1191</span></span>
-<span id="cb144-195"><a href="combining-and-splitting.html#cb144-195"></a><span class="co">#&gt; 175    and reappeared in his fine clothes, so that his             1191</span></span>
-<span id="cb144-196"><a href="combining-and-splitting.html#cb144-196"></a><span class="co">#&gt; 176  friends knew him again directly, and made as much             1191</span></span>
-<span id="cb144-197"><a href="combining-and-splitting.html#cb144-197"></a><span class="co">#&gt; 177                                  of him as before.             1191</span></span></code></pre></div>
+<div class="sourceCode" id="cb145"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb145-1"><a href="combining-and-splitting.html#cb145-1"></a><span class="kw">library</span>(ggpage)</span>
+<span id="cb145-2"><a href="combining-and-splitting.html#cb145-2"></a></span>
+<span id="cb145-3"><a href="combining-and-splitting.html#cb145-3"></a>tinderbox_line &lt;-<span class="st"> </span><span class="kw">head</span>(tinderbox)</span>
+<span id="cb145-4"><a href="combining-and-splitting.html#cb145-4"></a>tinderbox_paragraph &lt;-<span class="st"> </span><span class="kw">head</span>(tinderbox_paragraph) </span>
+<span id="cb145-5"><a href="combining-and-splitting.html#cb145-5"></a>  </span>
+<span id="cb145-6"><a href="combining-and-splitting.html#cb145-6"></a>  </span>
+<span id="cb145-7"><a href="combining-and-splitting.html#cb145-7"></a><span class="co"># combine all six rows into a paragraph</span></span>
+<span id="cb145-8"><a href="combining-and-splitting.html#cb145-8"></a>tinderbox_line <span class="op">%&gt;%</span><span class="st"> </span></span>
+<span id="cb145-9"><a href="combining-and-splitting.html#cb145-9"></a><span class="st">  </span><span class="kw">summarize</span>(<span class="dt">paragraph =</span> <span class="kw">str_c</span>(text, <span class="dt">collapse =</span> <span class="st">&quot; &quot;</span>))</span>
+<span id="cb145-10"><a href="combining-and-splitting.html#cb145-10"></a><span class="co">#&gt; # A tibble: 1 x 1</span></span>
+<span id="cb145-11"><a href="combining-and-splitting.html#cb145-11"></a><span class="co">#&gt;   paragraph                                                                     </span></span>
+<span id="cb145-12"><a href="combining-and-splitting.html#cb145-12"></a><span class="co">#&gt;   &lt;chr&gt;                                                                         </span></span>
+<span id="cb145-13"><a href="combining-and-splitting.html#cb145-13"></a><span class="co">#&gt; 1 &quot;A soldier came marching along the high road: \&quot;Left, right - left, right.\&quot; ~</span></span>
+<span id="cb145-14"><a href="combining-and-splitting.html#cb145-14"></a></span>
+<span id="cb145-15"><a href="combining-and-splitting.html#cb145-15"></a><span class="co"># split one paragraph into multiple rows </span></span>
+<span id="cb145-16"><a href="combining-and-splitting.html#cb145-16"></a><span class="co"># ggpage::nest_paragraphs() extends str_wrap()</span></span>
+<span id="cb145-17"><a href="combining-and-splitting.html#cb145-17"></a>tinderbox_paragraph <span class="op">%&gt;%</span><span class="st"> </span></span>
+<span id="cb145-18"><a href="combining-and-splitting.html#cb145-18"></a><span class="st">  </span><span class="kw">mutate</span>(<span class="dt">paragraph_length =</span> <span class="kw">str_length</span>(text)) <span class="op">%&gt;%</span><span class="st"> </span></span>
+<span id="cb145-19"><a href="combining-and-splitting.html#cb145-19"></a><span class="st">  </span><span class="kw">nest_paragraphs</span>(text, <span class="dt">width =</span> <span class="dv">50</span>)  <span class="co"># no more than 50 characters per row</span></span>
+<span id="cb145-20"><a href="combining-and-splitting.html#cb145-20"></a><span class="co">#&gt;                                                   text paragraph_length</span></span>
+<span id="cb145-21"><a href="combining-and-splitting.html#cb145-21"></a><span class="co">#&gt; 1         A soldier came marching along the high road:              480</span></span>
+<span id="cb145-22"><a href="combining-and-splitting.html#cb145-22"></a><span class="co">#&gt; 2     &quot;Left, right - left, right.&quot; He had his knapsack              480</span></span>
+<span id="cb145-23"><a href="combining-and-splitting.html#cb145-23"></a><span class="co">#&gt; 3    on his back, and a sword at his side; he had been              480</span></span>
+<span id="cb145-24"><a href="combining-and-splitting.html#cb145-24"></a><span class="co">#&gt; 4       to the wars, and was now returning home. As he              480</span></span>
+<span id="cb145-25"><a href="combining-and-splitting.html#cb145-25"></a><span class="co">#&gt; 5       walked on, he met a very frightful-looking old              480</span></span>
+<span id="cb145-26"><a href="combining-and-splitting.html#cb145-26"></a><span class="co">#&gt; 6     witch in the road. Her under-lip hung quite down              480</span></span>
+<span id="cb145-27"><a href="combining-and-splitting.html#cb145-27"></a><span class="co">#&gt; 7       on her breast, and she stopped and said, &quot;Good              480</span></span>
+<span id="cb145-28"><a href="combining-and-splitting.html#cb145-28"></a><span class="co">#&gt; 8    evening, soldier; you have a very fine sword, and              480</span></span>
+<span id="cb145-29"><a href="combining-and-splitting.html#cb145-29"></a><span class="co">#&gt; 9     a large knapsack, and you are a real soldier; so              480</span></span>
+<span id="cb145-30"><a href="combining-and-splitting.html#cb145-30"></a><span class="co">#&gt; 10     you shall have as much money as ever you like.&quot;              480</span></span>
+<span id="cb145-31"><a href="combining-and-splitting.html#cb145-31"></a><span class="co">#&gt; 11   &quot;Thank you, old witch,&quot; said the soldier. &quot;Do you             2073</span></span>
+<span id="cb145-32"><a href="combining-and-splitting.html#cb145-32"></a><span class="co">#&gt; 12   see that large tree,&quot; said the witch, pointing to             2073</span></span>
+<span id="cb145-33"><a href="combining-and-splitting.html#cb145-33"></a><span class="co">#&gt; 13  a tree which stood beside them. &quot;Well, it is quite             2073</span></span>
+<span id="cb145-34"><a href="combining-and-splitting.html#cb145-34"></a><span class="co">#&gt; 14       hollow inside, and you must climb to the top,             2073</span></span>
+<span id="cb145-35"><a href="combining-and-splitting.html#cb145-35"></a><span class="co">#&gt; 15     when you will see a hole, through which you can             2073</span></span>
+<span id="cb145-36"><a href="combining-and-splitting.html#cb145-36"></a><span class="co">#&gt; 16   let yourself down into the tree to a great depth.             2073</span></span>
+<span id="cb145-37"><a href="combining-and-splitting.html#cb145-37"></a><span class="co">#&gt; 17    I will tie a rope round your body, so that I can             2073</span></span>
+<span id="cb145-38"><a href="combining-and-splitting.html#cb145-38"></a><span class="co">#&gt; 18    pull you up again when you call out to me.&quot; &quot;But             2073</span></span>
+<span id="cb145-39"><a href="combining-and-splitting.html#cb145-39"></a><span class="co">#&gt; 19     what am I to do, down there in the tree?&quot; asked             2073</span></span>
+<span id="cb145-40"><a href="combining-and-splitting.html#cb145-40"></a><span class="co">#&gt; 20     the soldier. &quot;Get money,&quot; she replied; &quot;for you             2073</span></span>
+<span id="cb145-41"><a href="combining-and-splitting.html#cb145-41"></a><span class="co">#&gt; 21      must know that when you reach the ground under             2073</span></span>
+<span id="cb145-42"><a href="combining-and-splitting.html#cb145-42"></a><span class="co">#&gt; 22   the tree, you will find yourself in a large hall,             2073</span></span>
+<span id="cb145-43"><a href="combining-and-splitting.html#cb145-43"></a><span class="co">#&gt; 23    lighted up by three hundred lamps; you will then             2073</span></span>
+<span id="cb145-44"><a href="combining-and-splitting.html#cb145-44"></a><span class="co">#&gt; 24    see three doors, which can be easily opened, for             2073</span></span>
+<span id="cb145-45"><a href="combining-and-splitting.html#cb145-45"></a><span class="co">#&gt; 25      the keys are in all the locks. On entering the             2073</span></span>
+<span id="cb145-46"><a href="combining-and-splitting.html#cb145-46"></a><span class="co">#&gt; 26   first of the chambers, to which these doors lead,             2073</span></span>
+<span id="cb145-47"><a href="combining-and-splitting.html#cb145-47"></a><span class="co">#&gt; 27  you will see a large chest, standing in the middle             2073</span></span>
+<span id="cb145-48"><a href="combining-and-splitting.html#cb145-48"></a><span class="co">#&gt; 28      of the floor, and upon it a dog seated, with a             2073</span></span>
+<span id="cb145-49"><a href="combining-and-splitting.html#cb145-49"></a><span class="co">#&gt; 29      pair of eyes as large as teacups. But you need             2073</span></span>
+<span id="cb145-50"><a href="combining-and-splitting.html#cb145-50"></a><span class="co">#&gt; 30     not be at all afraid of him; I will give you my             2073</span></span>
+<span id="cb145-51"><a href="combining-and-splitting.html#cb145-51"></a><span class="co">#&gt; 31  blue checked apron, which you must spread upon the             2073</span></span>
+<span id="cb145-52"><a href="combining-and-splitting.html#cb145-52"></a><span class="co">#&gt; 32   floor, and then boldly seize hold of the dog, and             2073</span></span>
+<span id="cb145-53"><a href="combining-and-splitting.html#cb145-53"></a><span class="co">#&gt; 33     place him upon it. You can then open the chest,             2073</span></span>
+<span id="cb145-54"><a href="combining-and-splitting.html#cb145-54"></a><span class="co">#&gt; 34  and take from it as many pence as you please, they             2073</span></span>
+<span id="cb145-55"><a href="combining-and-splitting.html#cb145-55"></a><span class="co">#&gt; 35      are only copper pence; but if you would rather             2073</span></span>
+<span id="cb145-56"><a href="combining-and-splitting.html#cb145-56"></a><span class="co">#&gt; 36      have silver money, you must go into the second             2073</span></span>
+<span id="cb145-57"><a href="combining-and-splitting.html#cb145-57"></a><span class="co">#&gt; 37  chamber. Here you will find another dog, with eyes             2073</span></span>
+<span id="cb145-58"><a href="combining-and-splitting.html#cb145-58"></a><span class="co">#&gt; 38  as big as mill-wheels; but do not let that trouble             2073</span></span>
+<span id="cb145-59"><a href="combining-and-splitting.html#cb145-59"></a><span class="co">#&gt; 39    you. Place him upon my apron, and then take what             2073</span></span>
+<span id="cb145-60"><a href="combining-and-splitting.html#cb145-60"></a><span class="co">#&gt; 40  money you please. If, however, you like gold best,             2073</span></span>
+<span id="cb145-61"><a href="combining-and-splitting.html#cb145-61"></a><span class="co">#&gt; 41     enter the third chamber, where there is another             2073</span></span>
+<span id="cb145-62"><a href="combining-and-splitting.html#cb145-62"></a><span class="co">#&gt; 42    chest full of it. The dog who sits on this chest             2073</span></span>
+<span id="cb145-63"><a href="combining-and-splitting.html#cb145-63"></a><span class="co">#&gt; 43   is very dreadful; his eyes are as big as a tower,             2073</span></span>
+<span id="cb145-64"><a href="combining-and-splitting.html#cb145-64"></a><span class="co">#&gt; 44   but do not mind him. If he also is placed upon my             2073</span></span>
+<span id="cb145-65"><a href="combining-and-splitting.html#cb145-65"></a><span class="co">#&gt; 45    apron, he cannot hurt you, and you may take from             2073</span></span>
+<span id="cb145-66"><a href="combining-and-splitting.html#cb145-66"></a><span class="co">#&gt; 46   the chest what gold you will.&quot; &quot;This is not a bad             2073</span></span>
+<span id="cb145-67"><a href="combining-and-splitting.html#cb145-67"></a><span class="co">#&gt; 47    story,&quot; said the soldier; &quot;but what am I to give             2073</span></span>
+<span id="cb145-68"><a href="combining-and-splitting.html#cb145-68"></a><span class="co">#&gt; 48      you, you old witch? For, of course, you do not             2073</span></span>
+<span id="cb145-69"><a href="combining-and-splitting.html#cb145-69"></a><span class="co">#&gt; 49   mean to tell me all this for nothing.&quot; &quot;No,&quot; said             2073</span></span>
+<span id="cb145-70"><a href="combining-and-splitting.html#cb145-70"></a><span class="co">#&gt; 50    the witch; &quot;but I do not ask for a single penny.             2073</span></span>
+<span id="cb145-71"><a href="combining-and-splitting.html#cb145-71"></a><span class="co">#&gt; 51   Only promise to bring me an old tinder-box, which             2073</span></span>
+<span id="cb145-72"><a href="combining-and-splitting.html#cb145-72"></a><span class="co">#&gt; 52   my grandmother left behind the last time she went             2073</span></span>
+<span id="cb145-73"><a href="combining-and-splitting.html#cb145-73"></a><span class="co">#&gt; 53                                        down there.&quot;             2073</span></span>
+<span id="cb145-74"><a href="combining-and-splitting.html#cb145-74"></a><span class="co">#&gt; 54    &quot;Very well; I promise. Now tie the rope round my              798</span></span>
+<span id="cb145-75"><a href="combining-and-splitting.html#cb145-75"></a><span class="co">#&gt; 55   body.&quot; &quot;Here it is,&quot; replied the witch; &quot;and here              798</span></span>
+<span id="cb145-76"><a href="combining-and-splitting.html#cb145-76"></a><span class="co">#&gt; 56      is my blue checked apron.&quot; As soon as the rope              798</span></span>
+<span id="cb145-77"><a href="combining-and-splitting.html#cb145-77"></a><span class="co">#&gt; 57      was tied, the soldier climbed up the tree, and              798</span></span>
+<span id="cb145-78"><a href="combining-and-splitting.html#cb145-78"></a><span class="co">#&gt; 58   let himself down through the hollow to the ground              798</span></span>
+<span id="cb145-79"><a href="combining-and-splitting.html#cb145-79"></a><span class="co">#&gt; 59   beneath; and here he found, as the witch had told              798</span></span>
+<span id="cb145-80"><a href="combining-and-splitting.html#cb145-80"></a><span class="co">#&gt; 60      him, a large hall, in which many hundred lamps              798</span></span>
+<span id="cb145-81"><a href="combining-and-splitting.html#cb145-81"></a><span class="co">#&gt; 61    were all burning. Then he opened the first door.              798</span></span>
+<span id="cb145-82"><a href="combining-and-splitting.html#cb145-82"></a><span class="co">#&gt; 62  &quot;Ah!&quot; there sat the dog, with the eyes as large as              798</span></span>
+<span id="cb145-83"><a href="combining-and-splitting.html#cb145-83"></a><span class="co">#&gt; 63  teacups, staring at him. &quot;You&#39;re a pretty fellow,&quot;              798</span></span>
+<span id="cb145-84"><a href="combining-and-splitting.html#cb145-84"></a><span class="co">#&gt; 64      said the soldier, seizing him, and placing him              798</span></span>
+<span id="cb145-85"><a href="combining-and-splitting.html#cb145-85"></a><span class="co">#&gt; 65   on the witch&#39;s apron, while he filled his pockets              798</span></span>
+<span id="cb145-86"><a href="combining-and-splitting.html#cb145-86"></a><span class="co">#&gt; 66    from the chest with as many pieces as they would              798</span></span>
+<span id="cb145-87"><a href="combining-and-splitting.html#cb145-87"></a><span class="co">#&gt; 67   hold. Then he closed the lid, seated the dog upon              798</span></span>
+<span id="cb145-88"><a href="combining-and-splitting.html#cb145-88"></a><span class="co">#&gt; 68     it again, and walked into another chamber, and,              798</span></span>
+<span id="cb145-89"><a href="combining-and-splitting.html#cb145-89"></a><span class="co">#&gt; 69  sure enough, there sat the dog with eyes as big as              798</span></span>
+<span id="cb145-90"><a href="combining-and-splitting.html#cb145-90"></a><span class="co">#&gt; 70                                        mill-wheels.              798</span></span>
+<span id="cb145-91"><a href="combining-and-splitting.html#cb145-91"></a><span class="co">#&gt; 71   &quot;You had better not look at me in that way,&quot; said             1797</span></span>
+<span id="cb145-92"><a href="combining-and-splitting.html#cb145-92"></a><span class="co">#&gt; 72   the soldier; &quot;you will make your eyes water;&quot; and             1797</span></span>
+<span id="cb145-93"><a href="combining-and-splitting.html#cb145-93"></a><span class="co">#&gt; 73  then he seated him also upon the apron, and opened             1797</span></span>
+<span id="cb145-94"><a href="combining-and-splitting.html#cb145-94"></a><span class="co">#&gt; 74       the chest. But when he saw what a quantity of             1797</span></span>
+<span id="cb145-95"><a href="combining-and-splitting.html#cb145-95"></a><span class="co">#&gt; 75    silver money it contained, he very quickly threw             1797</span></span>
+<span id="cb145-96"><a href="combining-and-splitting.html#cb145-96"></a><span class="co">#&gt; 76   away all the coppers he had taken, and filled his             1797</span></span>
+<span id="cb145-97"><a href="combining-and-splitting.html#cb145-97"></a><span class="co">#&gt; 77   pockets and his knapsack with nothing but silver.             1797</span></span>
+<span id="cb145-98"><a href="combining-and-splitting.html#cb145-98"></a><span class="co">#&gt; 78     Then he went into the third room, and there the             1797</span></span>
+<span id="cb145-99"><a href="combining-and-splitting.html#cb145-99"></a><span class="co">#&gt; 79    dog was really hideous; his eyes were, truly, as             1797</span></span>
+<span id="cb145-100"><a href="combining-and-splitting.html#cb145-100"></a><span class="co">#&gt; 80      big as towers, and they turned round and round             1797</span></span>
+<span id="cb145-101"><a href="combining-and-splitting.html#cb145-101"></a><span class="co">#&gt; 81       in his head like wheels. &quot;Good morning,&quot; said             1797</span></span>
+<span id="cb145-102"><a href="combining-and-splitting.html#cb145-102"></a><span class="co">#&gt; 82     the soldier, touching his cap, for he had never             1797</span></span>
+<span id="cb145-103"><a href="combining-and-splitting.html#cb145-103"></a><span class="co">#&gt; 83      seen such a dog in his life. But after looking             1797</span></span>
+<span id="cb145-104"><a href="combining-and-splitting.html#cb145-104"></a><span class="co">#&gt; 84   at him more closely, he thought he had been civil             1797</span></span>
+<span id="cb145-105"><a href="combining-and-splitting.html#cb145-105"></a><span class="co">#&gt; 85   enough, so he placed him on the floor, and opened             1797</span></span>
+<span id="cb145-106"><a href="combining-and-splitting.html#cb145-106"></a><span class="co">#&gt; 86   the chest. Good gracious, what a quantity of gold             1797</span></span>
+<span id="cb145-107"><a href="combining-and-splitting.html#cb145-107"></a><span class="co">#&gt; 87       there was! enough to buy all the sugar-sticks             1797</span></span>
+<span id="cb145-108"><a href="combining-and-splitting.html#cb145-108"></a><span class="co">#&gt; 88     of the sweet-stuff women; all the tin soldiers,             1797</span></span>
+<span id="cb145-109"><a href="combining-and-splitting.html#cb145-109"></a><span class="co">#&gt; 89     whips, and rocking-horses in the world, or even             1797</span></span>
+<span id="cb145-110"><a href="combining-and-splitting.html#cb145-110"></a><span class="co">#&gt; 90         the whole town itself There was, indeed, an             1797</span></span>
+<span id="cb145-111"><a href="combining-and-splitting.html#cb145-111"></a><span class="co">#&gt; 91     immense quantity. So the soldier now threw away             1797</span></span>
+<span id="cb145-112"><a href="combining-and-splitting.html#cb145-112"></a><span class="co">#&gt; 92   all the silver money he had taken, and filled his             1797</span></span>
+<span id="cb145-113"><a href="combining-and-splitting.html#cb145-113"></a><span class="co">#&gt; 93     pockets and his knapsack with gold instead; and             1797</span></span>
+<span id="cb145-114"><a href="combining-and-splitting.html#cb145-114"></a><span class="co">#&gt; 94     not only his pockets and his knapsack, but even             1797</span></span>
+<span id="cb145-115"><a href="combining-and-splitting.html#cb145-115"></a><span class="co">#&gt; 95  his cap and boots, so that he could scarcely walk.             1797</span></span>
+<span id="cb145-116"><a href="combining-and-splitting.html#cb145-116"></a><span class="co">#&gt; 96   He was really rich now; so he replaced the dog on             1797</span></span>
+<span id="cb145-117"><a href="combining-and-splitting.html#cb145-117"></a><span class="co">#&gt; 97   the chest, closed the door, and called up through             1797</span></span>
+<span id="cb145-118"><a href="combining-and-splitting.html#cb145-118"></a><span class="co">#&gt; 98   the tree: &quot;Now pull me out, you old witch.&quot; &quot;Have             1797</span></span>
+<span id="cb145-119"><a href="combining-and-splitting.html#cb145-119"></a><span class="co">#&gt; 99    you got the tinder-box?&quot; asked the witch. &quot;No; I             1797</span></span>
+<span id="cb145-120"><a href="combining-and-splitting.html#cb145-120"></a><span class="co">#&gt; 100    declare I quite forgot it.&quot; So he went back and             1797</span></span>
+<span id="cb145-121"><a href="combining-and-splitting.html#cb145-121"></a><span class="co">#&gt; 101 fetched the tinderbox, and then the witch drew him             1797</span></span>
+<span id="cb145-122"><a href="combining-and-splitting.html#cb145-122"></a><span class="co">#&gt; 102 up out of the tree, and he stood again in the high             1797</span></span>
+<span id="cb145-123"><a href="combining-and-splitting.html#cb145-123"></a><span class="co">#&gt; 103 road, with his pockets, his knapsack, his cap, and             1797</span></span>
+<span id="cb145-124"><a href="combining-and-splitting.html#cb145-124"></a><span class="co">#&gt; 104  his boots full of gold. &quot;What are you going to do             1797</span></span>
+<span id="cb145-125"><a href="combining-and-splitting.html#cb145-125"></a><span class="co">#&gt; 105  with the tinder-box?&quot; asked the soldier. &quot;That is             1797</span></span>
+<span id="cb145-126"><a href="combining-and-splitting.html#cb145-126"></a><span class="co">#&gt; 106  nothing to you,&quot; replied the witch; &quot;you have the             1797</span></span>
+<span id="cb145-127"><a href="combining-and-splitting.html#cb145-127"></a><span class="co">#&gt; 107                money, now give me the tinder-box.&quot;             1797</span></span>
+<span id="cb145-128"><a href="combining-and-splitting.html#cb145-128"></a><span class="co">#&gt; 108 &quot;I tell you what,&quot; said the soldier, &quot;if you don&#39;t             2188</span></span>
+<span id="cb145-129"><a href="combining-and-splitting.html#cb145-129"></a><span class="co">#&gt; 109   tell me what you are going to do with it, I will             2188</span></span>
+<span id="cb145-130"><a href="combining-and-splitting.html#cb145-130"></a><span class="co">#&gt; 110   draw my sword and cut off your head.&quot; &quot;No,&quot; said             2188</span></span>
+<span id="cb145-131"><a href="combining-and-splitting.html#cb145-131"></a><span class="co">#&gt; 111     the witch. The soldier immediately cut off her             2188</span></span>
+<span id="cb145-132"><a href="combining-and-splitting.html#cb145-132"></a><span class="co">#&gt; 112     head, and there she lay on the ground. Then he             2188</span></span>
+<span id="cb145-133"><a href="combining-and-splitting.html#cb145-133"></a><span class="co">#&gt; 113   tied up all his money in her apron, and slung it             2188</span></span>
+<span id="cb145-134"><a href="combining-and-splitting.html#cb145-134"></a><span class="co">#&gt; 114    on his back like a bundle, put the tinderbox in             2188</span></span>
+<span id="cb145-135"><a href="combining-and-splitting.html#cb145-135"></a><span class="co">#&gt; 115    his pocket, and walked off to the nearest town.             2188</span></span>
+<span id="cb145-136"><a href="combining-and-splitting.html#cb145-136"></a><span class="co">#&gt; 116 It was a very nice town, and he put up at the best             2188</span></span>
+<span id="cb145-137"><a href="combining-and-splitting.html#cb145-137"></a><span class="co">#&gt; 117     inn, and ordered a dinner of all his favourite             2188</span></span>
+<span id="cb145-138"><a href="combining-and-splitting.html#cb145-138"></a><span class="co">#&gt; 118      dishes, for now he was rich and had plenty of             2188</span></span>
+<span id="cb145-139"><a href="combining-and-splitting.html#cb145-139"></a><span class="co">#&gt; 119 money. The servant, who cleaned his boots, thought             2188</span></span>
+<span id="cb145-140"><a href="combining-and-splitting.html#cb145-140"></a><span class="co">#&gt; 120    they certainly were a shabby pair to be worn by             2188</span></span>
+<span id="cb145-141"><a href="combining-and-splitting.html#cb145-141"></a><span class="co">#&gt; 121   such a rich gentleman, for he had not yet bought             2188</span></span>
+<span id="cb145-142"><a href="combining-and-splitting.html#cb145-142"></a><span class="co">#&gt; 122   any new ones. The next day, however, he procured             2188</span></span>
+<span id="cb145-143"><a href="combining-and-splitting.html#cb145-143"></a><span class="co">#&gt; 123    some good clothes and proper boots, so that our             2188</span></span>
+<span id="cb145-144"><a href="combining-and-splitting.html#cb145-144"></a><span class="co">#&gt; 124     soldier soon became known as a fine gentleman,             2188</span></span>
+<span id="cb145-145"><a href="combining-and-splitting.html#cb145-145"></a><span class="co">#&gt; 125   and the people visited him, and told him all the             2188</span></span>
+<span id="cb145-146"><a href="combining-and-splitting.html#cb145-146"></a><span class="co">#&gt; 126      wonders that were to be seen in the town, and             2188</span></span>
+<span id="cb145-147"><a href="combining-and-splitting.html#cb145-147"></a><span class="co">#&gt; 127    of the king&#39;s beautiful daughter, the princess.             2188</span></span>
+<span id="cb145-148"><a href="combining-and-splitting.html#cb145-148"></a><span class="co">#&gt; 128     &quot;Where can I see her?&quot; asked the soldier. &quot;She             2188</span></span>
+<span id="cb145-149"><a href="combining-and-splitting.html#cb145-149"></a><span class="co">#&gt; 129   is not to be seen at all,&quot; they said; &quot;she lives             2188</span></span>
+<span id="cb145-150"><a href="combining-and-splitting.html#cb145-150"></a><span class="co">#&gt; 130  in a large copper castle, surrounded by walls and             2188</span></span>
+<span id="cb145-151"><a href="combining-and-splitting.html#cb145-151"></a><span class="co">#&gt; 131    towers. No one but the king himself can pass in             2188</span></span>
+<span id="cb145-152"><a href="combining-and-splitting.html#cb145-152"></a><span class="co">#&gt; 132     or out, for there has been a prophecy that she             2188</span></span>
+<span id="cb145-153"><a href="combining-and-splitting.html#cb145-153"></a><span class="co">#&gt; 133   will marry a common soldier, and the king cannot             2188</span></span>
+<span id="cb145-154"><a href="combining-and-splitting.html#cb145-154"></a><span class="co">#&gt; 134  bear to think of such a marriage.&quot; &quot;I should like             2188</span></span>
+<span id="cb145-155"><a href="combining-and-splitting.html#cb145-155"></a><span class="co">#&gt; 135 very much to see her,&quot; thought the soldier; but he             2188</span></span>
+<span id="cb145-156"><a href="combining-and-splitting.html#cb145-156"></a><span class="co">#&gt; 136  could not obtain permission to do so. However, he             2188</span></span>
+<span id="cb145-157"><a href="combining-and-splitting.html#cb145-157"></a><span class="co">#&gt; 137  passed a very pleasant time; went to the theatre,             2188</span></span>
+<span id="cb145-158"><a href="combining-and-splitting.html#cb145-158"></a><span class="co">#&gt; 138  drove in the king&#39;s garden, and gave a great deal             2188</span></span>
+<span id="cb145-159"><a href="combining-and-splitting.html#cb145-159"></a><span class="co">#&gt; 139  of money to the poor, which was very good of him;             2188</span></span>
+<span id="cb145-160"><a href="combining-and-splitting.html#cb145-160"></a><span class="co">#&gt; 140   he remembered what it had been in olden times to             2188</span></span>
+<span id="cb145-161"><a href="combining-and-splitting.html#cb145-161"></a><span class="co">#&gt; 141   be without a shilling. Now he was rich, had fine             2188</span></span>
+<span id="cb145-162"><a href="combining-and-splitting.html#cb145-162"></a><span class="co">#&gt; 142 clothes, and many friends, who all declared he was             2188</span></span>
+<span id="cb145-163"><a href="combining-and-splitting.html#cb145-163"></a><span class="co">#&gt; 143   a fine fellow and a real gentleman, and all this             2188</span></span>
+<span id="cb145-164"><a href="combining-and-splitting.html#cb145-164"></a><span class="co">#&gt; 144     gratified him exceedingly. But his money would             2188</span></span>
+<span id="cb145-165"><a href="combining-and-splitting.html#cb145-165"></a><span class="co">#&gt; 145    not last forever; and as he spent and gave away             2188</span></span>
+<span id="cb145-166"><a href="combining-and-splitting.html#cb145-166"></a><span class="co">#&gt; 146    a great deal daily, and received none, he found             2188</span></span>
+<span id="cb145-167"><a href="combining-and-splitting.html#cb145-167"></a><span class="co">#&gt; 147   himself at last with only two shillings left. So             2188</span></span>
+<span id="cb145-168"><a href="combining-and-splitting.html#cb145-168"></a><span class="co">#&gt; 148     he was obliged to leave his elegant rooms, and             2188</span></span>
+<span id="cb145-169"><a href="combining-and-splitting.html#cb145-169"></a><span class="co">#&gt; 149   live in a little garret under the roof, where he             2188</span></span>
+<span id="cb145-170"><a href="combining-and-splitting.html#cb145-170"></a><span class="co">#&gt; 150     had to clean his own boots, and even mend them             2188</span></span>
+<span id="cb145-171"><a href="combining-and-splitting.html#cb145-171"></a><span class="co">#&gt; 151   with a large needle. None of his friends came to             2188</span></span>
+<span id="cb145-172"><a href="combining-and-splitting.html#cb145-172"></a><span class="co">#&gt; 152   see him, there were too many stairs to mount up.             2188</span></span>
+<span id="cb145-173"><a href="combining-and-splitting.html#cb145-173"></a><span class="co">#&gt; 153 One dark evening, he had not even a penny to buy a             1191</span></span>
+<span id="cb145-174"><a href="combining-and-splitting.html#cb145-174"></a><span class="co">#&gt; 154  candle; then all at once he remembered that there             1191</span></span>
+<span id="cb145-175"><a href="combining-and-splitting.html#cb145-175"></a><span class="co">#&gt; 155     was a piece of candle stuck in the tinder-box,             1191</span></span>
+<span id="cb145-176"><a href="combining-and-splitting.html#cb145-176"></a><span class="co">#&gt; 156 which he had brought from the old tree, into which             1191</span></span>
+<span id="cb145-177"><a href="combining-and-splitting.html#cb145-177"></a><span class="co">#&gt; 157     the witch had helped him. He found the tinder-             1191</span></span>
+<span id="cb145-178"><a href="combining-and-splitting.html#cb145-178"></a><span class="co">#&gt; 158 box, but no sooner had he struck a few sparks from             1191</span></span>
+<span id="cb145-179"><a href="combining-and-splitting.html#cb145-179"></a><span class="co">#&gt; 159   the flint and steel, than the door flew open and             1191</span></span>
+<span id="cb145-180"><a href="combining-and-splitting.html#cb145-180"></a><span class="co">#&gt; 160   the dog with eyes as big as teacups, whom he had             1191</span></span>
+<span id="cb145-181"><a href="combining-and-splitting.html#cb145-181"></a><span class="co">#&gt; 161     seen while down in the tree, stood before him,             1191</span></span>
+<span id="cb145-182"><a href="combining-and-splitting.html#cb145-182"></a><span class="co">#&gt; 162     and said, &quot;What orders, master?&quot; &quot;Hallo,&quot; said             1191</span></span>
+<span id="cb145-183"><a href="combining-and-splitting.html#cb145-183"></a><span class="co">#&gt; 163   the soldier; &quot;well this is a pleasant tinderbox,             1191</span></span>
+<span id="cb145-184"><a href="combining-and-splitting.html#cb145-184"></a><span class="co">#&gt; 164       if it brings me all I wish for.&quot; - &quot;Bring me             1191</span></span>
+<span id="cb145-185"><a href="combining-and-splitting.html#cb145-185"></a><span class="co">#&gt; 165  some money,&quot; said he to the dog. He was gone in a             1191</span></span>
+<span id="cb145-186"><a href="combining-and-splitting.html#cb145-186"></a><span class="co">#&gt; 166   moment, and presently returned, carrying a large             1191</span></span>
+<span id="cb145-187"><a href="combining-and-splitting.html#cb145-187"></a><span class="co">#&gt; 167 bag of coppers in his month. The soldier very soon             1191</span></span>
+<span id="cb145-188"><a href="combining-and-splitting.html#cb145-188"></a><span class="co">#&gt; 168     discovered after this the value of the tinder-             1191</span></span>
+<span id="cb145-189"><a href="combining-and-splitting.html#cb145-189"></a><span class="co">#&gt; 169  box. If he struck the flint once, the dog who sat             1191</span></span>
+<span id="cb145-190"><a href="combining-and-splitting.html#cb145-190"></a><span class="co">#&gt; 170  on the chest of copper money made his appearance;             1191</span></span>
+<span id="cb145-191"><a href="combining-and-splitting.html#cb145-191"></a><span class="co">#&gt; 171   if twice, the dog came from the chest of silver;             1191</span></span>
+<span id="cb145-192"><a href="combining-and-splitting.html#cb145-192"></a><span class="co">#&gt; 172 and if three times, the dog with eyes like towers,             1191</span></span>
+<span id="cb145-193"><a href="combining-and-splitting.html#cb145-193"></a><span class="co">#&gt; 173     who watched over the gold. The soldier had now             1191</span></span>
+<span id="cb145-194"><a href="combining-and-splitting.html#cb145-194"></a><span class="co">#&gt; 174 plenty of money; he returned to his elegant rooms,             1191</span></span>
+<span id="cb145-195"><a href="combining-and-splitting.html#cb145-195"></a><span class="co">#&gt; 175    and reappeared in his fine clothes, so that his             1191</span></span>
+<span id="cb145-196"><a href="combining-and-splitting.html#cb145-196"></a><span class="co">#&gt; 176  friends knew him again directly, and made as much             1191</span></span>
+<span id="cb145-197"><a href="combining-and-splitting.html#cb145-197"></a><span class="co">#&gt; 177                                  of him as before.             1191</span></span></code></pre></div>
 </div>
             </section>
 

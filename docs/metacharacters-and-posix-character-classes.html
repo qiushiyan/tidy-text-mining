@@ -4,11 +4,11 @@
 
   <meta charset="utf-8" />
   <meta http-equiv="X-UA-Compatible" content="IE=edge" />
-  <title>References | Notes for “Text Mining with R: A Tidy Approach”</title>
-  <meta name="description" content="References | Notes for “Text Mining with R: A Tidy Approach”" />
+  <title>A.1 Metacharacters and POSIX character classes | Notes for “Text Mining with R: A Tidy Approach”</title>
+  <meta name="description" content="A.1 Metacharacters and POSIX character classes | Notes for “Text Mining with R: A Tidy Approach”" />
   <meta name="generator" content="bookdown 0.20 and GitBook 2.6.7" />
 
-  <meta property="og:title" content="References | Notes for “Text Mining with R: A Tidy Approach”" />
+  <meta property="og:title" content="A.1 Metacharacters and POSIX character classes | Notes for “Text Mining with R: A Tidy Approach”" />
   <meta property="og:type" content="book" />
   
   
@@ -16,7 +16,7 @@
   <meta name="github-repo" content="enixam/tidy-text-mining" />
 
   <meta name="twitter:card" content="summary" />
-  <meta name="twitter:title" content="References | Notes for “Text Mining with R: A Tidy Approach”" />
+  <meta name="twitter:title" content="A.1 Metacharacters and POSIX character classes | Notes for “Text Mining with R: A Tidy Approach”" />
   
   
   
@@ -31,8 +31,8 @@
   <meta name="apple-mobile-web-app-status-bar-style" content="black" />
   
   
-<link rel="prev" href="text-classification.html"/>
-<link rel="next" href="reviews-on-regular-expressions.html"/>
+<link rel="prev" href="reviews-on-regular-expressions.html"/>
+<link rel="next" href="unicode-code-points-categories-blocks-and-scripts.html"/>
 <script src="libs/jquery-2.2.3/jquery.min.js"></script>
 <link href="libs/gitbook-2.6.7/css/style.css" rel="stylesheet" />
 <link href="libs/gitbook-2.6.7/css/plugin-table.css" rel="stylesheet" />
@@ -239,34 +239,71 @@ code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } /* Warni
           <div class="page-inner">
 
             <section class="normal" id="section-">
-<div id="references" class="section level1 unnumbered">
-<h1>References</h1>
-<div id="refs">
-<div id="ref-10.5210/fm.v19i4.4944">
-<p>Jurafsky, Dan, Victor Chahuneau, Bryan Routledge, and Noah Smith. 2014. “Narrative Framing of Consumer Sentiment in Online Restaurant Reviews.” <em>First Monday</em> 19 (April). <a href="https://doi.org/10.5210/fm.v19i4.4944">https://doi.org/10.5210/fm.v19i4.4944</a>.</p>
+<div id="metacharacters-and-posix-character-classes" class="section level2">
+<h2><span class="header-section-number">A.1</span> Metacharacters and POSIX character classes</h2>
+<ul>
+<li><code>\w</code> matches any word character (alphabet or number, or alphanumeric) and underscore, equivalent to <code>[A-Za-z0-9_]</code>.<br />
+</li>
+<li><code>\W</code> is the opposite of <code>\w</code> that matches non-word character, or <code>[^A-Za-z0-9_]</code></li>
+<li><code>\d</code> matches any single digit number<br />
+</li>
+<li><code>.</code> matches any character <strong>except</strong> linebreaks, equivalent to <code>[^\r\n]</code> (Windows) or <code>[\n]</code> (Mac)<br />
+</li>
+<li><code>\s</code> matches any white space, including spaces, tabs and vertical tab, return and line breaks, equivalent to <code>[:space:]</code> in the following table.<br />
+</li>
+<li><code>\S</code> is the opposite of <code>\s</code> that matches any non-white character. <code>[\s\S]</code> is a common shorthand for <strong>matching everything</strong>, since <code>.</code> does not match linebreak.</li>
+</ul>
+<p>And there are POSIX character classes.</p>
+<table>
+<colgroup>
+<col width="50%" />
+<col width="50%" />
+</colgroup>
+<thead>
+<tr class="header">
+<th align="center">class</th>
+<th align="center">description</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td align="center"><code>[:alnum:]</code></td>
+<td align="center">alphabets or numbers, equivalent to <code>[A-Za-z0-9]</code></td>
+</tr>
+<tr class="even">
+<td align="center"><code>[:alpha:]</code></td>
+<td align="center">alphabets, equivalent to <code>[A-Za-z]</code></td>
+</tr>
+<tr class="odd">
+<td align="center"><code>[:punct:]</code></td>
+<td align="center">punctuation</td>
+</tr>
+<tr class="even">
+<td align="center"><code>[:blank:]</code></td>
+<td align="center">space or tab, equivalent to <code>[\t ]</code></td>
+</tr>
+<tr class="odd">
+<td align="center"><code>[:space:]</code></td>
+<td align="center">any whitespace character including space <code>[\f\n\r\t\v ]</code></td>
+</tr>
+<tr class="even">
+<td align="center"><code>[:print:]</code></td>
+<td align="center">any printable character, a similar expression is <code>[:graph:]</code> which excludes space</td>
+</tr>
+<tr class="odd">
+<td align="center"><code>[:xdigit:]</code></td>
+<td align="center">any hexadecimal digit, equivalent to <code>[F-Aa-f0-9]</code></td>
+</tr>
+</tbody>
+</table>
 </div>
-<div id="ref-lee">
-<p>Lee, Junseok, Ji-Ho Kang, Sunghae Jun, Hyunwoong Lim, Dongsik Jang, and Sangsung Park. 2018. “Ensemble Modeling for Sustainable Technology Transfer.” <em>Sustainability</em> 10 (July): 2278. <a href="https://doi.org/10.3390/su10072278">https://doi.org/10.3390/su10072278</a>.</p>
-</div>
-<div id="ref-monroe_colaresi_quinn">
-<p>Monroe, Burt L., Michael P. Colaresi, and Kevin M. Quinn. 2008. “Fightin’ Words: Lexical Feature Selection and Evaluation for Identifying the Content of Political Conflict.” <em>Political Analysis</em> 16 (4): 372–403. <a href="https://doi.org/10.1093/pan/mpn018">https://doi.org/10.1093/pan/mpn018</a>.</p>
-</div>
-<div id="ref-10.5555/3165010">
-<p>Silge, Julia, and David Robinson. 2017. <em>Text Mining with R: A Tidy Approach</em>. 1st ed. O’Reilly Media, Inc.</p>
-</div>
-</div>
-
-</div>
-
-
-
             </section>
 
           </div>
         </div>
       </div>
-<a href="text-classification.html" class="navigation navigation-prev " aria-label="Previous page"><i class="fa fa-angle-left"></i></a>
-<a href="reviews-on-regular-expressions.html" class="navigation navigation-next " aria-label="Next page"><i class="fa fa-angle-right"></i></a>
+<a href="reviews-on-regular-expressions.html" class="navigation navigation-prev " aria-label="Previous page"><i class="fa fa-angle-left"></i></a>
+<a href="unicode-code-points-categories-blocks-and-scripts.html" class="navigation navigation-next " aria-label="Next page"><i class="fa fa-angle-right"></i></a>
     </div>
   </div>
 <script src="libs/gitbook-2.6.7/js/app.min.js"></script>
@@ -297,7 +334,7 @@ gitbook.start({
 "size": 2
 },
 "edit": {
-"link": "https://github.com/enixam/tidy-text-mining/edit/master/book/references.Rmd",
+"link": "https://github.com/enixam/tidy-text-mining/edit/master/book/regex.Rmd",
 "text": "Edit"
 },
 "history": {

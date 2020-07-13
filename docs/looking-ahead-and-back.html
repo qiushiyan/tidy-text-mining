@@ -4,11 +4,11 @@
 
   <meta charset="utf-8" />
   <meta http-equiv="X-UA-Compatible" content="IE=edge" />
-  <title>A.3 Looking ahead and back | Notes for “Text Mining with R: A Tidy Approach”</title>
-  <meta name="description" content="A.3 Looking ahead and back | Notes for “Text Mining with R: A Tidy Approach”" />
+  <title>A.4 Looking ahead and back | Notes for “Text Mining with R: A Tidy Approach”</title>
+  <meta name="description" content="A.4 Looking ahead and back | Notes for “Text Mining with R: A Tidy Approach”" />
   <meta name="generator" content="bookdown 0.20 and GitBook 2.6.7" />
 
-  <meta property="og:title" content="A.3 Looking ahead and back | Notes for “Text Mining with R: A Tidy Approach”" />
+  <meta property="og:title" content="A.4 Looking ahead and back | Notes for “Text Mining with R: A Tidy Approach”" />
   <meta property="og:type" content="book" />
   
   
@@ -16,7 +16,7 @@
   <meta name="github-repo" content="enixam/tidy-text-mining" />
 
   <meta name="twitter:card" content="summary" />
-  <meta name="twitter:title" content="A.3 Looking ahead and back | Notes for “Text Mining with R: A Tidy Approach”" />
+  <meta name="twitter:title" content="A.4 Looking ahead and back | Notes for “Text Mining with R: A Tidy Approach”" />
   
   
   
@@ -24,7 +24,7 @@
 <meta name="author" content="Qiushi Yan" />
 
 
-<meta name="date" content="2020-06-27" />
+<meta name="date" content="2020-07-13" />
 
   <meta name="viewport" content="width=device-width, initial-scale=1" />
   <meta name="apple-mobile-web-app-capable" content="yes" />
@@ -201,10 +201,15 @@ code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } /* Warni
 <li class="chapter" data-level="" data-path="references.html"><a href="references.html"><i class="fa fa-check"></i>References</a></li>
 <li class="appendix"><span><b>Appendix</b></span></li>
 <li class="chapter" data-level="A" data-path="reviews-on-regular-expressions.html"><a href="reviews-on-regular-expressions.html"><i class="fa fa-check"></i><b>A</b> Reviews on regular expressions</a><ul>
-<li class="chapter" data-level="A.1" data-path="posix-character-classes.html"><a href="posix-character-classes.html"><i class="fa fa-check"></i><b>A.1</b> POSIX Character Classes</a></li>
-<li class="chapter" data-level="A.2" data-path="greedy-and-lazy-quantifiers.html"><a href="greedy-and-lazy-quantifiers.html"><i class="fa fa-check"></i><b>A.2</b> Greedy and lazy quantifiers</a></li>
-<li class="chapter" data-level="A.3" data-path="looking-ahead-and-back.html"><a href="looking-ahead-and-back.html"><i class="fa fa-check"></i><b>A.3</b> Looking ahead and back</a></li>
-<li class="chapter" data-level="A.4" data-path="backreferences.html"><a href="backreferences.html"><i class="fa fa-check"></i><b>A.4</b> Backreferences</a></li>
+<li class="chapter" data-level="A.1" data-path="metacharacters-and-posix-character-classes.html"><a href="metacharacters-and-posix-character-classes.html"><i class="fa fa-check"></i><b>A.1</b> Metacharacters and POSIX character classes</a></li>
+<li class="chapter" data-level="A.2" data-path="unicode-code-points-categories-blocks-and-scripts.html"><a href="unicode-code-points-categories-blocks-and-scripts.html"><i class="fa fa-check"></i><b>A.2</b> Unicode Code Points, Categories, Blocks, and Scripts</a><ul>
+<li class="chapter" data-level="A.2.1" data-path="unicode-code-points-categories-blocks-and-scripts.html"><a href="unicode-code-points-categories-blocks-and-scripts.html#unicode-categories"><i class="fa fa-check"></i><b>A.2.1</b> Unicode categories</a></li>
+<li class="chapter" data-level="A.2.2" data-path="unicode-code-points-categories-blocks-and-scripts.html"><a href="unicode-code-points-categories-blocks-and-scripts.html#unicode-scripts"><i class="fa fa-check"></i><b>A.2.2</b> Unicode scripts</a></li>
+<li class="chapter" data-level="A.2.3" data-path="unicode-code-points-categories-blocks-and-scripts.html"><a href="unicode-code-points-categories-blocks-and-scripts.html#unicode-blocks"><i class="fa fa-check"></i><b>A.2.3</b> Unicode blocks</a></li>
+</ul></li>
+<li class="chapter" data-level="A.3" data-path="greedy-and-lazy-quantifiers.html"><a href="greedy-and-lazy-quantifiers.html"><i class="fa fa-check"></i><b>A.3</b> Greedy and lazy quantifiers</a></li>
+<li class="chapter" data-level="A.4" data-path="looking-ahead-and-back.html"><a href="looking-ahead-and-back.html"><i class="fa fa-check"></i><b>A.4</b> Looking ahead and back</a></li>
+<li class="chapter" data-level="A.5" data-path="backreferences.html"><a href="backreferences.html"><i class="fa fa-check"></i><b>A.5</b> Backreferences</a></li>
 </ul></li>
 <li class="chapter" data-level="B" data-path="text-processing-examples-in-r.html"><a href="text-processing-examples-in-r.html"><i class="fa fa-check"></i><b>B</b> Text processing examples in R</a><ul>
 <li class="chapter" data-level="B.1" data-path="replacing-and-removing.html"><a href="replacing-and-removing.html"><i class="fa fa-check"></i><b>B.1</b> Replacing and removing</a></li>
@@ -235,28 +240,28 @@ code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } /* Warni
 
             <section class="normal" id="section-">
 <div id="looking-ahead-and-back" class="section level2">
-<h2><span class="header-section-number">A.3</span> Looking ahead and back</h2>
+<h2><span class="header-section-number">A.4</span> Looking ahead and back</h2>
 <p>Lookahead specifies a pattern to be matched but not returned. A <em>lookahead</em> is actually a subexpression and is formatted as such. The syntax for a lookahead pattern is a <strong>subexpression</strong> preceded by <code>?=</code>, and the text to match follows the <code>=</code> sign. Some refer to this behaviour as “match but not consume”, in the sense that lookhead and lookahead match a pattern after/before what we actually want to extract, but do not return it.</p>
 <p>In the following example, we only want to matcch “my homepage” that followed by a <code>&lt;/title&gt;</code>, and we do not want <code>&lt;/title&gt;</code> in the results</p>
-<div class="sourceCode" id="cb137"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb137-1"><a href="looking-ahead-and-back.html#cb137-1"></a>text &lt;-<span class="st"> </span><span class="kw">c</span>(<span class="st">&quot;&lt;title&gt;my homepage&lt;/title&gt;&quot;</span>, <span class="st">&quot;&lt;p&gt;my homepage&lt;/p&gt;&quot;</span>)</span>
-<span id="cb137-2"><a href="looking-ahead-and-back.html#cb137-2"></a><span class="kw">str_extract</span>(text, <span class="st">&quot;my homepage(?=&lt;/title&gt;)&quot;</span>)</span>
-<span id="cb137-3"><a href="looking-ahead-and-back.html#cb137-3"></a><span class="co">#&gt; [1] &quot;my homepage&quot; NA</span></span>
-<span id="cb137-4"><a href="looking-ahead-and-back.html#cb137-4"></a><span class="co"># looking ahead (and back) must be used in subexpressions </span></span>
-<span id="cb137-5"><a href="looking-ahead-and-back.html#cb137-5"></a><span class="kw">str_extract</span>(text, <span class="st">&quot;my homepage?=&lt;/title&gt;&quot;</span>)</span>
-<span id="cb137-6"><a href="looking-ahead-and-back.html#cb137-6"></a><span class="co">#&gt; [1] NA NA</span></span></code></pre></div>
+<div class="sourceCode" id="cb138"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb138-1"><a href="looking-ahead-and-back.html#cb138-1"></a>text &lt;-<span class="st"> </span><span class="kw">c</span>(<span class="st">&quot;&lt;title&gt;my homepage&lt;/title&gt;&quot;</span>, <span class="st">&quot;&lt;p&gt;my homepage&lt;/p&gt;&quot;</span>)</span>
+<span id="cb138-2"><a href="looking-ahead-and-back.html#cb138-2"></a><span class="kw">str_extract</span>(text, <span class="st">&quot;my homepage(?=&lt;/title&gt;)&quot;</span>)</span>
+<span id="cb138-3"><a href="looking-ahead-and-back.html#cb138-3"></a><span class="co">#&gt; [1] &quot;my homepage&quot; NA</span></span>
+<span id="cb138-4"><a href="looking-ahead-and-back.html#cb138-4"></a><span class="co"># looking ahead (and back) must be used in subexpressions </span></span>
+<span id="cb138-5"><a href="looking-ahead-and-back.html#cb138-5"></a><span class="kw">str_extract</span>(text, <span class="st">&quot;my homepage?=&lt;/title&gt;&quot;</span>)</span>
+<span id="cb138-6"><a href="looking-ahead-and-back.html#cb138-6"></a><span class="co">#&gt; [1] NA NA</span></span></code></pre></div>
 <p>Similarly, <code>?&lt;=</code> is interpreted as the <em>lookback</em> operator, which specifies a pattern before the text we actually want to extract. Following is an example. A database search lists products, and you need only the prices.</p>
 <p>Following is an example. A database search lists products, and you need only the prices.</p>
-<div class="sourceCode" id="cb138"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb138-1"><a href="looking-ahead-and-back.html#cb138-1"></a>text &lt;-<span class="st"> </span><span class="kw">c</span>(<span class="st">&quot;ABC01: $23.45&quot;</span>, </span>
-<span id="cb138-2"><a href="looking-ahead-and-back.html#cb138-2"></a>          <span class="st">&quot;HGG42: $5.31&quot;</span>, </span>
-<span id="cb138-3"><a href="looking-ahead-and-back.html#cb138-3"></a>          <span class="st">&quot;CFMX1: $899.00&quot;</span>, </span>
-<span id="cb138-4"><a href="looking-ahead-and-back.html#cb138-4"></a>          <span class="st">&quot;XTC99: $69.96&quot;</span>, </span>
-<span id="cb138-5"><a href="looking-ahead-and-back.html#cb138-5"></a>          <span class="st">&quot;Total items found: 4&quot;</span>)</span>
-<span id="cb138-6"><a href="looking-ahead-and-back.html#cb138-6"></a></span>
-<span id="cb138-7"><a href="looking-ahead-and-back.html#cb138-7"></a><span class="kw">str_extract</span>(text, <span class="st">&quot;(?&lt;=</span><span class="ch">\\</span><span class="st">$)[0-9]+&quot;</span>)</span>
-<span id="cb138-8"><a href="looking-ahead-and-back.html#cb138-8"></a><span class="co">#&gt; [1] &quot;23&quot;  &quot;5&quot;   &quot;899&quot; &quot;69&quot;  NA</span></span></code></pre></div>
+<div class="sourceCode" id="cb139"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb139-1"><a href="looking-ahead-and-back.html#cb139-1"></a>text &lt;-<span class="st"> </span><span class="kw">c</span>(<span class="st">&quot;ABC01: $23.45&quot;</span>, </span>
+<span id="cb139-2"><a href="looking-ahead-and-back.html#cb139-2"></a>          <span class="st">&quot;HGG42: $5.31&quot;</span>, </span>
+<span id="cb139-3"><a href="looking-ahead-and-back.html#cb139-3"></a>          <span class="st">&quot;CFMX1: $899.00&quot;</span>, </span>
+<span id="cb139-4"><a href="looking-ahead-and-back.html#cb139-4"></a>          <span class="st">&quot;XTC99: $69.96&quot;</span>, </span>
+<span id="cb139-5"><a href="looking-ahead-and-back.html#cb139-5"></a>          <span class="st">&quot;Total items found: 4&quot;</span>)</span>
+<span id="cb139-6"><a href="looking-ahead-and-back.html#cb139-6"></a></span>
+<span id="cb139-7"><a href="looking-ahead-and-back.html#cb139-7"></a><span class="kw">str_extract</span>(text, <span class="st">&quot;(?&lt;=</span><span class="ch">\\</span><span class="st">$)[0-9]+&quot;</span>)</span>
+<span id="cb139-8"><a href="looking-ahead-and-back.html#cb139-8"></a><span class="co">#&gt; [1] &quot;23&quot;  &quot;5&quot;   &quot;899&quot; &quot;69&quot;  NA</span></span></code></pre></div>
 <p>ookahead and lookbehind operations may be combined, as in the following example</p>
-<div class="sourceCode" id="cb139"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb139-1"><a href="looking-ahead-and-back.html#cb139-1"></a><span class="kw">str_extract</span>(<span class="st">&quot;&lt;title&gt;my homepage&lt;/title&gt;&quot;</span>, <span class="st">&quot;(?&lt;=&lt;title&gt;)my homepage(?=&lt;/title&gt;)&quot;</span>)</span>
-<span id="cb139-2"><a href="looking-ahead-and-back.html#cb139-2"></a><span class="co">#&gt; [1] &quot;my homepage&quot;</span></span></code></pre></div>
+<div class="sourceCode" id="cb140"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb140-1"><a href="looking-ahead-and-back.html#cb140-1"></a><span class="kw">str_extract</span>(<span class="st">&quot;&lt;title&gt;my homepage&lt;/title&gt;&quot;</span>, <span class="st">&quot;(?&lt;=&lt;title&gt;)my homepage(?=&lt;/title&gt;)&quot;</span>)</span>
+<span id="cb140-2"><a href="looking-ahead-and-back.html#cb140-2"></a><span class="co">#&gt; [1] &quot;my homepage&quot;</span></span></code></pre></div>
 <p>Additionally, <code>(?=)</code> and <code>(?&lt;=)</code> are known as <strong>positive</strong> lookahead and lookback. A lesser used version is the <strong>negative</strong> form of those two operators, looking for text that does not match the specified pattern.</p>
 <table>
 <thead>
@@ -285,11 +290,11 @@ code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } /* Warni
 </tbody>
 </table>
 <p>Suppose we want to extract just the quantities but not the prices in the followin text:</p>
-<div class="sourceCode" id="cb140"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb140-1"><a href="looking-ahead-and-back.html#cb140-1"></a>text &lt;-<span class="st"> </span><span class="kw">c</span>(<span class="st">&quot;I paid $30 for 100 apples, 50 oranges, and 60 pears. I saved $5 on this order.&quot;</span>)</span>
-<span id="cb140-2"><a href="looking-ahead-and-back.html#cb140-2"></a><span class="co"># without word boundary, 0 after 3 as in $30 will be included</span></span>
-<span id="cb140-3"><a href="looking-ahead-and-back.html#cb140-3"></a><span class="kw">str_view_all</span>(text, <span class="st">&quot;</span><span class="ch">\\</span><span class="st">b(?&lt;!</span><span class="ch">\\</span><span class="st">$)</span><span class="ch">\\</span><span class="st">d+</span><span class="ch">\\</span><span class="st">b&quot;</span>)</span></code></pre></div>
-<div id="htmlwidget-d87e2579ce8ae6f76324" style="width:960px;height:100%;" class="str_view html-widget"></div>
-<script type="application/json" data-for="htmlwidget-d87e2579ce8ae6f76324">{"x":{"html":"<ul>\n  <li>I paid $30 for <span class='match'>100<\/span> apples, <span class='match'>50<\/span> oranges, and <span class='match'>60<\/span> pears. I saved $5 on this order.<\/li>\n<\/ul>"},"evals":[],"jsHooks":[]}</script>
+<div class="sourceCode" id="cb141"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb141-1"><a href="looking-ahead-and-back.html#cb141-1"></a>text &lt;-<span class="st"> </span><span class="kw">c</span>(<span class="st">&quot;I paid $30 for 100 apples, 50 oranges, and 60 pears. I saved $5 on this order.&quot;</span>)</span>
+<span id="cb141-2"><a href="looking-ahead-and-back.html#cb141-2"></a><span class="co"># without word boundary, 0 after 3 as in $30 will be included</span></span>
+<span id="cb141-3"><a href="looking-ahead-and-back.html#cb141-3"></a><span class="kw">str_view_all</span>(text, <span class="st">&quot;</span><span class="ch">\\</span><span class="st">b(?&lt;!</span><span class="ch">\\</span><span class="st">$)</span><span class="ch">\\</span><span class="st">d+</span><span class="ch">\\</span><span class="st">b&quot;</span>)</span></code></pre></div>
+<div id="htmlwidget-8d217188afc5c82e30eb" style="width:960px;height:100%;" class="str_view html-widget"></div>
+<script type="application/json" data-for="htmlwidget-8d217188afc5c82e30eb">{"x":{"html":"<ul>\n  <li>I paid $30 for <span class='match'>100<\/span> apples, <span class='match'>50<\/span> oranges, and <span class='match'>60<\/span> pears. I saved $5 on this order.<\/li>\n<\/ul>"},"evals":[],"jsHooks":[]}</script>
 </div>
             </section>
 

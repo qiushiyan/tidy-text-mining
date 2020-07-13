@@ -4,11 +4,11 @@
 
   <meta charset="utf-8" />
   <meta http-equiv="X-UA-Compatible" content="IE=edge" />
-  <title>A.4 Backreferences | Notes for “Text Mining with R: A Tidy Approach”</title>
-  <meta name="description" content="A.4 Backreferences | Notes for “Text Mining with R: A Tidy Approach”" />
+  <title>A.5 Backreferences | Notes for “Text Mining with R: A Tidy Approach”</title>
+  <meta name="description" content="A.5 Backreferences | Notes for “Text Mining with R: A Tidy Approach”" />
   <meta name="generator" content="bookdown 0.20 and GitBook 2.6.7" />
 
-  <meta property="og:title" content="A.4 Backreferences | Notes for “Text Mining with R: A Tidy Approach”" />
+  <meta property="og:title" content="A.5 Backreferences | Notes for “Text Mining with R: A Tidy Approach”" />
   <meta property="og:type" content="book" />
   
   
@@ -16,7 +16,7 @@
   <meta name="github-repo" content="enixam/tidy-text-mining" />
 
   <meta name="twitter:card" content="summary" />
-  <meta name="twitter:title" content="A.4 Backreferences | Notes for “Text Mining with R: A Tidy Approach”" />
+  <meta name="twitter:title" content="A.5 Backreferences | Notes for “Text Mining with R: A Tidy Approach”" />
   
   
   
@@ -24,7 +24,7 @@
 <meta name="author" content="Qiushi Yan" />
 
 
-<meta name="date" content="2020-06-27" />
+<meta name="date" content="2020-07-13" />
 
   <meta name="viewport" content="width=device-width, initial-scale=1" />
   <meta name="apple-mobile-web-app-capable" content="yes" />
@@ -201,10 +201,15 @@ code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } /* Warni
 <li class="chapter" data-level="" data-path="references.html"><a href="references.html"><i class="fa fa-check"></i>References</a></li>
 <li class="appendix"><span><b>Appendix</b></span></li>
 <li class="chapter" data-level="A" data-path="reviews-on-regular-expressions.html"><a href="reviews-on-regular-expressions.html"><i class="fa fa-check"></i><b>A</b> Reviews on regular expressions</a><ul>
-<li class="chapter" data-level="A.1" data-path="posix-character-classes.html"><a href="posix-character-classes.html"><i class="fa fa-check"></i><b>A.1</b> POSIX Character Classes</a></li>
-<li class="chapter" data-level="A.2" data-path="greedy-and-lazy-quantifiers.html"><a href="greedy-and-lazy-quantifiers.html"><i class="fa fa-check"></i><b>A.2</b> Greedy and lazy quantifiers</a></li>
-<li class="chapter" data-level="A.3" data-path="looking-ahead-and-back.html"><a href="looking-ahead-and-back.html"><i class="fa fa-check"></i><b>A.3</b> Looking ahead and back</a></li>
-<li class="chapter" data-level="A.4" data-path="backreferences.html"><a href="backreferences.html"><i class="fa fa-check"></i><b>A.4</b> Backreferences</a></li>
+<li class="chapter" data-level="A.1" data-path="metacharacters-and-posix-character-classes.html"><a href="metacharacters-and-posix-character-classes.html"><i class="fa fa-check"></i><b>A.1</b> Metacharacters and POSIX character classes</a></li>
+<li class="chapter" data-level="A.2" data-path="unicode-code-points-categories-blocks-and-scripts.html"><a href="unicode-code-points-categories-blocks-and-scripts.html"><i class="fa fa-check"></i><b>A.2</b> Unicode Code Points, Categories, Blocks, and Scripts</a><ul>
+<li class="chapter" data-level="A.2.1" data-path="unicode-code-points-categories-blocks-and-scripts.html"><a href="unicode-code-points-categories-blocks-and-scripts.html#unicode-categories"><i class="fa fa-check"></i><b>A.2.1</b> Unicode categories</a></li>
+<li class="chapter" data-level="A.2.2" data-path="unicode-code-points-categories-blocks-and-scripts.html"><a href="unicode-code-points-categories-blocks-and-scripts.html#unicode-scripts"><i class="fa fa-check"></i><b>A.2.2</b> Unicode scripts</a></li>
+<li class="chapter" data-level="A.2.3" data-path="unicode-code-points-categories-blocks-and-scripts.html"><a href="unicode-code-points-categories-blocks-and-scripts.html#unicode-blocks"><i class="fa fa-check"></i><b>A.2.3</b> Unicode blocks</a></li>
+</ul></li>
+<li class="chapter" data-level="A.3" data-path="greedy-and-lazy-quantifiers.html"><a href="greedy-and-lazy-quantifiers.html"><i class="fa fa-check"></i><b>A.3</b> Greedy and lazy quantifiers</a></li>
+<li class="chapter" data-level="A.4" data-path="looking-ahead-and-back.html"><a href="looking-ahead-and-back.html"><i class="fa fa-check"></i><b>A.4</b> Looking ahead and back</a></li>
+<li class="chapter" data-level="A.5" data-path="backreferences.html"><a href="backreferences.html"><i class="fa fa-check"></i><b>A.5</b> Backreferences</a></li>
 </ul></li>
 <li class="chapter" data-level="B" data-path="text-processing-examples-in-r.html"><a href="text-processing-examples-in-r.html"><i class="fa fa-check"></i><b>B</b> Text processing examples in R</a><ul>
 <li class="chapter" data-level="B.1" data-path="replacing-and-removing.html"><a href="replacing-and-removing.html"><i class="fa fa-check"></i><b>B.1</b> Replacing and removing</a></li>
@@ -235,32 +240,32 @@ code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } /* Warni
 
             <section class="normal" id="section-">
 <div id="backreferences" class="section level2">
-<h2><span class="header-section-number">A.4</span> Backreferences</h2>
+<h2><span class="header-section-number">A.5</span> Backreferences</h2>
 <p>Backreferences are used to overcome the problem that one match has no knowledge of its previous match, appearing as a pair of a subexpression and a <code>\number</code> referencing to that subexpression.</p>
 <p>Find all repeated words (often typos):</p>
-<div class="sourceCode" id="cb141"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb141-1"><a href="backreferences.html#cb141-1"></a>text &lt;-<span class="st"> &quot;This is a block of of text, several words here are are repeated, and and they should not be.&quot;</span></span>
-<span id="cb141-2"><a href="backreferences.html#cb141-2"></a><span class="kw">str_view_all</span>(text, <span class="st">&quot;(</span><span class="ch">\\</span><span class="st">w+) </span><span class="ch">\\</span><span class="st">1&quot;</span>)</span></code></pre></div>
-<div id="htmlwidget-8d217188afc5c82e30eb" style="width:960px;height:100%;" class="str_view html-widget"></div>
-<script type="application/json" data-for="htmlwidget-8d217188afc5c82e30eb">{"x":{"html":"<ul>\n  <li>Th<span class='match'>is is<\/span> a block <span class='match'>of of<\/span> text, several words here <span class='match'>are are<\/span> repeated, <span class='match'>and and<\/span> they should not be.<\/li>\n<\/ul>"},"evals":[],"jsHooks":[]}</script>
+<div class="sourceCode" id="cb142"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb142-1"><a href="backreferences.html#cb142-1"></a>text &lt;-<span class="st"> &quot;This is a block of of text, several words here are are repeated, and and they should not be.&quot;</span></span>
+<span id="cb142-2"><a href="backreferences.html#cb142-2"></a><span class="kw">str_view_all</span>(text, <span class="st">&quot;(</span><span class="ch">\\</span><span class="st">w+) </span><span class="ch">\\</span><span class="st">1&quot;</span>)</span></code></pre></div>
+<div id="htmlwidget-10a657b698926e14e0a1" style="width:960px;height:100%;" class="str_view html-widget"></div>
+<script type="application/json" data-for="htmlwidget-10a657b698926e14e0a1">{"x":{"html":"<ul>\n  <li>Th<span class='match'>is is<\/span> a block <span class='match'>of of<\/span> text, several words here <span class='match'>are are<\/span> repeated, <span class='match'>and and<\/span> they should not be.<\/li>\n<\/ul>"},"evals":[],"jsHooks":[]}</script>
 <p>Another example with html data where we want to match all normal header tags, note that the last pair <code>&lt;h2&gt;...&lt;h3&gt;</code> is invalid:</p>
-<div class="sourceCode" id="cb142"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb142-1"><a href="backreferences.html#cb142-1"></a>text &lt;-<span class="st"> &quot;&lt;BODY&gt;</span></span>
-<span id="cb142-2"><a href="backreferences.html#cb142-2"></a><span class="st">&lt;H1&gt;Welcome to my Homepage&lt;/H1&gt;</span></span>
-<span id="cb142-3"><a href="backreferences.html#cb142-3"></a><span class="st">Content is divided into two sections:&lt;BR&gt;</span></span>
-<span id="cb142-4"><a href="backreferences.html#cb142-4"></a><span class="st">&lt;H2&gt;ColdFusion&lt;/H2&gt;</span></span>
-<span id="cb142-5"><a href="backreferences.html#cb142-5"></a><span class="st">Information about Macromedia ColdFusion.</span></span>
-<span id="cb142-6"><a href="backreferences.html#cb142-6"></a><span class="st">&lt;H2&gt;Wireless&lt;/H2&gt;</span></span>
-<span id="cb142-7"><a href="backreferences.html#cb142-7"></a><span class="st">Information about Bluetooth, 802.11, and more.</span></span>
-<span id="cb142-8"><a href="backreferences.html#cb142-8"></a><span class="st">&lt;H2&gt;This is not valid HTML&lt;/H3&gt;</span></span>
-<span id="cb142-9"><a href="backreferences.html#cb142-9"></a><span class="st">&lt;/BODY&gt;&quot;</span></span>
-<span id="cb142-10"><a href="backreferences.html#cb142-10"></a></span>
-<span id="cb142-11"><a href="backreferences.html#cb142-11"></a><span class="kw">str_extract_all</span>(text, <span class="st">&quot;&lt;[Hh](</span><span class="ch">\\</span><span class="st">d)&gt;.+&lt;/[Hh]</span><span class="ch">\\</span><span class="st">1&gt;&quot;</span>)</span>
-<span id="cb142-12"><a href="backreferences.html#cb142-12"></a><span class="co">#&gt; [[1]]</span></span>
-<span id="cb142-13"><a href="backreferences.html#cb142-13"></a><span class="co">#&gt; [1] &quot;&lt;H1&gt;Welcome to my Homepage&lt;/H1&gt;&quot; &quot;&lt;H2&gt;ColdFusion&lt;/H2&gt;&quot;            </span></span>
-<span id="cb142-14"><a href="backreferences.html#cb142-14"></a><span class="co">#&gt; [3] &quot;&lt;H2&gt;Wireless&lt;/H2&gt;&quot;</span></span></code></pre></div>
+<div class="sourceCode" id="cb143"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb143-1"><a href="backreferences.html#cb143-1"></a>text &lt;-<span class="st"> &quot;&lt;BODY&gt;</span></span>
+<span id="cb143-2"><a href="backreferences.html#cb143-2"></a><span class="st">&lt;H1&gt;Welcome to my Homepage&lt;/H1&gt;</span></span>
+<span id="cb143-3"><a href="backreferences.html#cb143-3"></a><span class="st">Content is divided into two sections:&lt;BR&gt;</span></span>
+<span id="cb143-4"><a href="backreferences.html#cb143-4"></a><span class="st">&lt;H2&gt;ColdFusion&lt;/H2&gt;</span></span>
+<span id="cb143-5"><a href="backreferences.html#cb143-5"></a><span class="st">Information about Macromedia ColdFusion.</span></span>
+<span id="cb143-6"><a href="backreferences.html#cb143-6"></a><span class="st">&lt;H2&gt;Wireless&lt;/H2&gt;</span></span>
+<span id="cb143-7"><a href="backreferences.html#cb143-7"></a><span class="st">Information about Bluetooth, 802.11, and more.</span></span>
+<span id="cb143-8"><a href="backreferences.html#cb143-8"></a><span class="st">&lt;H2&gt;This is not valid HTML&lt;/H3&gt;</span></span>
+<span id="cb143-9"><a href="backreferences.html#cb143-9"></a><span class="st">&lt;/BODY&gt;&quot;</span></span>
+<span id="cb143-10"><a href="backreferences.html#cb143-10"></a></span>
+<span id="cb143-11"><a href="backreferences.html#cb143-11"></a><span class="kw">str_extract_all</span>(text, <span class="st">&quot;&lt;[Hh](</span><span class="ch">\\</span><span class="st">d)&gt;.+&lt;/[Hh]</span><span class="ch">\\</span><span class="st">1&gt;&quot;</span>)</span>
+<span id="cb143-12"><a href="backreferences.html#cb143-12"></a><span class="co">#&gt; [[1]]</span></span>
+<span id="cb143-13"><a href="backreferences.html#cb143-13"></a><span class="co">#&gt; [1] &quot;&lt;H1&gt;Welcome to my Homepage&lt;/H1&gt;&quot; &quot;&lt;H2&gt;ColdFusion&lt;/H2&gt;&quot;            </span></span>
+<span id="cb143-14"><a href="backreferences.html#cb143-14"></a><span class="co">#&gt; [3] &quot;&lt;H2&gt;Wireless&lt;/H2&gt;&quot;</span></span></code></pre></div>
 <p><strong>Backreferences is particularly useful when performing replace operations</strong>.</p>
-<div class="sourceCode" id="cb143"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb143-1"><a href="backreferences.html#cb143-1"></a>text &lt;-<span class="st"> &quot;user@gmail.com is my email address&quot;</span></span>
-<span id="cb143-2"><a href="backreferences.html#cb143-2"></a><span class="kw">str_replace</span>(text, <span class="st">&quot;(.+@.+</span><span class="ch">\\</span><span class="st">.com)&quot;</span>, <span class="st">&quot;&lt;a href: </span><span class="ch">\\</span><span class="st">1&gt;</span><span class="ch">\\</span><span class="st">1&lt;a&gt;&quot;</span>)</span>
-<span id="cb143-3"><a href="backreferences.html#cb143-3"></a><span class="co">#&gt; [1] &quot;&lt;a href: user@gmail.com&gt;user@gmail.com&lt;a&gt; is my email address&quot;</span></span></code></pre></div>
+<div class="sourceCode" id="cb144"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb144-1"><a href="backreferences.html#cb144-1"></a>text &lt;-<span class="st"> &quot;user@gmail.com is my email address&quot;</span></span>
+<span id="cb144-2"><a href="backreferences.html#cb144-2"></a><span class="kw">str_replace</span>(text, <span class="st">&quot;(.+@.+</span><span class="ch">\\</span><span class="st">.com)&quot;</span>, <span class="st">&quot;&lt;a href: </span><span class="ch">\\</span><span class="st">1&gt;</span><span class="ch">\\</span><span class="st">1&lt;a&gt;&quot;</span>)</span>
+<span id="cb144-3"><a href="backreferences.html#cb144-3"></a><span class="co">#&gt; [1] &quot;&lt;a href: user@gmail.com&gt;user@gmail.com&lt;a&gt; is my email address&quot;</span></span></code></pre></div>
 
 </div>
 <!-- </div> -->

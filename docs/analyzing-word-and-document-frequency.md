@@ -317,7 +317,7 @@ $$
 $$
 A problem is that, when some word $w$ is only presented in document $i$, among other documents in the corpus, odds ratio will have zero denominator and the metric goes to infinity. One solution is to "add a little bit to the zeroes", in which smoothed word frequency is defined as $\tilde{f_w^i}  = f_w^i + \varepsilon$. 
 
-Note that regardless of the zero treatment, words with highest log odds ratio are often obscure ones. The problem is again the failure to account for sampling variability. **With logodds ratios, the sampling variation goes down with increased frequency**. So that different words are not comparable.  
+Note that regardless of the zero treatment, words with highest log odds ratio are often obscure ones. The problem is again the failure to account for sampling variability. **With log odds ratios, the sampling variation goes down with increased frequency**. So that different words are not comparable.  
 
 A common response to this is to set some frequency "threshold" for features to ‘‘qualify’’ for consideration. For example, we only compute log odds ratio on words that appears at least 10 times. 
 

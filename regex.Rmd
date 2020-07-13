@@ -37,7 +37,41 @@ And there are POSIX character classes.
 
 https://www.regular-expressions.info/unicode.html
 
-Unicode is a character set that aims to define all characters and glyphs from all human languages, living and dead. If 
+Unicode is a character set that aims to define all characters and glyphs from all human languages, living and dead. The Unicode Standard defines a codespace of numerical values ranging from 0 through 10FFFF16, called code points and denoted as U+0000 through U+10FFFF ("U+" plus the code point value in hexadecimal, prepended with leading zeros as necessary to result in a minimum of four digits^[Not all codepoint correspond to a character since there are many reserved positions, the first meaningful character in current Unicode is `U+0020`, which is the blank space as word divider]. This section introduces regular expressions that leverage this powerful mapping. 
+
+We have stated that `.` matches any single character, in Unicode parlance this means “the dot matches any single **Unicode code point**”. For instance, à can be encoded as two code points: U+0061 (a) followed by U+0300 (grave accent)^[In R, this can be printed with `print("\u0061\u0300")`]. In this situation, . applied to à will match the first code point without the accent. `^.$` will fail to match, and `^..$` matches `à`.  
+
+The Unicode code point U+0300 (grave accent) is a **combining mark**. Any code point that is not a combining mark can be followed by any number of combining marks. This sequence, like U+0061 U+0300 above, is displayed as a single grapheme^[The smallest meaningful contrastive unit in a writing system.] on the screen.  
+
+To match a single grapheme, whether it be just one codepoint all a codepoint followed by multiple combining marks, we can use metacharacter `\X`, which is rougly the Unicode version of `.`. One difference is that `\X` always matches line break characters.   
+
+### Unicode categories
+
+In the case of regualr expressions, Unicode also brings new possibilites of matching. One notion is that each Unicode character belongs to a certain category. For example, `\p{L}` will match a single character belonging to the *letter* category, and `\p{P}` means the *punctuation category*. There are also subcategories such as `\p{LI}` will match the lowercase letter subcategory,  children of `\p{L}`. A list of all Unicode categories and subcategories can be found at https://en.wikipedia.org/wiki/Unicode_character_property#General_Category.
+
+### Unicode scripts
+
+The Unicode standard places each assigned code point (character) into one script. A script is a group of code points used by a particular human writing system. There are scripts like `Thai` Thai correspond to a single human language (denoted by `\p{Common}`), and scripts like `Latin` spanning multiple languages (denoted by `\p{Latin}`, including basic ASCII characters, latin supplements, latin extended and more).  
+
+`\p{Han}` is the script for Chinese.
+
+```{r}
+str_view_all("彷佛全世界的细雨下在全世界的grassland上", "\\p{Han}")
+```
+
+A special script is the `Common` script. This script contains all sorts of characters that are common to a wide range of scripts. It includes all sorts of punctuation, whitespace and miscellaneous symbols.  
+
+### Unicode blocks
+
+A Unicode block is a certain range of code points. An essential difference between blocks and scripts is that a block is a single contiguous range of code points, and blocks do not correspond 100% with scripts. 
+
+For ASCII characters, the block is `[\u0000–\u007F ]`, and for Chinese `[\u4E00-\u9FA5]`
+
+
+
+
+
+
 
 ## Greedy and lazy quantifiers 
 
