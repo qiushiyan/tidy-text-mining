@@ -69,7 +69,7 @@ A special script is the `Common` script. This script contains all sorts of chara
 
 A Unicode block is a certain range of code points. An essential difference between blocks and scripts is that a block is a single contiguous range of code points, and blocks do not correspond 100% with scripts. 
 
-For ASCII characters, the block is `[\u0000–\u007F ]`, and for Chinese `[\u4E00-\u9FA5]`
+For ASCII characters, the block is `[\u0000–\u007F]`, and for Chinese `[\u4E00-\u9FA5]`
 
 
 

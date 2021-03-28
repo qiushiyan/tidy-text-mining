@@ -1,2 +1,3 @@
 
 Analyzing trump's twitter: http://varianceexplained.org/r/trump-tweets/
+
